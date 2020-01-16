@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.0)
 
 project(ShaderMaker)
 
+add_subdirectory(glslang)
+
 add_definitions(-DUNICODE -D_UNICODE)
 
+include_directories(glslang)
 
-target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil)
+add_executable(ShaderMaker glsl2spv.cpp glsl2spv.h)
+
+target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV)
