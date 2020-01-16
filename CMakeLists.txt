@@ -8,6 +8,6 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 include_directories(glslang)
 
-add_executable(ShaderMaker glsl2spv.cpp glsl2spv.h)
+add_executable(ShaderMaker main.cpp glsl2spv.cpp glsl2spv.h)
 
 target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV)
