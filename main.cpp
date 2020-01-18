@@ -49,18 +49,62 @@ UTF8String MakeValueName(const ShaderDataType type,const uint count)
 
     if(count==1)
         return type_name[uint(type)];
+
+    return UTF8String(type_vec_name[uint(type)])+UTF8String(count);
 }
 
-enum class ShaderSegment
+class ShaderConfigParse
 {
-    None=0,
+public:
 
-    Attribute,
-    Output,
-    AttributeToGBuffer,
-    GBufferToAttribute
+    ShaderConfigParse(){}
+    virtual ~ShaderConfigParse()=default;
 
+    virtual void Parse(const UTF8String &)=0;
+};//
 
+class AttributeParse:public ShaderConfigParse
+{
+public:
+
+    using ShaderConfigParse::ShaderConfigParse;
+
+    void Parse(const UTF8String &str) override
+    {
+    }
+};
+
+class OutputParse:public ShaderConfigParse
+{
+public:
+
+    using ShaderConfigParse::ShaderConfigParse;
+
+    void Parse(const UTF8String &str) override
+    {
+    }
+};
+
+class AttributeToGBufferParse:public ShaderConfigParse
+{
+public:
+
+    using ShaderConfigParse::ShaderConfigParse;
+
+    void Parse(const UTF8String &str) override
+    {
+    }
+};
+
+class GBufferToAttributeParse:public ShaderConfigParse
+{
+public:
+
+    using ShaderConfigParse::ShaderConfigParse;
+
+    void Parse(const UTF8String &str) override
+    {
+    }
 };
 
 inline bool IsSegmentFlag(const UTF8String &str)
@@ -69,14 +113,14 @@ inline bool IsSegmentFlag(const UTF8String &str)
          &&str.GetEndChar()     ==']');
 }
 
-inline const ShaderSegment &GetShaderSegment(const UTF8String &str)
+inline ShaderConfigParse *GetShaderSegment(const UTF8String &str)
 {
-    if(str.CaseComp("[attribute]"           )==0)return ShaderSegment::Attribute;
-    if(str.CaseComp("[output]"              )==0)return ShaderSegment::Output;
-    if(str.CaseComp("[attribute_to_gbuffer]")==0)return ShaderSegment::AttributeToGBuffer;
-    if(str.CaseComp("[gbuffer_to_attribute]")==0)return ShaderSegment::GBufferToAttribute;
+    if(str.CaseComp("[attribute]"           )==0)return(new AttributeParse());
+    if(str.CaseComp("[output]"              )==0)return(new OutputParse());
+    if(str.CaseComp("[attribute_to_gbuffer]")==0)return(new AttributeToGBufferParse());
+    if(str.CaseComp("[gbuffer_to_attribute]")==0)return(new GBufferToAttributeParse());
 
-    return ShaderSegment::None;
+    return nullptr;
 }
 
 #if HGL_OS == HGL_OS_Windows
@@ -97,7 +141,7 @@ int main(int argc,char **argv)
 
     UTF8StringList gbfile;
 
-    ShaderSegment cur_segment=ShaderSegment::None;
+    ShaderConfigParse *cur_parse=nullptr;
 
     const int lines=LoadStringListFromTextFile(gbfile,argv[1]);
 
@@ -108,9 +152,12 @@ int main(int argc,char **argv)
         const UTF8String &str=gbfile.GetString(i);
 
         if(IsSegmentFlag(str))
-            cur_segment=GetShaderSegment(str);
+        {
+            delete cur_parse;
+            cur_parse=GetShaderSegment(str);
+        }
 
-        
+        cur_parse->Parse(str);
     }
 
     return(0);
