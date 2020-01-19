@@ -120,7 +120,6 @@ ShaderAttributeList gbuffer_list;
 UTF8StringList attribute_to_gbuffer;
 UTF8StringList gbuffer_to_attribute;
 
-UTF8String ShaderTypeChar="bolfatinudev";
 UTF8String SpaceChar=" \t;";
 
 class ShaderConfigParse
@@ -347,7 +346,7 @@ void MakeShaderHeader(UTF8StringList &shader)
 void MakeWorldMatrix(UTF8StringList &shader)
 {
 shader.Add(R"(
-layout(std430,binding = 0,row_major) uniform WorldMatrix     // hgl/math/Math.h
+layout(std430,binding=0,row_major) uniform WorldMatrix     // hgl/math/Math.h
 {
     mat4 ortho;
 
@@ -372,6 +371,8 @@ layout(std430,push_constant,row_major) uniform Consts
 {
     mat4 local_to_world;
     mat3 normal;
+    vec3 object_position;
+    vec3 object_size;
 }pc;)");
 }
 
@@ -449,6 +450,10 @@ void main()
     SaveShaderToFile(output_filename+OS_TEXT("_gbuffer.frag"),shader);
 }
 
+void MakeCompositionVertexShader(const OSString &output_filename)
+{
+}
+
 void MakeCompositionFragmentShader(const OSString &output_filename)
 {
     UTF8StringList shader;
@@ -462,10 +467,10 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
     ShaderAttribute *sa=gbuffer_list.GetData();
     UTF8String type_name;
 
-    if(use_subpass)
-        shader.Add(U8_TEXT("layout(input_attachment_index=0,binding=0) uniform subpassInput rb_depth;"));
-    else
-        shader.Add(U8_TEXT("layout(binding=0) uniform sampler2D rb_depth;"));
+    //if(use_subpass)
+    //    shader.Add(U8_TEXT("layout(input_attachment_index=0,binding=0) uniform subpassInput rb_depth;"));
+    //else
+    //    shader.Add(U8_TEXT("layout(binding=0) uniform sampler2D rb_depth;"));
 
     for(int i=0;i<gbuffer_list.GetCount();i++)
     {
@@ -479,30 +484,32 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
         ++sa;
     }
 
+//    shader.Add(R"(
+//layout(location=0) out vec4 FragColor;
+//
+//highp vec3 RetrievePosition()
+//{)");
+//
+//if(use_subpass)
+//    shader.Add(R"(    highp vec4 clip    = vec4(gl_FragCoord.xy * world.resolution * 2.0 - 1.0, subpassLoad(rb_depth).x, 1.0);)");
+//else
+//    shader.Add(R"(    highp vec4 clip    = vec4(gl_FragCoord.xy * world.resolution * 2.0 - 1.0, texelFetch(rb_depth,gl_FragCoord.xy,0).x,1.0);)");
+//
+//shader.Add(R"(
+//    highp vec4 world_w = world.inverse_projection * clip;
+//    highp vec3 pos     = world_w.xyz / world_w.w;
+//
+//    return pos;
+//}
+//
+//void main()
+//{
+//    highp vec3 Position=RetrievePosition();
+//)");
+
     shader.Add(R"(
-layout(location=0) out vec4 FragColor;
-
-highp vec3 RetrievePosition()
-{)");
-
-if(use_subpass)
-    shader.Add(R"(
-    highp vec4 clip    = vec4(gl_FragCoord.xy * world.resolution * 2.0 - 1.0, subpassLoad(rb_depth).x, 1.0);)");
-else
-    shader.Add(R"(
-    highp vec4 clip    = vec4(gl_FragCoord.xy * world.resolution * 2.0 - 1.0, texelFetch(rb_depth,gl_FragCoord.xy,0).x,1.0);)");
-
-shader.Add(R"(
-    highp vec4 world_w = global_uniform.inv_view_proj * clip;
-    highp vec3 pos     = world_w.xyz / world_w.w;
-
-    return pos;
-}
-
 void main()
-{
-    highp vec3 Position=RetrievePosition();
-)");
+{)");
 
     MakeGBufferAttribute(shader);
     
@@ -539,11 +546,13 @@ int main(int argc,char **argv)
     util::CmdParse cp(argc,argv);
 
     if(cp.Find(OS_TEXT("/es"))>0)use_opengl_es=true;
-    if(cp.Find(OS_TEXT("/subpass"))>0)use_subpass=true;
+//    if(cp.Find(OS_TEXT("/subpass"))>0)use_subpass=true;
 
     ParseGBufferConfig(argv[2]);
 
     MakeGBufferFragmentShader(argv[1]);
+
+    MakeCompositionVertexShader(argv[1]);
     MakeCompositionFragmentShader(argv[1]);
 
     return(0);
