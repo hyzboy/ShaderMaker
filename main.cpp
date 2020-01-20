@@ -337,7 +337,7 @@ void MakeShaderHeader(UTF8StringList &shader)
         shader.Add("#version core 460");
 
     shader.Add(R"(/**
- * Copyright (c) 2018-2020, www.hyzgame.com
+ * Copyright (c) 2018-2020 www.hyzgame.com
  *
  * Create by ShaderMaker
  */)");
@@ -346,7 +346,7 @@ void MakeShaderHeader(UTF8StringList &shader)
 void MakeWorldMatrix(UTF8StringList &shader)
 {
 shader.Add(R"(
-layout(std430,binding=0,row_major) uniform WorldMatrix     // hgl/math/Math.h
+layout(binding=0) uniform WorldMatrix     // hgl/math/Math.h
 {
     mat4 ortho;
 
@@ -367,7 +367,7 @@ layout(std430,binding=0,row_major) uniform WorldMatrix     // hgl/math/Math.h
 void MakePushConstant(UTF8StringList &shader)
 {
 shader.Add(R"(
-layout(std430,push_constant,row_major) uniform Consts
+layout(push_constant) uniform Consts
 {
     mat4 local_to_world;
     mat3 normal;
@@ -452,6 +452,25 @@ void main()
 
 void MakeCompositionVertexShader(const OSString &output_filename)
 {
+    UTF8StringList shader;
+
+    MakeShaderHeader(shader);
+
+    shader.Add(R"(
+layout(location = 0) in vec2 Vertex;
+
+layout(location = 0) out vec2 vs_out_position;
+
+void main()
+{
+    gl_Position=vec4(Vertex,0.0,1.0);
+
+    vs_out_position=(Vertex+1.0)/2.0;
+})");
+
+    OutputStringList(shader);
+
+    SaveShaderToFile(output_filename+OS_TEXT("_composition.vert"),shader);
 }
 
 void MakeCompositionFragmentShader(const OSString &output_filename)
@@ -483,6 +502,10 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
 
         ++sa;
     }
+
+    shader.Add("");
+    shader.Add(U8_TEXT("layout(location=0) in vec2 vs_out_position;"));
+    shader.Add(U8_TEXT("layout(location=0) out vec4 FragColor;"));
 
 //    shader.Add(R"(
 //layout(location=0) out vec4 FragColor;
