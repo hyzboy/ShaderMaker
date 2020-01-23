@@ -11,3 +11,7 @@ include_directories(glslang)
 add_executable(ShaderMaker main.cpp glsl2spv.cpp glsl2spv.h)
 
 target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV)
+
+if(UNIX)
+    target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
+endif()
