@@ -9,7 +9,8 @@ namespace hgl
 {
     namespace graph
     {
-        void InitDefaultShaderBuildResource();      ///<初始化glsl2spv数值限定
+        bool InitShaderMaker();
+        void ClearShaderMaker();
 
         bool GLSL2SPV(const VkShaderStageFlagBits shader_type,const char *shader_source,std::vector<uint32> &spirv,UTF8String &log,UTF8String &debug_log);
     }//namespace graph

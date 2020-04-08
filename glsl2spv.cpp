@@ -1,5 +1,6 @@
 ﻿#include"glsl2spv.h"
 #include<SPIRV/GlslangToSpv.h>
+#include<glslang/Include/glslang_c_interface.h>
 
 namespace hgl
 {
@@ -142,9 +143,16 @@ namespace hgl
             }
         }//namespace
 
-        void InitDefaultShaderBuildResource()
+        bool InitShaderMaker()
         {
             init_default_build_in_resource();
+
+            return glslang::InitializeProcess();
+        }
+
+        void ClearShaderMaker()
+        {
+            glslang::FinalizeProcess();
         }
 
         bool GLSL2SPV(const VkShaderStageFlagBits shader_type,const char *shader_source,std::vector<uint32> &spirv,UTF8String &log,UTF8String &debug_log)
