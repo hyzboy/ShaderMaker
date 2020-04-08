@@ -226,7 +226,7 @@ namespace hgl
                 return(false);
             }
 
-            bool result=hgl::graph::GLSL2SPV(flag,source,spirv,log,debug_log);
+            bool result=GLSL2SPV(flag,source,spirv,log,debug_log);
 
             if(!result)
             {
