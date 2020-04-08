@@ -236,8 +236,13 @@ namespace hgl
             else
             {
                 const OSString spv_filename=filename+OS_TEXT(".spv");
+                const uint64 spv_size= spirv.size() * sizeof(uint32);
 
-                filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spirv.size()*sizeof(uint32));
+                if(filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spv_size)!=spv_size)
+                {
+                    std::cerr<<"save to file error!"<<std::endl;
+                    result=false;
+                }
             }
 
             delete[] source;
