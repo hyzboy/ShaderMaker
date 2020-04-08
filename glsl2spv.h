@@ -12,7 +12,7 @@ namespace hgl
         bool InitShaderMaker();
         void ClearShaderMaker();
 
-        bool GLSL2SPV(const VkShaderStageFlagBits shader_type,const char *shader_source,std::vector<uint32> &spirv,UTF8String &log,UTF8String &debug_log);
+        bool CompileShader(const OSString& filename);
     }//namespace graph
 }//namespace hgl
 #endif//HGL_GRAPH_GLSL2SPV_INCLUDE

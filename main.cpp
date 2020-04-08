@@ -452,52 +452,6 @@ void main()
     SaveShaderToFile(output_filename+OS_TEXT("_composition.frag"),shader);
 }
 
-bool CompileShader(const OSString &filename)
-{
-    char *source;
-
-    int64 size=filesystem::LoadFileToMemory(filename,(void **)&source,true);
-
-    if(size<=0)
-        return(false);
-    
-    VkShaderStageFlagBits flag;
-    std::vector<uint32> spirv;
-    UTF8String log,debug_log;
-
-    const OSString ext_name=filesystem::ClipFileExtName(filename,false);
-
-    if (ext_name.CaseComp(OS_TEXT("vert")) == 0)flag = VK_SHADER_STAGE_VERTEX_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("tesc")) == 0)flag = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("tese")) == 0)flag = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("geom")) == 0)flag = VK_SHADER_STAGE_GEOMETRY_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("frag")) == 0)flag = VK_SHADER_STAGE_FRAGMENT_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("comp")) == 0)flag = VK_SHADER_STAGE_COMPUTE_BIT; else
-    if (ext_name.CaseComp(OS_TEXT("task")) == 0)flag = VK_SHADER_STAGE_TASK_BIT_NV; else
-    if (ext_name.CaseComp(OS_TEXT("mesh")) == 0)flag = VK_SHADER_STAGE_MESH_BIT_NV; else
-    {
-        std::cerr<<"can't parse shader type."<<std::endl;
-        return(false);
-    }
-
-    bool result=hgl::graph::GLSL2SPV(flag,source,spirv,log,debug_log);
-
-    if(!result)
-    {
-        std::cerr<<"shader compiler error: "<<log.c_str()<<std::endl;
-        std::cerr<<"debug log: "<<debug_log.c_str()<<std::endl;
-    }
-    else
-    {
-        const OSString spv_filename=filename+OS_TEXT(".spv");
-
-        filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spirv.size()*sizeof(uint32));
-    }
-
-    delete[] source;
-    return result;
-}
-
 #if HGL_OS == HGL_OS_Windows
 int wmain(int argc,wchar_t **argv)
 #else
@@ -506,7 +460,7 @@ int main(int argc,char **argv)
 {
     hgl::graph::InitShaderMaker();
 
-    int result=CompileShader(argv[1]);
+    int result=hgl::graph::CompileShader(argv[1]);
 
     hgl::graph::ClearShaderMaker();
 
