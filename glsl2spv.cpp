@@ -139,6 +139,12 @@ namespace hgl
                     case VK_SHADER_STAGE_COMPUTE_BIT:
                         return EShLangCompute;
 
+                    case VK_SHADER_STAGE_TASK_BIT_NV:
+                        return EShLangTaskNV;
+
+                    case VK_SHADER_STAGE_MESH_BIT_NV:
+                        return EShLangMeshNV;
+
                     default:
                         return EShLangVertex;
                 }
