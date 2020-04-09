@@ -9,8 +9,8 @@ namespace hgl
 {
     namespace graph
     {
-        bool InitShaderMaker();
-        void ClearShaderMaker();
+        bool InitShaderCompiler();
+        void CloseShaderCompiler();
 
         bool CompileShader(const OSString& filename);
     }//namespace graph

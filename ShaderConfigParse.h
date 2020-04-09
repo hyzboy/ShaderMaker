@@ -1,5 +1,5 @@
 #pragma once
-#include<hgl/type/BaseString.h>
+#include<hgl/type/StringList.h>
 #include"ShaderDataType.h"
 #include<iostream>
 #include<iomanip>
@@ -63,3 +63,53 @@ inline bool IsSegmentFlag(const UTF8String& str)
     return(str.GetBeginChar() == '['
         && str.GetEndChar() == ']');
 }
+
+class AttributeParse :public ShaderConfigParse
+{
+    ShaderAttributeList *attr_list;
+
+public:
+
+    AttributeParse(ShaderAttributeList *sal) :ShaderConfigParse()
+    {
+        attr_list=sal;
+    }
+
+    void Parse(const UTF8String& str) override
+    {
+        UTF8String value_name;
+        ShaderDataFormat sdf;
+
+        sdf = ParseValue(value_name, str);
+
+        if (sdf == 0)
+        {
+            std::cerr << "[AttributeParse] ShaderDataType parse error,str=\"" << str.c_str() << "\"" << std::endl;
+            return;
+        }
+
+        ShaderAttribute sa;
+
+        sa.format = sdf;
+        hgl::strcpy(sa.name, sizeof(sa.name), value_name.c_str());
+
+        attr_list->Add(sa);
+    }
+};//class AttributeParse :public ShaderConfigParse
+
+class CodeLog :public ShaderConfigParse
+{
+    UTF8StringList *code_list;
+
+public:
+
+    CodeLog(UTF8StringList *sl) :ShaderConfigParse()
+    {
+        code_list=sl;
+    }
+
+    void Parse(const UTF8String& str) override
+    {
+        code_list->Add(str);
+    }
+};//class CodeLog :public ShaderConfigParse

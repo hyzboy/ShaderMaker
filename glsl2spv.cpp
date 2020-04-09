@@ -151,14 +151,14 @@ namespace hgl
             }
         }//namespace
 
-        bool InitShaderMaker()
+        bool InitShaderCompiler()
         {
             init_default_build_in_resource();
 
             return glslang::InitializeProcess();
         }
 
-        void ClearShaderMaker()
+        void CloseShaderCompiler()
         {
             glslang::FinalizeProcess();
         }

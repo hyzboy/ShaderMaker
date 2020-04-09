@@ -23,104 +23,12 @@ ShaderAttributeList gbuffer_list;
 UTF8StringList attribute_to_gbuffer;
 UTF8StringList gbuffer_to_attribute;
 
-class AttributeParse:public ShaderConfigParse
-{
-public:
-
-    AttributeParse():ShaderConfigParse()
-    {
-        std::cout<<"[Attribute]"<<std::endl;
-    }
-
-    void Parse(const UTF8String &str) override
-    {
-        UTF8String value_name;
-        ShaderDataFormat sdf;
-
-        sdf=ParseValue(value_name,str);
-
-        if(sdf==0)
-        {
-            std::cerr<<"[Attribute] ShaderDataType parse error,str=\""<<str.c_str()<<"\""<<std::endl;
-            return;
-        }
-
-        ShaderAttribute sa;
-
-        sa.format=sdf;
-        hgl::strcpy(sa.name,sizeof(sa.name),value_name.c_str());
-
-        attr_list.Add(sa);        
-    }
-};
-
-class GBufferParse:public ShaderConfigParse
-{
-public:
-
-    GBufferParse():ShaderConfigParse()
-    {
-        std::cout<<"[GBuffer]"<<std::endl;
-    }
-    
-    void Parse(const UTF8String &str) override
-    {
-        UTF8String value_name;
-        ShaderDataFormat sdf;
-
-        sdf=ParseValue(value_name,str);
-
-        if(sdf==0)
-        {
-            std::cerr<<"[GBuffer] ShaderDataType parse error,str=\""<<str.c_str()<<"\""<<std::endl;
-            return;
-        }
-
-        ShaderAttribute sa;
-
-        sa.format=sdf;
-        hgl::strcpy(sa.name,sizeof(sa.name),value_name.c_str());
-
-        gbuffer_list.Add(sa);
-    }
-};
-
-class AttributeToGBufferParse:public ShaderConfigParse
-{
-public:
-
-    AttributeToGBufferParse():ShaderConfigParse()
-    {
-        std::cout<<"[AttributeToGBuffer] "<<std::endl;
-    }
-
-    void Parse(const UTF8String &str) override
-    {
-        attribute_to_gbuffer.Add(str);
-    }
-};
-
-class GBufferToAttributeParse:public ShaderConfigParse
-{
-public:
-
-    GBufferToAttributeParse():ShaderConfigParse()
-    {
-        std::cout<<"[GBufferToAttribute] "<<std::endl;
-    }
-
-    void Parse(const UTF8String &str) override
-    {
-        gbuffer_to_attribute.Add(str);
-    }
-};
-
 inline ShaderConfigParse *GetShaderSegment(const UTF8String &str)
 {
-    if(str.CaseComp("[attribute]"           )==0)return(new AttributeParse());
-    if(str.CaseComp("[gbuffer]"             )==0)return(new GBufferParse());
-    if(str.CaseComp("[attribute_to_gbuffer]")==0)return(new AttributeToGBufferParse());
-    if(str.CaseComp("[gbuffer_to_attribute]")==0)return(new GBufferToAttributeParse());
+    if(str.CaseComp("[attribute]"           )==0)return(new AttributeParse(&attr_list));
+    if(str.CaseComp("[gbuffer]"             )==0)return(new AttributeParse(&gbuffer_list));
+    if(str.CaseComp("[attribute_to_gbuffer]")==0)return(new CodeLog(&attribute_to_gbuffer));
+    if(str.CaseComp("[gbuffer_to_attribute]")==0)return(new CodeLog(&gbuffer_to_attribute));
 
     return nullptr;
 }
@@ -401,14 +309,6 @@ int wmain(int argc,wchar_t **argv)
 int main(int argc,char **argv)
 #endif//
 {
-    hgl::graph::InitShaderMaker();
-
-    int result=hgl::graph::CompileShader(argv[1]);
-
-    hgl::graph::ClearShaderMaker();
-
-    return result;
-/*
     std::cout<<"ShaderMaker 1.0"<<std::endl;
     std::cout<<"Copyright (C) www.hyzgame.com"<<std::endl;
     std::cout<<std::endl;
@@ -431,5 +331,5 @@ int main(int argc,char **argv)
     MakeCompositionVertexShader(argv[1]);
     MakeCompositionFragmentShader(argv[1]);
 
-    return(0);*/
+    return(0);
 }
