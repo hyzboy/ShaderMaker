@@ -17,9 +17,13 @@ enum class RenderType
     END_RANGE   =PostProcess,
     RANGE_SIZE  =(END_RANGE-BEGIN_RANGE)+1,
 
+    FS  = Forward,
+
     DS1 = DeferredGBuffer,
     DS2 = DeferredComposition,
     DS3 = DeferredTransparent,
+
+    PP  = PostProcess,
 };//enum class RenderType
 
 constexpr char *render_typenames[]={"f","gb","dc","dt","pp"};

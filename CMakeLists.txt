@@ -8,7 +8,7 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 include_directories(glslang)
 
-set(SM_HEADER_FILES ShaderDataType.h glsl2spv.h)
+set(SM_HEADER_FILES ShaderDataType.h ShaderConfigParse.h glsl2spv.h)
 set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ForwardShading.cpp)
 
 add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
