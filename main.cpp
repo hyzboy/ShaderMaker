@@ -35,14 +35,14 @@ void OutputStringList(const UTF8StringList &sl)
 void MakeShaderHeader(UTF8StringList &shader)
 {
     if(use_opengl_es)
-        shader.Add("#version es 320");
+        shader.Add("#version 320 es");
     else
-        shader.Add("#version core 460");
+        shader.Add("#version 460 core");
 
     shader.Add(R"(/**
- * Copyright (c) 2018-2020 www.hyzgame.com
- *
  * Create by ShaderMaker
+ *
+ * Offical web: www.hyzgame.com
  */)");
 }
 
