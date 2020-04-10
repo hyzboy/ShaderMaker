@@ -1,12 +1,10 @@
-﻿#include"ShaderDataType.h"
-#include"glsl2spv.h"
+﻿#include"glsl2spv.h"
 #include"ShaderConfigParse.h"
 
 #include<hgl/type/StdString.h>
 #include<hgl/type/StringList.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
-#include<hgl/filesystem/FileSystem.h>
 #include<hgl/util/cmd/CmdParse.h>
 #include<hgl/log/LogInfo.h>
 #include<iostream>
@@ -17,55 +15,7 @@ using namespace hgl;
 bool use_opengl_es=false;
 bool use_subpass=false;
 
-ShaderAttributeList attr_list;
-ShaderAttributeList gbuffer_list;
-
-UTF8StringList attribute_to_gbuffer;
-UTF8StringList gbuffer_to_attribute;
-
-inline ShaderConfigParse *GetShaderSegment(const UTF8String &str)
-{
-    if(str.CaseComp("[attribute]"           )==0)return(new AttributeParse(&attr_list));
-    if(str.CaseComp("[gbuffer]"             )==0)return(new AttributeParse(&gbuffer_list));
-    if(str.CaseComp("[attribute_to_gbuffer]")==0)return(new CodeLog(&attribute_to_gbuffer));
-    if(str.CaseComp("[gbuffer_to_attribute]")==0)return(new CodeLog(&gbuffer_to_attribute));
-
-    return nullptr;
-}
-
-bool ParseGBufferConfig(const OSString &filename)
-{
-    UTF8StringList gbfile;
-
-    ShaderConfigParse *cur_parse=nullptr;
-
-    const int lines=LoadStringListFromTextFile(gbfile,filename);
-
-    if(lines<=4)
-        return(false);
-
-    LOG_INFO(OS_TEXT("file \"")+filename+OS_TEXT("\" total ")+OSString(lines)+OS_TEXT(" lines.") HGL_LINE_END);
-
-    for(int i=0;i<lines;i++)
-    {
-        const UTF8String &str=gbfile.GetString(i);
-
-        if(str.IsEmpty())continue;
-
-        if(IsSegmentFlag(str))
-        {
-            if(cur_parse)
-                delete cur_parse;
-
-            cur_parse=GetShaderSegment(str);
-            continue;
-        }
-
-        cur_parse->Parse(str);
-    }
-
-    return(true);
-}
+ShaderConfigParse *shader_config=nullptr;
 
 void OutputStringList(const UTF8StringList &sl)
 {
@@ -131,10 +81,10 @@ layout(push_constant) uniform Consts
 
 void MakeGBufferAttribute(UTF8StringList &shader)
 {
-    ShaderAttribute *sa=attr_list.GetData();
+    ShaderAttribute *sa= shader_config->attr_list.GetData();
     UTF8String type_name;
     
-    for(int i=0;i<attr_list.GetCount();i++)
+    for(int i=0;i< shader_config->attr_list.GetCount();i++)
     {
         type_name=MakeValueName(sa->format);
 
@@ -174,10 +124,10 @@ void MakeGBufferFragmentShader(const OSString &output_filename)
     
     shader.Add("");
 
-    ShaderAttribute *sa=gbuffer_list.GetData();
+    ShaderAttribute *sa= shader_config->gbuffer_list.GetData();
     UTF8String type_name;
 
-    for(int i=0;i<gbuffer_list.GetCount();i++)
+    for(int i=0;i< shader_config->gbuffer_list.GetCount();i++)
     {
         type_name=MakeValueName(sa->format);
 
@@ -194,7 +144,7 @@ void main()
 
     MakeCustomCode(shader);
 
-    shader.Add(attribute_to_gbuffer);
+    shader.Add(shader_config->attribute_to_gbuffer);
 
     shader.Add(UTF8String("}"));
 
@@ -236,7 +186,7 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
 
     shader.Add("");
 
-    ShaderAttribute *sa=gbuffer_list.GetData();
+    ShaderAttribute *sa= shader_config->gbuffer_list.GetData();
     UTF8String type_name;
 
     //if(use_subpass)
@@ -244,7 +194,7 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
     //else
     //    shader.Add(U8_TEXT("layout(binding=0) uniform sampler2D rb_depth;"));
 
-    for(int i=0;i<gbuffer_list.GetCount();i++)
+    for(int i=0;i< shader_config->gbuffer_list.GetCount();i++)
     {
         type_name=MakeValueName(sa->format);
         
@@ -290,7 +240,7 @@ void main()
     MakeGBufferAttribute(shader);
     
     shader.Add("");
-    shader.Add(gbuffer_to_attribute);
+    shader.Add(shader_config->gbuffer_to_attribute);
     shader.Add("");
 
     MakeCustomCode(shader);
@@ -324,7 +274,10 @@ int main(int argc,char **argv)
     if(cp.Find(OS_TEXT("/es"))>0)use_opengl_es=true;
 //    if(cp.Find(OS_TEXT("/subpass"))>0)use_subpass=true;
 
-    ParseGBufferConfig(argv[2]);
+    shader_config=LoadShaderConfig(argv[2]);
+
+    if(!shader_config)
+        return(1);
 
     MakeGBufferFragmentShader(argv[1]);
 
