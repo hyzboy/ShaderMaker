@@ -1,5 +1,6 @@
 ﻿#include"glsl2spv.h"
 #include"ShaderConfigParse.h"
+#include"ShaderLib.h"
 
 #include<hgl/type/StdString.h>
 #include<hgl/type/StringList.h>
@@ -253,19 +254,15 @@ void main()
     SaveShaderToFile(output_filename+OS_TEXT("_composition.frag"),shader);
 }
 
-#if HGL_OS == HGL_OS_Windows
-int wmain(int argc,wchar_t **argv)
-#else
-int main(int argc,char **argv)
-#endif//
+int os_main(int argc,os_char **argv)
 {
-    std::cout<<"ShaderMaker 1.0"<<std::endl;
-    std::cout<<"Copyright (C) www.hyzgame.com"<<std::endl;
-    std::cout<<std::endl;
+    os_out<<OS_TEXT("ShaderMaker 1.0")<<std::endl;
+    os_out<<OS_TEXT("Copyright (C) www.hyzgame.com")<<std::endl;
+    os_out<<std::endl;
 
     if(argc<2)
     {
-        std::cout<<"Example: ShaderMaker output_name 1.gbuffer [/es]"<<std::endl;
+        os_out<<OS_TEXT("Example: ShaderMaker output_name 1.gbuffer [/es]")<<std::endl;
         return(0);
     }
 
@@ -278,6 +275,8 @@ int main(int argc,char **argv)
 
     if(!shader_config)
         return(1);
+
+
 
     MakeGBufferFragmentShader(argv[1]);
 
