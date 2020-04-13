@@ -3,7 +3,10 @@
 
 using namespace hgl;
 
-int LoadShader(const OSString &);
-void ClearShaderLib();
+namespace shader_lib
+{
+    int Load(const OSString &);
+    void Clear();
 
-bool AddShader(UTF8StringList &,const int index);
+    bool AddTo(UTF8StringList &,const int index);
+}//namespace shader_lib

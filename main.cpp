@@ -1,6 +1,8 @@
 ﻿#include"glsl2spv.h"
+#include"RenderPlatformConfig.h"
 #include"ShaderConfigParse.h"
 #include"ShaderLib.h"
+#include"ShaderMaker.h"
 
 #include<hgl/type/StdString.h>
 #include<hgl/type/StringList.h>
@@ -13,72 +15,11 @@
 
 using namespace hgl;
 
-bool use_opengl_es=false;
-bool use_subpass=false;
+static bool mobile_platform=false;
 
 ShaderConfigParse *shader_config=nullptr;
 
-void OutputStringList(const UTF8StringList &sl)
-{
-    UTF8String **str=sl.GetDataList();
 
-    for(int i=0;i<sl.GetCount();i++)
-    {
-        if((*str)->IsEmpty())
-            std::cout<<std::endl;
-        else
-            std::cout<<(*str)->c_str()<<std::endl;
-
-        ++str;
-    }
-}
-
-void MakeShaderHeader(UTF8StringList &shader)
-{
-    if(use_opengl_es)
-        shader.Add("#version 320 es");
-    else
-        shader.Add("#version 460 core");
-
-    shader.Add(R"(/**
- * Create by ShaderMaker
- *
- * Offical web: www.hyzgame.com
- */)");
-}
-
-void MakeWorldMatrix(UTF8StringList &shader)
-{
-shader.Add(R"(
-layout(binding=0) uniform WorldMatrix     // hgl/math/Math.h
-{
-    mat4 ortho;
-
-    mat4 projection;
-    mat4 inverse_projection;
-
-    mat4 modelview;
-    mat4 inverse_modelview;
-
-    mat4 mvp;
-    mat4 inverse_mvp;
-
-    vec4 view_pos;
-    vec2 resolution;
-} world;)");
-}
-
-void MakePushConstant(UTF8StringList &shader)
-{
-shader.Add(R"(
-layout(push_constant) uniform Consts
-{
-    mat4 local_to_world;
-    mat3 normal;
-    vec3 object_position;
-    vec3 object_size;
-}pc;)");
-}
 
 void MakeGBufferAttribute(UTF8StringList &shader)
 {
@@ -93,12 +34,6 @@ void MakeGBufferAttribute(UTF8StringList &shader)
 
         ++sa;
     }
-}
-
-void MakeCustomCode(UTF8StringList &shader)
-{
-    shader.Add("//[Begin] Your code------------------------------------\n");
-    shader.Add("//[End] Your code--------------------------------------");
 }
 
 bool SaveShaderToFile(const OSString &filename,const UTF8StringList &sl)
@@ -120,8 +55,8 @@ void MakeGBufferFragmentShader(const OSString &output_filename)
     UTF8StringList shader;
 
     MakeShaderHeader(shader);
-    MakeWorldMatrix(shader);
-    MakePushConstant(shader);
+    shader_lib::AddTo(shader,si_push_constant);
+    shader_lib::AddTo(shader,si_ubo_world_matrix);
     
     shader.Add("");
 
@@ -159,18 +94,7 @@ void MakeCompositionVertexShader(const OSString &output_filename)
     UTF8StringList shader;
 
     MakeShaderHeader(shader);
-
-    shader.Add(R"(
-layout(location = 0) in vec2 Vertex;
-
-layout(location = 0) out vec2 vs_out_position;
-
-void main()
-{
-    gl_Position=vec4(Vertex,0.0,1.0);
-
-    vs_out_position=(Vertex+1.0)/2.0;
-})");
+    shader_lib::AddTo(shader,si_fs_rectangle_vs);
 
     OutputStringList(shader);
 
@@ -182,8 +106,8 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
     UTF8StringList shader;
 
     MakeShaderHeader(shader);
-    MakeWorldMatrix(shader);
-    MakePushConstant(shader);
+    shader_lib::AddTo(shader,si_push_constant);
+    shader_lib::AddTo(shader,si_ubo_world_matrix);
 
     shader.Add("");
 
@@ -193,15 +117,15 @@ void MakeCompositionFragmentShader(const OSString &output_filename)
     //if(use_subpass)
     //    shader.Add(U8_TEXT("layout(input_attachment_index=0,binding=0) uniform subpassInput rb_depth;"));
     //else
-    //    shader.Add(U8_TEXT("layout(binding=0) uniform sampler2D rb_depth;"));
+        shader.Add(U8_TEXT("layout(binding=0) uniform sampler2D rb_depth;"));
 
     for(int i=0;i< shader_config->gbuffer_list.GetCount();i++)
     {
         type_name=MakeValueName(sa->format);
         
-        if(use_subpass)
-            shader.Add(U8_TEXT("layout(input_attachment_index=")+UTF8String(i+1)+U8_TEXT(",binding=")+UTF8String(i+1)+U8_TEXT(") uniform subpassInput si_")+UTF8String(sa->name)+U8_TEXT(";"));
-        else
+        //if(use_subpass)
+        //    shader.Add(U8_TEXT("layout(input_attachment_index=")+UTF8String(i+1)+U8_TEXT(",binding=")+UTF8String(i+1)+U8_TEXT(") uniform subpassInput si_")+UTF8String(sa->name)+U8_TEXT(";"));
+        //else
             shader.Add(U8_TEXT("layout(binding=")+UTF8String(i+1)+U8_TEXT(") uniform sampler2D ")+UTF8String(sa->name)+U8_TEXT(";"));
 
         ++sa;
@@ -268,20 +192,22 @@ int os_main(int argc,os_char **argv)
 
     util::CmdParse cp(argc,argv);
 
-    if(cp.Find(OS_TEXT("/es"))>0)use_opengl_es=true;
-//    if(cp.Find(OS_TEXT("/subpass"))>0)use_subpass=true;
+    RenderPlatformConfig rpc;
 
-    shader_config=LoadShaderConfig(argv[2]);
+    rpc.name            =to_u8(argv[1]);
+    rpc.config_filename =argv[2];
+    rpc.mobile          =(cp.Find(OS_TEXT("/mobile")) > 0);
 
-    if(!shader_config)
-        return(1);
+    ShaderConfigParse *scp=LoadShaderConfig(rpc.config_filename);
 
-
+    ShaderMaker *sm=new ShaderMaker(rpc);
 
     MakeGBufferFragmentShader(argv[1]);
 
     MakeCompositionVertexShader(argv[1]);
     MakeCompositionFragmentShader(argv[1]);
+
+    delete sm;
 
     return(0);
 }
