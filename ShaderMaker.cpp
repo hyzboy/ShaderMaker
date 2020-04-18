@@ -1,6 +1,8 @@
 #include"ShaderMaker.h"
 #include"ShaderLib.h"
 #include<iostream>
+#include<hgl/io/FileOutputStream.h>
+#include<hgl/io/TextOutputStream.h>
 
 namespace
 {
@@ -43,9 +45,24 @@ ShaderMaker::~ShaderMaker()
 
         ++str;
     }
+
     std::cout << std::endl;
 
     shader_lib::Clear();
+}
+
+bool ShaderMaker::Save(const OSString &filename)
+{
+    io::FileOutputStream fos;
+
+    if(!fos.CreateTrunc(filename))
+        return(false);
+
+    AutoDelete<io::UTF8TextOutputStream> tos=new io::UTF8TextOutputStream(&fos);
+
+    tos->WriteText(shader_source);
+
+    return(true);
 }
 
 void ShaderMaker::MakeCustomCode()

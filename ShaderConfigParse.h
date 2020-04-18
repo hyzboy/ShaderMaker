@@ -29,17 +29,16 @@ struct RenderpassConfig
     RenderTargetConfig *        rt_depth=nullptr;           ///<深度渲染目标
 };
 
-struct RenderPipelineConfig
+struct ShaderConfig
 {
-};//
+    ShaderAttributeList attr_list;                          ///<材质属性(如BaseColor,Normal)，用于描述该材质最终需要那些数据
+    ShaderAttributeList fb_list;                            ///<Framebuffer属性，用于描述当前着色最终会输出到几个Framebuffer上
 
-struct ShaderConfigParse
-{
-    ShaderAttributeList attr_list;
-    ShaderAttributeList gbuffer_list;
+    UTF8StringList      attr2fb;                            ///<材质属性到Framebuffer(GBuffer)转换代码
 
-    UTF8StringList attribute_to_gbuffer;
-    UTF8StringList gbuffer_to_attribute;
-};//
+    bool                deferred;                           ///<是否属于延迟渲染
 
-ShaderConfigParse *LoadShaderConfig(const OSString &);
+    UTF8StringList      gb2attr;                            ///<GBuffer到材质属性转换代码(延迟渲染独有)
+};//struct ShaderConfig
+
+ShaderConfig *LoadShaderConfig(const OSString &);

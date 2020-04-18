@@ -111,18 +111,20 @@ namespace
         }
     };//class CodeLog :public ShaderConfigParse
 
-    ParseBase* GetShaderSegment(const UTF8String& str, ShaderConfigParse *scp)
+    ParseBase* GetShaderSegment(const UTF8String& str, ShaderConfig *cfg)
     {
-        if (str.CaseComp("[attribute]") == 0)return(new AttributeParse(&scp->attr_list));
-        if (str.CaseComp("[gbuffer]") == 0)return(new AttributeParse(&scp->gbuffer_list));
-        if (str.CaseComp("[attribute_to_gbuffer]") == 0)return(new CodeLog(&scp->attribute_to_gbuffer));
-        if (str.CaseComp("[gbuffer_to_attribute]") == 0)return(new CodeLog(&scp->gbuffer_to_attribute));
+        if (str.CaseComp("[attr]"       ) == 0)return(new AttributeParse(&cfg->attr_list));
+        if (str.CaseComp("[framebuffer]") == 0)return(new AttributeParse(&cfg->fb_list));
+        if (str.CaseComp("[attr_to_fb]" ) == 0)return(new CodeLog(&cfg->attr2fb));
+        if (str.CaseComp("[gb_to_attr]" ) == 0)
+        {cfg->deferred=true;                   return(new CodeLog(&cfg->gb2attr));}
+
 
         return nullptr;
     }
 }//namespace
 
-ShaderConfigParse *LoadShaderConfig(const OSString &filename)
+ShaderConfig *LoadShaderConfig(const OSString &filename)
 {
     UTF8StringList gbfile;
 
@@ -135,7 +137,7 @@ ShaderConfigParse *LoadShaderConfig(const OSString &filename)
 
     LOG_INFO(OS_TEXT("file \"") + filename + OS_TEXT("\" total ") + OSString(lines) + OS_TEXT(" lines.") HGL_LINE_END);
 
-    ShaderConfigParse *scp=new ShaderConfigParse;
+    ShaderConfig *cfg=new ShaderConfig;
 
     for (int i = 0; i < lines; i++)
     {
@@ -148,12 +150,12 @@ ShaderConfigParse *LoadShaderConfig(const OSString &filename)
             if (cur_parse)
                 delete cur_parse;
 
-            cur_parse = GetShaderSegment(str,scp);
+            cur_parse = GetShaderSegment(str,cfg);
             continue;
         }
 
         cur_parse->Parse(str);
     }
 
-    return(scp);
+    return(cfg);
 }

@@ -18,4 +18,6 @@ public:
 
     ShaderMaker(const RenderPlatformConfig &);
     ~ShaderMaker();
+    
+    bool Save(const OSString &filename);
 };//class ShaderMaker
