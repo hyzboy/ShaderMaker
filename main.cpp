@@ -1,6 +1,6 @@
 ﻿#include"glsl2spv.h"
 #include"RenderPlatformConfig.h"
-#include"ShaderConfigParse.h"
+#include"ShaderConfig.h"
 #include"ShaderLib.h"
 #include"ShaderMaker.h"
 
@@ -13,7 +13,7 @@
 
 using namespace hgl;
 
-ShaderConfigParse *shader_config=nullptr;
+ShaderConfig *shader_config=nullptr;
 
 int os_main(int argc,os_char **argv)
 {
@@ -29,15 +29,15 @@ int os_main(int argc,os_char **argv)
 
     util::CmdParse cp(argc,argv);
 
-    RenderPlatformConfig rpc;
+    RenderPlatformConfig rp_cfg;
 
-    rpc.name            =to_u8(argv[1]);
-    rpc.config_filename =argv[2];
-    rpc.mobile          =(cp.Find(OS_TEXT("/mobile")) > 0);
+    rp_cfg.name            =to_u8(argv[1]);
+    rp_cfg.config_filename =argv[2];
+    rp_cfg.mobile          =(cp.Find(OS_TEXT("/mobile")) > 0);
 
-    ShaderConfigParse *scp=LoadShaderConfig(rpc.config_filename);
+    ShaderConfig *shader_cfg=LoadShaderConfig(rp_cfg.config_filename);
 
-    ShaderMaker *sm=new ShaderMaker(rpc);
+    ShaderMaker *sm=new ShaderMaker(rp_cfg);
 
     MakeGBufferFragmentShader(argv[1]);
 

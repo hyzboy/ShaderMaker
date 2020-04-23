@@ -1,4 +1,4 @@
-#include"ShaderConfigParse.h"
+#include"ShaderConfig.h"
 #include<hgl/log/LogInfo.h>
 #include<hgl/type/StringList.h>
 #include<iostream>
@@ -51,6 +51,7 @@ namespace
         return(str.GetBeginChar() == '['
             && str.GetEndChar() == ']');
     }
+
     class ParseBase
     {
     public:
@@ -119,18 +120,17 @@ namespace
         if (str.CaseComp("[gb_to_attr]" ) == 0)
         {cfg->deferred=true;                   return(new CodeLog(&cfg->gb2attr));}
 
-
         return nullptr;
     }
 }//namespace
 
 ShaderConfig *LoadShaderConfig(const OSString &filename)
 {
-    UTF8StringList gbfile;
+    UTF8StringList cfg_list;
 
     ParseBase* cur_parse = nullptr;
 
-    const int lines = LoadStringListFromTextFile(gbfile, filename);
+    const int lines = LoadStringListFromTextFile(cfg_list, filename);
 
     if (lines <= 4)
         return(false);
@@ -141,7 +141,7 @@ ShaderConfig *LoadShaderConfig(const OSString &filename)
 
     for (int i = 0; i < lines; i++)
     {
-        const UTF8String& str = gbfile.GetString(i);
+        const UTF8String &str = cfg_list.GetString(i);
 
         if (str.IsEmpty())continue;
 
