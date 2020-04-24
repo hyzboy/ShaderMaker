@@ -8,7 +8,7 @@ namespace
 {
     UTF8String SpaceChar = " \t;";
 
-    ShaderDataFormat ParseValue(UTF8String& value_name, const UTF8String& str)
+    ShaderDataFormat ParseValue(UTF8String &value_name, const UTF8String &str)
     {
         if (str.Length() < 6)      //"vec 6;",最短就6个字符不可能更短了
             return 0;
@@ -46,10 +46,12 @@ namespace
         return sdf;
     }
 
-    bool IsSegmentFlag(const UTF8String& str)
+    bool IsSegmentFlag(const UTF8String &str)
     {
-        return(str.GetBeginChar() == '['
-            && str.GetEndChar() == ']');
+        if(str.GetBeginChar() != '[')return(false);
+        if(str.FindChar(2,']')<0)return(false);
+
+        return(true);
     }
 
     class ParseBase
@@ -64,16 +66,16 @@ namespace
 
     class AttributeParse :public ParseBase
     {
-        ShaderAttributeList* attr_list;
+        ShaderAttributeList *attr_list;
 
     public:
 
-        AttributeParse(ShaderAttributeList* sal) :ParseBase()
+        AttributeParse(ShaderAttributeList *sal) :ParseBase()
         {
             attr_list = sal;
         }
 
-        void Parse(const UTF8String& str) override
+        void Parse(const UTF8String &str) override
         {
             UTF8String value_name;
             ShaderDataFormat sdf;
@@ -97,23 +99,32 @@ namespace
 
     class CodeLog :public ParseBase
     {
-        UTF8StringList* code_list;
+        UTF8StringList *code_list;
 
     public:
 
-        CodeLog(UTF8StringList* sl) :ParseBase()
+        CodeLog(UTF8StringList *sl) :ParseBase()
         {
             code_list = sl;
         }
 
-        void Parse(const UTF8String& str) override
+        void Parse(const UTF8String &str) override
         {
             code_list->Add(str);
         }
     };//class CodeLog :public ShaderConfigParse
 
-    ParseBase* GetShaderSegment(const UTF8String& str, ShaderConfig *cfg)
+    ParseBase *GetShaderSegment(const UTF8String &str, ShaderConfig *cfg)
     {
+        if(str.GetBeginChar()!='[')return(nullptr);
+
+        const int pos=str.FindChar(2,']');
+
+        if(pos<=0)return(nullptr);
+
+
+
+        if (str.CaseComp("[depend]"     ) == 0)return(new AttributeParse(&cfg->attr_list));
         if (str.CaseComp("[attr]"       ) == 0)return(new AttributeParse(&cfg->attr_list));
         if (str.CaseComp("[framebuffer]") == 0)return(new AttributeParse(&cfg->fb_list));
         if (str.CaseComp("[attr_to_fb]" ) == 0)return(new CodeLog(&cfg->attr2fb));
@@ -128,14 +139,14 @@ ShaderConfig *LoadShaderConfig(const OSString &filename)
 {
     UTF8StringList cfg_list;
 
-    ParseBase* cur_parse = nullptr;
+    ParseBase *cur_parse = nullptr;
 
     const int lines = LoadStringListFromTextFile(cfg_list, filename);
 
     if (lines <= 4)
         return(false);
 
-    LOG_INFO(OS_TEXT("file \"") + filename + OS_TEXT("\" total ") + OSString(lines) + OS_TEXT(" lines.") HGL_LINE_END);
+    LOG_INFO(OS_TEXT("file \"") + filename + OS_TEXT("\" total ") + OSString::valueOf(lines) + OS_TEXT(" lines.") HGL_LINE_END);
 
     ShaderConfig *cfg=new ShaderConfig;
 

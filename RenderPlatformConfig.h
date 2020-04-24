@@ -12,6 +12,11 @@ struct RenderPlatformConfig
 
 public:
 
+    RenderPlatformConfig()
+    {
+        mobile=false;
+    }
+
     void operator = (const RenderPlatformConfig &rpc)
     {
         name            =rpc.name;

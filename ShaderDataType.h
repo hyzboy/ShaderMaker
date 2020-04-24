@@ -10,14 +10,14 @@ constexpr size_t MAX_SHADER_VALUE_NAME_LENGTH = 32;
 enum class ShaderDataType
 {
     Bool = 0,
-    Float,
     Int,
     Uint,
+    Float,
     Double,
 
     BEGIN_RANGE = Bool,
-    END_RANGE = Double,
-    RANGE_SIZE = (END_RANGE - BEGIN_RANGE + 1)
+    END_RANGE   = Double,
+    RANGE_SIZE  = (END_RANGE - BEGIN_RANGE + 1)
 };//
 
 using ShaderDataFormat = uint32;
@@ -27,7 +27,7 @@ UTF8String MakeValueName(const ShaderDataType type,const uint count);
 UTF8String MakeValueName(const ShaderDataFormat sdf);
 
 const ShaderDataFormat ParseShaderType(const UTF8String &str);
-    
+
 struct ShaderAttribute
 {
     ShaderDataFormat format;

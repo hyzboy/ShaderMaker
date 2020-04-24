@@ -1,10 +1,11 @@
 #pragma once
+
 #include<hgl/type/StringList.h>
 #include"ShaderDataType.h"
 
 using namespace hgl;
 
-enum class FramebufferType:int
+enum class FramebufferType:size_t
 {
     Data=0,
 
@@ -36,6 +37,8 @@ struct RenderpassConfig
 
 struct ShaderConfig
 {
+    UTF8StringList depend_list;                             ///<依赖模块列表
+
     ShaderAttributeList attr_list;                          ///<材质属性(如BaseColor,Normal)，用于描述该材质最终需要那些数据
     ShaderAttributeList fb_list;                            ///<Framebuffer属性，用于描述当前着色最终会输出到几个Framebuffer上
 

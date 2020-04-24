@@ -3,7 +3,7 @@
 inline ShaderDataFormat MakeShaderDataFormat(const ShaderDataType type, const uint count)
 {
     if (type<ShaderDataType::BEGIN_RANGE
-        || type>ShaderDataType::END_RANGE)return 0;
+     || type>ShaderDataType::END_RANGE)return 0;
 
     if (count < 1 || count>4)return 0;
 
@@ -15,18 +15,18 @@ UTF8String MakeValueName(const ShaderDataType type,const uint count)
     constexpr char type_name[][8]=
     {
         "bool",
-        "float",
         "int",
         "uint",
+        "float",
         "double"
     };
 
     constexpr char type_vec_name[][8]=
     {
         "bvec",
-        "vec",
         "ivec",
         "uvec",
+        "vec",
         "dvec"
     };
 
@@ -40,7 +40,7 @@ UTF8String MakeValueName(const ShaderDataType type,const uint count)
     if(count==1)
         return type_name[uint(type)];
 
-    return UTF8String(type_vec_name[uint(type)])+UTF8String(count);
+    return UTF8String(type_vec_name[uint(type)])+UTF8String::valueOf(count);
 }
 
 UTF8String MakeValueName(const ShaderDataFormat sdf)
@@ -67,10 +67,10 @@ const ShaderDataFormat ParseShaderType(const UTF8String &str)
     else 
         count=1;
 
-    if(first_char=='v')return MakeShaderDataFormat(ShaderDataType::Float,   count);else
     if(first_char=='b')return MakeShaderDataFormat(ShaderDataType::Bool,    count);else
     if(first_char=='i')return MakeShaderDataFormat(ShaderDataType::Int,     count);else
     if(first_char=='u')return MakeShaderDataFormat(ShaderDataType::Uint,    count);else
+    if(first_char=='v')return MakeShaderDataFormat(ShaderDataType::Float,   count);else
     if(first_char=='d')return MakeShaderDataFormat(ShaderDataType::Double,  count);else
         return 0;   
 }

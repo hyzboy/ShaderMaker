@@ -19,7 +19,8 @@ ShaderMaker::ShaderMaker(const RenderPlatformConfig &rpc)
 {
     rp_cfg=rpc;
 
-    si_header           = shader_lib::Load(rpc.mobile?OS_TEXT("header_mobile.glsl"):OS_TEXT("header_desktop.glsl"));
+    si_header           = shader_lib::Load(rpc.mobile?OS_TEXT("header_mobile.glsl")
+                                                     :OS_TEXT("header_desktop.glsl"));
     si_comment          = shader_lib::Load(OS_TEXT("header_comment.glsl"));
     si_push_constant    = shader_lib::Load(OS_TEXT("push_constant_3d.glsl"));
     si_ubo_world_matrix = shader_lib::Load(OS_TEXT("UBO_WorldMatrix.glsl"));
@@ -71,4 +72,3 @@ void ShaderMaker::MakeCustomCode()
 
 //[End] Your code--------------------------------------)");
 }
-
