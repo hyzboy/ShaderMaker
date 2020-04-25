@@ -48,8 +48,8 @@ namespace
 
     bool IsSegmentFlag(const UTF8String &str)
     {
-        if(str.GetBeginChar() != '[')return(false);
-        if(str.FindChar(2,']')<0)return(false);
+        if(str.GetBeginChar()   !='[')return(false);
+        if(str.GetEndChar()     !=']')return(false);
 
         return(true);
     }
@@ -116,14 +116,6 @@ namespace
 
     ParseBase *GetShaderSegment(const UTF8String &str, ShaderConfig *cfg)
     {
-        if(str.GetBeginChar()!='[')return(nullptr);
-
-        const int pos=str.FindChar(2,']');
-
-        if(pos<=0)return(nullptr);
-
-
-
         if (str.CaseComp("[depend]"     ) == 0)return(new AttributeParse(&cfg->attr_list));
         if (str.CaseComp("[attr]"       ) == 0)return(new AttributeParse(&cfg->attr_list));
         if (str.CaseComp("[framebuffer]") == 0)return(new AttributeParse(&cfg->fb_list));
@@ -155,6 +147,10 @@ ShaderConfig *LoadShaderConfig(const OSString &filename)
         const UTF8String &str = cfg_list.GetString(i);
 
         if (str.IsEmpty())continue;
+
+        if(str.GetBeginChar()=='/')continue;        //注释跳过
+
+        int pos=str.FindExcludeChar(" \t");
 
         if (IsSegmentFlag(str))
         {
