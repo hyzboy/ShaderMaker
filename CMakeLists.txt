@@ -18,3 +18,7 @@ target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV
 if(UNIX)
     target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
 endif()
+
+IF(WIN32)
+    set_target_properties(ShaderMaker PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+ENDIF()
