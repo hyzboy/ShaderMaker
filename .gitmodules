@@ -1,6 +1,6 @@
-[submodule "glslang"]
-	path = glslang
-	url = https://github.com/KhronosGroup/glslang.git
 [submodule "shader_libs"]
 	path = shader_libs
 	url = https://github.com/hyzboy/shader_libs.git
+[submodule "SPIRV-Cross"]
+	path = SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross

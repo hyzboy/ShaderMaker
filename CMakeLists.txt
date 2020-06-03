@@ -2,11 +2,12 @@
 
 project(ShaderMaker)
 
-add_subdirectory(glslang)
+add_subdirectory(SPIRV-Cross)
+add_subdirectory(SPIRV-Cross/external/glslang)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
-include_directories(glslang)
+include_directories(SPIRV-Cross/external/glslang)
 
 set(SM_HEADER_FILES ShaderDataType.h ShaderConfig.h ShaderLib.h glsl2spv.h ShaderMaker.h)
 set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp ShaderConfigParse.cpp ShaderMaker.cpp ForwardShading.cpp)
