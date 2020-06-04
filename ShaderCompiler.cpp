@@ -1,4 +1,5 @@
 #include"glsl2spv.h"
+#include<glslang/Include/revision.h>
 #include<iostream>
 
 using namespace hgl;
@@ -6,7 +7,7 @@ using namespace hgl::graph;
 
 int os_main(int argc,os_char **argv)
 {
-    os_out<<OS_TEXT("ShaderCompiler 1.0")<<std::endl;
+    os_out<<OS_TEXT("ShaderCompiler 1.0 (Powered by glslang rev:")<<GLSLANG_PATCH_LEVEL<<")"<<std::endl;
     os_out<<OS_TEXT("Copyright (C) www.hyzgame.com")<<std::endl;
     os_out<<std::endl;
 
