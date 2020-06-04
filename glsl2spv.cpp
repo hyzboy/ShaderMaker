@@ -1,6 +1,6 @@
 ﻿#include"glsl2spv.h"
-#include<SPIRV/GlslangToSpv.h>
-#include<glslang/Include/glslang_c_interface.h>
+#include<glslang/SPIRV/GlslangToSpv.h>
+#include<glslang/Include/ResourceLimits.h>
 #include<iostream>
 #include<hgl/filesystem/FileSystem.h>
 
