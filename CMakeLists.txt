@@ -8,10 +8,10 @@ set(SM_HEADER_FILES ShaderDataType.h ShaderConfig.h ShaderLib.h glsl2spv.h Shade
 set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp ShaderConfigParse.cpp ShaderMaker.cpp ForwardShading.cpp)
 
 add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
-add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp)
+add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp VKShaderParse.h)
 
 target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV OGLCompiler OSDependent)
-target_link_libraries(ShaderCompiler PRIVATE CMCore CMPlatform CMUtil glslang SPIRV OGLCompiler OSDependent HLSL SPIRV-Tools SPIRV-Tools-opt)
+target_link_libraries(ShaderCompiler PRIVATE CMCore CMPlatform CMUtil CMSceneGraph glslang SPIRV OGLCompiler OSDependent HLSL SPIRV-Tools SPIRV-Tools-opt)
 
 if(UNIX)
     target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
