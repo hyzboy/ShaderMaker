@@ -25,30 +25,62 @@ VK_NAMESPACE_USING
 constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
 constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
-void OutputVertexShaderConfig(ShaderParse *sp,DataOutputStream *dos)
+constexpr char *SPIRTypeBaseTypeName[]=
 {
-    Map<UTF8String,VkVertexInputAttributeDescription *> stage_input_locations;
+	"Unknown",
+	"Void",
+	"Boolean",
+	"SByte",
+	"UByte",
+	"Short",
+	"UShort",
+	"Int",
+	"UInt",
+	"Int64",
+	"UInt64",
+	"AtomicCounter",
+	"Half",
+	"Float",
+	"Double",
+	"Struct",
+	"Image",
+	"SampledImage",
+	"Sampler",
+	"AccelerationStructureNV",
 
-    const SPVResVector &stage_inputs=sp->GetStageInputs();
+	// Keep internal types at the end.
+	"ControlPointArray",
+	"Char"
+};
 
-    uint attr_count=stage_inputs.size();
+void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStream *dos,const char *hint)
+{
+    uint attr_count=stages.size();
 
     dos->WriteUint8(attr_count);
     spirv_cross::SPIRType::BaseType base_type;
     uint8 vec_size;
+    uint location;
+    UTF8String name;
+
+    os_out<<hint<<" State: "<<attr_count<<std::endl;
     
-    for(const spirv_cross::Resource &si:stage_inputs)
+    for(const spirv_cross::Resource &si:stages)
     {
         sp->GetFormat(si,&base_type,&vec_size);
+        name=sp->GetName(si);
+        location=sp->GetLocation(si);
 
-        dos->WriteUint8(sp->GetLocation(si));
+        dos->WriteUint8(location);
         dos->WriteUint8(base_type);
         dos->WriteUint8(vec_size);
-        dos->WriteUTF8TinyString(sp->GetName(si));
+        dos->WriteUTF8TinyString(name);
+
+        std::cout<<hint<<" State ["<<name.c_str()<<"] location="<<location<<", basetype:"<<SPIRTypeBaseTypeName[base_type-spirv_cross::SPIRType::BaseType::Unknown]<<", vecsize: "<<uint(vec_size)<<std::endl;
     }
 }
 
-void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type)
+void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type,const char *hint)
 {
     uint32_t count=res.size();
 
@@ -56,6 +88,8 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
     dos->WriteUint8(count);
 
     if(count<=0)return;
+
+    std::cout<<count<<" "<<hint<<std::endl;
 
     uint binding;
     UTF8String name;
@@ -67,13 +101,15 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
 
         dos->WriteUint8(binding);
         dos->WriteUTF8TinyString(name);
+
+        std::cout<<hint<<"["<<name.c_str()<<"] binding: "<<binding<<std::endl;
     }
 }
 
 void OutputShaderConfig(ShaderParse *sp,DataOutputStream *dos)
 {
-    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,"uniform_buffer");
+    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,"combined_image_sampler");
 }
 
 bool CompileShader(const OSString &filename)
@@ -89,11 +125,12 @@ bool CompileShader(const OSString &filename)
 
     VkShaderStageFlagBits flag;
     SPIRVData spirv;
+    uint32 spv_size=0;
 
     if(CompileShaderToSPV(source,ext_name,spirv,flag))
     {
         const OSString spv_filename=filename+OS_TEXT(".spv");
-        const uint64 spv_size=spirv.size()*sizeof(uint32);
+        spv_size=spirv.size()*sizeof(uint32);
 
         if(filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spv_size)!=spv_size)
         {
@@ -103,7 +140,7 @@ bool CompileShader(const OSString &filename)
     }
 
     {
-        const OSString sr_filename=filename+OS_TEXT(".sr");
+        const OSString sr_filename=filename+OS_TEXT(".shader");
 
         OpenFileOutputStream fos(sr_filename,fomCreateTrunc);
         DataOutputStream *dos=new LEDataOutputStream(fos);
@@ -111,12 +148,15 @@ bool CompileShader(const OSString &filename)
         dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
         dos->WriteUint8(0);
         dos->WriteUint32(flag);
+        dos->WriteUint32(spv_size);
+        dos->Write(spirv.data(),spv_size);
+
+        os_out<<OS_TEXT("SPV Data: ")<<spv_size<<OS_TEXT(" bytes.")<<std::endl;
 
         ShaderParse sp(spirv.data(),spirv.size()*sizeof(uint32));
 
-        if (ext_name.CaseComp(OS_TEXT("vert")) == 0)
-            OutputVertexShaderConfig(&sp,dos);
-    
+        OutputShaderStage(&sp,sp.GetStageInputs(),dos,"Input");
+        OutputShaderStage(&sp,sp.GetStageOutputs(),dos,"Output");
         OutputShaderConfig(&sp,dos);
 
         delete dos;
