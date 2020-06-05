@@ -21,7 +21,7 @@ namespace hgl
          * @param spirv 输出的spir-v数据
          * @return 是否编译成功
          */
-        bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv);
+        bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv,VkShaderStageFlagBits &);
     }//namespace graph
 }//namespace hgl
 #endif//HGL_GRAPH_GLSL2SPV_INCLUDE

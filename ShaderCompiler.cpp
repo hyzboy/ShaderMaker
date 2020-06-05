@@ -3,60 +3,77 @@
 #include<iostream>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/Map.h>
+#include<hgl/io/FileOutputStream.h>
+#include<hgl/io/DataOutputStream.h>
 #include"VKShaderParse.h"
 
 using namespace hgl;
+using namespace hgl::io;
 using namespace hgl::graph;
 
 VK_NAMESPACE_USING
 
-void OutputShaderConfig(ShaderParse *sp)
-{
-    
-}
+/**
+ *  shader file header
+ *
+ *  offset  size    
+ *  0       7       flag string "Shader\x1A"
+ *  7       1       version, now is 0
+ *  8       4       VkShaderStageFlagBits              
+ *  [vertex input attribute]
+  */
+constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
+constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
-void OutputVertexShaderConfig(ShaderParse *sp)
+void OutputVertexShaderConfig(ShaderParse *sp,DataOutputStream *dos)
 {
     Map<UTF8String,VkVertexInputAttributeDescription *> stage_input_locations;
 
     const SPVResVector &stage_inputs=sp->GetStageInputs();
 
     uint attr_count=stage_inputs.size();
+
+    dos->WriteUint8(attr_count);
+    spirv_cross::SPIRType::BaseType base_type;
+    uint8 vec_size;
     
-    VkVertexInputBindingDescription *binding_list=new VkVertexInputBindingDescription[attr_count];
-    VkVertexInputAttributeDescription *attribute_list=new VkVertexInputAttributeDescription[attr_count];
-
-    VkVertexInputBindingDescription *bind=binding_list;
-    VkVertexInputAttributeDescription *attr=attribute_list;
-
-    uint32_t binding_index=0;
-
     for(const spirv_cross::Resource &si:stage_inputs)
     {
-        const VkFormat                  format  =sp->GetFormat(si);             //注意这个格式有可能会解析不出来(比如各种压缩格式)
-        const UTF8String &              name    =sp->GetName(si);
-        
-        bind->binding   =binding_index;                 //binding对应在vkCmdBindVertexBuffer中设置的缓冲区的序列号，所以这个数字必须从0开始，而且紧密排列。
-                                                        //在VertexInput类中，buf_list需要严格按照本此binding为序列号排列
-        bind->stride    =GetStrideByFormat(format);
-        bind->inputRate =VK_VERTEX_INPUT_RATE_VERTEX;
+        sp->GetFormat(si,&base_type,&vec_size);
 
-        //binding对应的是第几个数据输入流
-        //实际使用一个binding可以绑定多个attrib
-        //比如在一个流中传递{pos,color}这样两个数据，就需要两个attrib
-        //但在我们的设计中，仅支持一个流传递一个attrib
-
-        attr->binding   =binding_index;
-        attr->location  =sp->GetLocation(si);                                        //此值对应shader中的layout(location=
-        attr->format    =format;
-        attr->offset    =0;
-
-        stage_input_locations.Add(name,attr);
-
-        ++attr;
-        ++bind;
-        ++binding_index;
+        dos->WriteUint8(sp->GetLocation(si));
+        dos->WriteUint8(base_type);
+        dos->WriteUint8(vec_size);
+        dos->WriteUTF8TinyString(sp->GetName(si));
     }
+}
+
+void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type)
+{
+    uint32_t count=res.size();
+
+    dos->WriteUint32(desc_type);
+    dos->WriteUint8(count);
+
+    if(count<=0)return;
+
+    uint binding;
+    UTF8String name;
+
+    for(const spirv_cross::Resource &obj:res)
+    {
+        name    =sp->GetName(obj);
+        binding =sp->GetBinding(obj);
+
+        dos->WriteUint8(binding);
+        dos->WriteUTF8TinyString(name);
+    }
+}
+
+void OutputShaderConfig(ShaderParse *sp,DataOutputStream *dos)
+{
+    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 }
 
 bool CompileShader(const OSString &filename)
@@ -70,9 +87,10 @@ bool CompileShader(const OSString &filename)
 
     const OSString ext_name=filesystem::ClipFileExtName(filename,false);
 
+    VkShaderStageFlagBits flag;
     SPIRVData spirv;
 
-    if(CompileShaderToSPV(source,ext_name,spirv))
+    if(CompileShaderToSPV(source,ext_name,spirv,flag))
     {
         const OSString spv_filename=filename+OS_TEXT(".spv");
         const uint64 spv_size=spirv.size()*sizeof(uint32);
@@ -84,12 +102,27 @@ bool CompileShader(const OSString &filename)
         }
     }
 
-    ShaderParse sp(spirv.data(),spirv.size()*sizeof(uint32));
+    {
+        const OSString sr_filename=filename+OS_TEXT(".sr");
 
-    if (ext_name.CaseComp(OS_TEXT("vert")) == 0)
-        OutputVertexShaderConfig(&sp);
+        OpenFileOutputStream fos(sr_filename,fomCreateTrunc);
+        DataOutputStream *dos=new LEDataOutputStream(fos);
 
-    OutputShaderConfig(&sp);
+        dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
+        dos->WriteUint8(0);
+        dos->WriteUint32(flag);
+
+        ShaderParse sp(spirv.data(),spirv.size()*sizeof(uint32));
+
+        if (ext_name.CaseComp(OS_TEXT("vert")) == 0)
+            OutputVertexShaderConfig(&sp,dos);
+    
+        OutputShaderConfig(&sp,dos);
+
+        delete dos;
+        fos->Close();
+    }
+
     return(true);
 }
 

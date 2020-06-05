@@ -203,9 +203,8 @@ namespace hgl
             return(true);
         }
 
-        bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv)
+        bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv,VkShaderStageFlagBits &flag)
         {    
-            VkShaderStageFlagBits flag;
             UTF8String log,debug_log;
 
             if (ext_name.CaseComp(OS_TEXT("vert")) == 0)flag = VK_SHADER_STAGE_VERTEX_BIT; else
