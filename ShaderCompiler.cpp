@@ -5,6 +5,7 @@
 #include<hgl/type/Map.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/DataOutputStream.h>
+#include<hgl/io/MemoryOutputStream.h>
 #include"VKShaderParse.h"
 
 using namespace hgl;
@@ -58,6 +59,12 @@ void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStre
     uint attr_count=stages.size();
 
     dos->WriteUint8(attr_count);
+
+    if(attr_count<=0)return;
+
+    MemoryOutputStream mos;
+    AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
+
     spirv_cross::SPIRType::BaseType base_type;
     uint8 vec_size;
     uint location;
@@ -71,13 +78,16 @@ void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStre
         name=sp->GetName(si);
         location=sp->GetLocation(si);
 
-        dos->WriteUint8(location);
-        dos->WriteUint8(base_type);
-        dos->WriteUint8(vec_size);
-        dos->WriteUTF8TinyString(name);
+        mdos->WriteUint8(location);
+        mdos->WriteUint8(base_type);
+        mdos->WriteUint8(vec_size);
+        mdos->WriteUTF8TinyString(name);
 
         std::cout<<hint<<" State ["<<name.c_str()<<"] location="<<location<<", basetype:"<<SPIRTypeBaseTypeName[base_type-spirv_cross::SPIRType::BaseType::Unknown]<<", vecsize: "<<uint(vec_size)<<std::endl;
     }
+
+    dos->WriteUint32(mos.GetSize());
+    dos->Write(mos.GetData(),mos.GetSize());
 }
 
 void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type,const char *hint)
@@ -89,6 +99,9 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
 
     if(count<=0)return;
 
+    MemoryOutputStream mos;
+    AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
+
     std::cout<<count<<" "<<hint<<std::endl;
 
     uint binding;
@@ -99,11 +112,14 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
         name    =sp->GetName(obj);
         binding =sp->GetBinding(obj);
 
-        dos->WriteUint8(binding);
-        dos->WriteUTF8TinyString(name);
+        mdos->WriteUint8(binding);
+        mdos->WriteUTF8TinyString(name);
 
         std::cout<<hint<<"["<<name.c_str()<<"] binding: "<<binding<<std::endl;
     }
+
+    dos->WriteUint32(mos.GetSize());
+    dos->Write(mos.GetData(),mos.GetSize());
 }
 
 void OutputShaderConfig(ShaderParse *sp,DataOutputStream *dos)
