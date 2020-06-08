@@ -14,15 +14,6 @@ using namespace hgl::graph;
 
 VK_NAMESPACE_USING
 
-/**
- *  shader file header
- *
- *  offset  size    
- *  0       7       flag string "Shader\x1A"
- *  7       1       version, now is 0
- *  8       4       VkShaderStageFlagBits              
- *  [vertex input attribute]
-  */
 constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
 constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
@@ -94,15 +85,16 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
 {
     uint32_t count=res.size();
 
-    dos->WriteUint32(desc_type);
-    dos->WriteUint8(count);
-
     if(count<=0)return;
+
+    dos->WriteUint32(desc_type);
 
     MemoryOutputStream mos;
     AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
 
     std::cout<<count<<" "<<hint<<std::endl;
+
+    mdos->WriteUint8(count);
 
     uint binding;
     UTF8String name;
@@ -124,8 +116,8 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
 
 void OutputShaderConfig(ShaderParse *sp,DataOutputStream *dos)
 {
-    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,"uniform_buffer");
-    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,"combined_image_sampler");
+    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          "uniform_buffer");
+    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  "combined_image_sampler");
 }
 
 bool CompileShader(const OSString &filename)
