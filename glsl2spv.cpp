@@ -2,6 +2,7 @@
 #include<glslang/SPIRV/GlslangToSpv.h>
 #include<glslang/Include/ResourceLimits.h>
 #include<iostream>
+#include<hgl/CodePage.h>
 
 namespace hgl
 {
@@ -217,6 +218,17 @@ namespace hgl
             if (ext_name.CaseComp(OS_TEXT("mesh")) == 0)flag = VK_SHADER_STAGE_MESH_BIT_NV; else
             {
                 std::cerr<<"can't parse shader type."<<std::endl;
+                return(false);
+            }
+
+            ByteOrderMask bom=CheckBOM(source);
+
+            if(bom==bomUTF8)
+                source+=3;
+            else
+            if(bom>bomUTF8&&bom<bomEnd)
+            {
+                std::cerr<<"please change the charset of shader source to UTF8/ANSI.";
                 return(false);
             }
 
