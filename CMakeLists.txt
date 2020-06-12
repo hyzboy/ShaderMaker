@@ -10,7 +10,7 @@ set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp Shade
 IF(CM_BUILD_GUI_TOOLS)
     set(IDENTIFIER "com.hyzgame.shadermaker")
 
-    target_link_libraries(TexConv PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+#    target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 ENDIF(CM_BUILD_GUI_TOOLS)
 
 add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
