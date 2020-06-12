@@ -1,8 +1,8 @@
 ﻿#include"glsl2spv.h"
-#include<SPIRV/GlslangToSpv.h>
-#include<glslang/Include/glslang_c_interface.h>
+#include<glslang/SPIRV/GlslangToSpv.h>
+#include<glslang/Include/ResourceLimits.h>
 #include<iostream>
-#include<hgl/filesystem/FileSystem.h>
+#include<hgl/CodePage.h>
 
 namespace hgl
 {
@@ -204,20 +204,9 @@ namespace hgl
             return(true);
         }
 
-        bool CompileShader(const OSString &filename)
-        {
-            char *source;
-
-            int64 size=filesystem::LoadFileToMemory(filename,(void **)&source,true);
-
-            if(size<=0)
-                return(false);
-    
-            VkShaderStageFlagBits flag;
-            std::vector<uint32> spirv;
+        bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv,VkShaderStageFlagBits &flag)
+        {    
             UTF8String log,debug_log;
-
-            const OSString ext_name=filesystem::ClipFileExtName(filename,false);
 
             if (ext_name.CaseComp(OS_TEXT("vert")) == 0)flag = VK_SHADER_STAGE_VERTEX_BIT; else
             if (ext_name.CaseComp(OS_TEXT("tesc")) == 0)flag = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT; else
@@ -232,27 +221,25 @@ namespace hgl
                 return(false);
             }
 
+            ByteOrderMask bom=CheckBOM(source);
+
+            if(bom==bomUTF8)
+                source+=3;
+            else
+            if(bom>bomUTF8&&bom<bomEnd)
+            {
+                std::cerr<<"please change the charset of shader source to UTF8/ANSI.";
+                return(false);
+            }
+
             bool result=GLSL2SPV(flag,source,spirv,log,debug_log);
 
-            if(!result)
-            {
-                std::cerr<<"shader compiler error: "<<log.c_str()<<std::endl;
-                std::cerr<<"debug log: "<<debug_log.c_str()<<std::endl;
-            }
-            else
-            {
-                const OSString spv_filename=filename+OS_TEXT(".spv");
-                const uint64 spv_size= spirv.size() * sizeof(uint32);
-
-                if(filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spv_size)!=spv_size)
-                {
-                    std::cerr<<"save to file error!"<<std::endl;
-                    result=false;
-                }
-            }
-
-            delete[] source;
-            return result;
+            if(result)
+                return(true);
+            
+            std::cerr<<"shader compiler error: "<<log.c_str()<<std::endl;
+            std::cerr<<"debug log: "<<debug_log.c_str()<<std::endl;
+            return(false);
         }
     }//namespace graph
 }//namespace hgl
