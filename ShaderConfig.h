@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 #include"ShaderDataType.h"

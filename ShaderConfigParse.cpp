@@ -1,4 +1,4 @@
-#include"ShaderConfig.h"
+﻿#include"ShaderConfig.h"
 #include<hgl/log/LogInfo.h>
 #include<hgl/type/StringList.h>
 #include<iostream>
@@ -150,7 +150,7 @@ ShaderConfig *LoadShaderConfig(const OSString &filename)
 
         if(str.GetBeginChar()=='/')continue;        //注释跳过
 
-        int pos=str.FindExcludeChar(UTF8String(" \t"));
+        int pos=str.FindExcludeChar(SpaceChar);
 
         if (IsSegmentFlag(str))
         {
