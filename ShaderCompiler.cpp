@@ -59,7 +59,7 @@ void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStre
     spirv_cross::SPIRType::BaseType base_type;
     uint8 vec_size;
     uint location;
-    UTF8String name;
+    AnsiString name;
 
     os_out<<hint<<" State: "<<attr_count<<std::endl;
     
@@ -72,7 +72,7 @@ void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStre
         mdos->WriteUint8(location);
         mdos->WriteUint8(base_type);
         mdos->WriteUint8(vec_size);
-        mdos->WriteUTF8TinyString(name);
+        mdos->WriteAnsiTinyString(name);
 
         std::cout<<hint<<" State ["<<name.c_str()<<"] location="<<location<<", basetype:"<<SPIRTypeBaseTypeName[base_type-spirv_cross::SPIRType::BaseType::Unknown]<<", vecsize: "<<uint(vec_size)<<std::endl;
     }
@@ -97,7 +97,7 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
     mdos->WriteUint8(count);
 
     uint binding;
-    UTF8String name;
+    AnsiString name;
 
     for(const spirv_cross::Resource &obj:res)
     {
@@ -105,7 +105,7 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
         binding =sp->GetBinding(obj);
 
         mdos->WriteUint8(binding);
-        mdos->WriteUTF8TinyString(name);
+        mdos->WriteAnsiTinyString(name);
 
         std::cout<<hint<<"["<<name.c_str()<<"] binding: "<<binding<<std::endl;
     }

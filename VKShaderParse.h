@@ -45,9 +45,9 @@ public:
 
 public:
 
-    const UTF8String GetName(const spirv_cross::Resource &res)const
+    const AnsiString GetName(const spirv_cross::Resource &res)const
     {
-        return UTF8String(compiler->get_name(res.id).c_str());
+        return AnsiString(compiler->get_name(res.id).c_str());
     }
 
     const uint32_t GetBinding(const spirv_cross::Resource &res)const

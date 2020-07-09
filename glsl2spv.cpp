@@ -163,7 +163,7 @@ namespace hgl
             glslang::FinalizeProcess();
         }
 
-        bool GLSL2SPV(const VkShaderStageFlagBits shader_type,const char *shader_source,std::vector<uint32> &spirv,UTF8String &log,UTF8String &debug_log)
+        bool GLSL2SPV(const VkShaderStageFlagBits shader_type,const char *shader_source,std::vector<uint32> &spirv,AnsiString &log,AnsiString &debug_log)
         {
             EShLanguage stage = FindLanguage(shader_type);
 
@@ -206,7 +206,7 @@ namespace hgl
 
         bool CompileShaderToSPV(const char *source,const OSString &ext_name,SPIRVData &spirv,VkShaderStageFlagBits &flag)
         {    
-            UTF8String log,debug_log;
+            AnsiString log,debug_log;
 
             if (ext_name.CaseComp(OS_TEXT("vert")) == 0)flag = VK_SHADER_STAGE_VERTEX_BIT; else
             if (ext_name.CaseComp(OS_TEXT("tesc")) == 0)flag = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT; else
