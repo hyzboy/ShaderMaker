@@ -19,30 +19,30 @@ constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
 constexpr char *SPIRTypeBaseTypeName[]=
 {
-	"Unknown",
-	"Void",
-	"Boolean",
-	"SByte",
-	"UByte",
-	"Short",
-	"UShort",
-	"Int",
-	"UInt",
-	"Int64",
-	"UInt64",
-	"AtomicCounter",
-	"Half",
-	"Float",
-	"Double",
-	"Struct",
-	"Image",
-	"SampledImage",
-	"Sampler",
-	"AccelerationStructureNV",
+    "Unknown",
+    "Void",
+    "Boolean",
+    "SByte",
+    "UByte",
+    "Short",
+    "UShort",
+    "Int",
+    "UInt",
+    "Int64",
+    "UInt64",
+    "AtomicCounter",
+    "Half",
+    "Float",
+    "Double",
+    "Struct",
+    "Image",
+    "SampledImage",
+    "Sampler",
+    "AccelerationStructureNV",
 
-	// Keep internal types at the end.
-	"ControlPointArray",
-	"Char"
+    // Keep internal types at the end.
+    "ControlPointArray",
+    "Char"
 };
 
 void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStream *dos,const char *hint)
@@ -176,7 +176,7 @@ bool CompileShader(const OSString &filename)
 
 int os_main(int argc,os_char **argv)
 {
-    os_out<<OS_TEXT("ShaderCompiler 1.0 (glslang version:")<<GLSLANG_MINOR_VERSION<<OS_TEXT(")")<<std::endl;
+    os_out<<OS_TEXT("ShaderCompiler 1.0")<<std::endl;
     os_out<<OS_TEXT("Copyright (C) www.hyzgame.com")<<std::endl;
     os_out<<std::endl;
 
