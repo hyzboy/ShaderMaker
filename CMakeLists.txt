@@ -13,8 +13,19 @@ IF(CM_BUILD_GUI_TOOLS)
 #    target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 ENDIF(CM_BUILD_GUI_TOOLS)
 
+set(VULKAN_SPIRV_LIBS   GenericCodeGen
+                        glslang
+                        HLSL
+                        MachineIndependent
+                        OGLCompiler
+                        OSDependent
+                        SPIRV
+                        SPIRV-Tools
+                        SPIRV-Tools-opt
+                        spirv-cross-core)
+
 add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
-target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil glslang SPIRV OGLCompiler OSDependent)
+target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil ${VULKAN_SPIRV_LIBS})
 
 add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp VKShaderParse.h)
 
@@ -22,16 +33,7 @@ target_link_libraries(ShaderCompiler PRIVATE    CMCore
                                                 CMPlatform
                                                 CMUtil
                                                 CMSceneGraph
-                                                glslang
-                                                SPIRV
-                                                GenericCodeGen
-                                                MachineIndependent
-                                                OGLCompiler
-                                                OSDependent
-                                                HLSL
-                                                SPIRV-Tools
-                                                SPIRV-Tools-opt
-                                                spirv-cross-core)
+                                                ${VULKAN_SPIRV_LIBS})
 
 if(UNIX)
     target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
