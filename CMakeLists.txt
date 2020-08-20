@@ -24,10 +24,13 @@ set(VULKAN_SPIRV_LIBS   GenericCodeGen
                         SPIRV-Tools-opt
                         spirv-cross-core)
 
+SET(SHADER_MODULE_SOURCE    ShaderModule.h
+                            ShaderModule.cpp)
+
 add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
 target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil ${VULKAN_SPIRV_LIBS})
 
-add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp VKShaderParse.h)
+add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp VKShaderParse.h ${SHADER_MODULE_SOURCE})
 
 target_link_libraries(ShaderCompiler PRIVATE    CMCore 
                                                 CMPlatform
