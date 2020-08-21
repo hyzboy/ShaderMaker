@@ -36,7 +36,8 @@ target_link_libraries(ShaderCompiler PRIVATE    CMCore
                                                 CMPlatform
                                                 CMUtil
                                                 CMSceneGraph
-                                                ${VULKAN_SPIRV_LIBS})
+                                                ${VULKAN_SPIRV_LIBS}
+                                                libexpat)
 
 if(UNIX)
     target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})

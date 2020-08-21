@@ -8,6 +8,8 @@
 #include<hgl/io/MemoryOutputStream.h>
 #include"VKShaderParse.h"
 
+#include"ShaderModule.h"
+
 using namespace hgl;
 using namespace hgl::io;
 using namespace hgl::graph;
@@ -47,9 +49,9 @@ constexpr char *SPIRTypeBaseTypeName[]=
 
 void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStream *dos,const char *hint)
 {
-    uint attr_count=stages.size();
+    size_t attr_count=stages.size();
 
-    dos->WriteUint8(attr_count);
+    dos->WriteUint8((uint8)attr_count);
 
     if(attr_count<=0)return;
 
@@ -83,7 +85,7 @@ void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStre
 
 void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type,const char *hint)
 {
-    uint32_t count=res.size();
+    size_t count=res.size();
 
     if(count<=0)return;
 
@@ -94,7 +96,7 @@ void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVect
 
     std::cout<<count<<" "<<hint<<std::endl;
 
-    mdos->WriteUint8(count);
+    mdos->WriteUint8((uint8)count);
 
     uint binding;
     AnsiString name;
@@ -184,6 +186,17 @@ int os_main(int argc,os_char **argv)
     {
         os_out<<OS_TEXT("Example: ShaderCompiler [shader filename]")<<std::endl;
         return(0);
+    }
+
+    const OSString filename=argv[1];
+    const OSString ext_name=filesystem::ClipFileExtName(filename,false);
+
+    if(ext_name.CaseComp(OS_TEXT("xml"))==0)
+    {
+        shader::Module *sm=shader::LoadXMLShader(filename);
+
+        SAFE_CLEAR(sm);
+        return 0;
     }
 
     InitShaderCompiler();

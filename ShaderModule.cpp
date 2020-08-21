@@ -1,93 +1,161 @@
 #include"ShaderModule.h"
 #include<hgl/util/xml/XMLParse.h>
+#include<hgl/util/xml/ElementParseCreater.h>
+#include<hgl/type/Stack.h>
 
 namespace shader
 {
     namespace
     {
-        class XMLElementParse
+        using namespace hgl::xml;
+
+        class AuthorElementCreater:public ElementCreater
         {
         public:
 
-            virtual ~XMLElementParse()=default;
+            AuthorElementCreater():ElementCreater("author"){}
+            virtual ~AuthorElementCreater()=default;
+        };//class AuthorElementCreater:public ElementCreater
+
+        class TimeElementCreater:public ElementCreater
+        {
+        public:
+
+            TimeElementCreater():ElementCreater("time"){}
+            virtual ~TimeElementCreater()=default;
+        };//class TimeElementCreater:public ElementCreater
+
+        class CPPElementCreater:public ElementCreater
+        {
+            UBO *ubo;
 
         public:
 
-            AnsiString  ToAnsiString    (const char *str){return AnsiString(str);}
-            UTF8String  ToUTF8String    (const char *str){return UTF8String((u8char *)str);}
-            UTF16String ToUTF16String   (const char *str){return to_u16(str);}
+            CPPElementCreater():ElementCreater("cpp"){ubo=nullptr;}
+            virtual ~CPPElementCreater()=default;
 
-        public:
+            void SetUBO(UBO *su){ubo=su;}
+            void End() override {ubo=nullptr;}
 
-            virtual bool Attr       (const char *flag,const char *info)
+            void CharData(const char *str,const int str_length) override
             {
-                
+                if(ubo)
+                    LoadStringFromText(ubo->cpp_file,(void *)str,str_length,UTF8CharSet);
+            }
+        };//class CPPElementCreater:public ElementCreater
+        
+        class CodeElementCreater:public ElementCreater
+        {
+            UBO *ubo;
+
+        public:
+
+            CodeElementCreater():ElementCreater("code"){ubo=nullptr;}
+            virtual ~CodeElementCreater()=default;
+            
+            void SetUBO(UBO *su){ubo=su;}
+            void End() override {ubo=nullptr;}
+
+            void CharData(const char *str,const int str_length) override
+            {
+                if(ubo)
+                    LoadStringListFromText(ubo->codes,(void *)str,str_length,UTF8CharSet);
+            }
+        };//class CodeElementCreater:public ElementCreater
+
+        class UBOElementCreater:public ElementCreater
+        {
+            CPPElementCreater cpp_ec;
+            CodeElementCreater code_ec;
+
+            Module *shader_module;
+            UBO *ubo;
+
+        public:
+
+            UBOElementCreater(Module *sm):ElementCreater("ubo")
+            {
+                shader_module=sm;
+                ubo=nullptr;
+
+                Registry("cpp",&cpp_ec);
+                Registry("code",&code_ec);
             }
 
-            virtual bool CharData   (const char *str,int str_length){}
-            virtual void End        (){}
-        };
+            virtual ~UBOElementCreater()=default;
 
-        class AdvXMLParse:public XMLParse
-        {
-            XMLElementParse *element_parse=nullptr;
-
-        public:
-
-            using XMLParse::XMLParse;
-            virtual ~AdvXMLParse()=default;            
-
-            virtual XMLElementParse *CreateAttrParse(const char *element_name)=0;
-
-            void StartElement(const char *element_name,const char **atts) override
+            bool Start() override
             {
-                element_parse=CreateAttrParse(element_name);
+                ubo=new UBO;
 
-                if(!element_parse)return;
+                cpp_ec.SetUBO(ubo);
+                code_ec.SetUBO(ubo);
 
-                const char *flag;
-                const char *info;
+                return(true);
+            }
 
-                while(*atts)
+            void Attr(const char *flag,const char *info) override
+            {
+                if(strcmp(flag,"name")==0)ubo->name=info;else
+                if(strcmp(flag,"value")==0)ubo->value_name=info;                
+            }
+
+            void End() override
+            {
+                if(ubo)
                 {
-                    flag=*atts;++atts;
-                    info=*atts;++atts;
-                    
-                    element_parse->Attr(flag,info);
+                    shader_module->ubo_list.Add(ubo);
+                    ubo=nullptr;
                 }
             }
+        };//class UBOElementCreater:public ElementCreater
 
-            void CharData(const char *str,int str_length) override
-            {
-                if(element_parse)
-                    element_parse->CharData(str,str_length);
-            }
+        class ShaderRootElementCreater:public ElementCreater
+        {        
+            AuthorElementCreater author_ec;
+            TimeElementCreater time_ec;
+            UBOElementCreater *ubo_ec;
 
-            void EndElement(const char *element_name) override
-            {
-                if(!element_parse)return;
+            Module *shader_module;
 
-                element_parse->End();
-
-                element_parse=nullptr;
-            }
-        };
-
-        class ShaderModuleXMLParse:public XMLParse
-        {
         public:
 
-            void StartElement(const char *element_name,const char **atts) override
+            ShaderRootElementCreater(Module *sm):ElementCreater("root")
             {
+                shader_module=sm;
+
+                ubo_ec=new UBOElementCreater(sm);
+
+                //Registry("author",&author_ec);
+                //Registry("time",&time_ec);
+                Registry("ubo",ubo_ec);
             }
 
-            void CharData(const char *str,int str_length) override
+            virtual ~ShaderRootElementCreater()
             {
+                SAFE_CLEAR(ubo_ec);
             }
 
-            void EndElement(const char *element_name) override
+            void End() override
             {
             }
-        };//class ShaderModuleXMLParse:public XMLParse
+        };//class ShaderRootElementCreater:public ElementCreater
     }//namespace
+
+    Module *LoadXMLShader(const OSString &filename)
+    {
+        Module *sm=new Module;
+
+        ShaderRootElementCreater root_ec(sm);
+        ElementParseCreater epc(&root_ec);
+        XMLParse xp(&epc);
+
+        if(!XMLParseFile(&xp,filename))
+        {
+            delete sm;
+            return(nullptr);
+        }
+
+        return sm;
+    }
 }//namespace shader
