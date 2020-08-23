@@ -1,25 +1,49 @@
-#include"glsl2spv.h"
-#include<glslang/Public/ShaderLang.h>
 #include<iostream>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/Map.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/DataOutputStream.h>
 #include<hgl/io/MemoryOutputStream.h>
-#include"VKShaderParse.h"
+#include"GLSLCompiler.h"
 
 #include"ShaderModule.h"
 
 using namespace hgl;
 using namespace hgl::io;
-using namespace hgl::graph;
-
-VK_NAMESPACE_USING
 
 constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
 constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
-constexpr char *SPIRTypeBaseTypeName[]=
+enum class SPIRBaseType
+{
+	Unknown,
+	Void,
+	Boolean,
+	SByte,
+	UByte,
+	Short,
+	UShort,
+	Int,
+	UInt,
+	Int64,
+	UInt64,
+	AtomicCounter,
+	Half,
+	Float,
+	Double,
+	Struct,
+	Image,
+	SampledImage,
+	Sampler,
+	AccelerationStructure,
+	RayQuery,
+
+	// Keep internal types at the end.
+	ControlPointArray,
+	Char
+};
+
+constexpr char *SPIRBaseTypeName[]=
 {
     "Unknown",
     "Void",
@@ -47,130 +71,204 @@ constexpr char *SPIRTypeBaseTypeName[]=
     "Char"
 };
 
-void OutputShaderStage(ShaderParse *sp,const SPVResVector &stages,DataOutputStream *dos,const char *hint)
+bool ToStageName(char *str,const enum class SPIRBaseType base_type,const uint32_t vec_size)
 {
-    size_t attr_count=stages.size();
+    if(vec_size==1)
+    {
+        switch(base_type)
+        {
+            case SPIRBaseType::Boolean: strcpy(str,"bool");break;
+            case SPIRBaseType::SByte:
+            case SPIRBaseType::Short:
+            case SPIRBaseType::Int:
+            case SPIRBaseType::Int64:   strcpy(str,"int");break;
+            case SPIRBaseType::UByte:
+            case SPIRBaseType::UShort:
+            case SPIRBaseType::UInt:
+            case SPIRBaseType::UInt64:  strcpy(str,"uint");break;
+            case SPIRBaseType::Float:   strcpy(str,"float");break;
+            case SPIRBaseType::Double:  strcpy(str,"double");break;
+            default:return(false);
+        }
+    }
+    else
+    {
+        switch(base_type)
+        {
+            case SPIRBaseType::Boolean: strcpy(str,"bvec ");break;
+            case SPIRBaseType::SByte:
+            case SPIRBaseType::Short:
+            case SPIRBaseType::Int:
+            case SPIRBaseType::Int64:   strcpy(str,"ivec ");break;
+            case SPIRBaseType::UByte:
+            case SPIRBaseType::UShort:
+            case SPIRBaseType::UInt:
+            case SPIRBaseType::UInt64:  strcpy(str,"uvec ");break;
+            case SPIRBaseType::Float:   strcpy(str,"vec ");break;
+            case SPIRBaseType::Double:  strcpy(str,"dvec ");break;
+            default:return(false);
+        }
 
-    dos->WriteUint8((uint8)attr_count);
+        if(base_type==SPIRBaseType::Float)
+            str[3]='0'+vec_size;
+        else
+            str[4]='0'+vec_size;
+    }
 
-    if(attr_count<=0)return;
+    return(true);
+}
+
+void OutputShaderStage(const glsl_compiler::ShaderStageData &ssd,DataOutputStream *dos,const char *hint)
+{
+    dos->WriteUint8(uint8(ssd.count));
+
+    if(ssd.count<=0)return;
 
     MemoryOutputStream mos;
     AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
 
-    spirv_cross::SPIRType::BaseType base_type;
-    uint8 vec_size;
-    uint location;
-    AnsiString name;
+    const glsl_compiler::ShaderStage *ss=ssd.items;
 
-    os_out<<hint<<" State: "<<attr_count<<std::endl;
+    char type_string[8];
     
-    for(const spirv_cross::Resource &si:stages)
+    for(size_t i=0;i<ssd.count;i++)
     {
-        sp->GetFormat(si,&base_type,&vec_size);
-        name=sp->GetName(si);
-        location=sp->GetLocation(si);
+        mdos->WriteUint8(ss->location);
+        mdos->WriteUint8(ss->base_type);
+        mdos->WriteUint8(ss->vec_size);
+        mdos->WriteAnsiTinyString(ss->name);
 
-        mdos->WriteUint8(location);
-        mdos->WriteUint8(base_type);
-        mdos->WriteUint8(vec_size);
-        mdos->WriteAnsiTinyString(name);
-
-        std::cout<<hint<<" State ["<<name.c_str()<<"] location="<<location<<", basetype:"<<SPIRTypeBaseTypeName[base_type-spirv_cross::SPIRType::BaseType::Unknown]<<", vecsize: "<<uint(vec_size)<<std::endl;
+        ToStageName(type_string,(enum class SPIRBaseType)ss->base_type,ss->vec_size);
+        std::cout<<"layout(location="<<int(ss->location)<<") "<<hint<<" "<<type_string<<" "<<ss->name<<std::endl;
+        ++ss;
     }
 
-    dos->WriteUint32(mos.GetSize());
-    dos->Write(mos.GetData(),mos.GetSize());
+    dos->WriteUint32(mos.Tell());
+    dos->Write(mos.GetData(),mos.Tell());
 }
 
-void OutputShaderResource(ShaderParse *sp,DataOutputStream *dos,const SPVResVector &res,const enum VkDescriptorType desc_type,const char *hint)
+void OutputShaderResource(const glsl_compiler::ShaderResourceData *srd_arrays,const uint32_t type,DataOutputStream *dos,const char *hint)
 {
-    size_t count=res.size();
+    const glsl_compiler::ShaderResourceData *srd=srd_arrays+type;
 
-    if(count<=0)return;
+    if(srd->count<=0)return;
 
-    dos->WriteUint32(desc_type);
+    dos->WriteUint32((uint32_t)type);
 
     MemoryOutputStream mos;
     AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
 
-    std::cout<<count<<" "<<hint<<std::endl;
+    std::cout<<srd->count<<" "<<hint<<std::endl;
 
-    mdos->WriteUint8((uint8)count);
+    mdos->WriteUint8(uint8(srd->count));
 
-    uint binding;
-    AnsiString name;
+    const glsl_compiler::ShaderResource *sr=srd->items;
 
-    for(const spirv_cross::Resource &obj:res)
+    for(size_t i=0;i<srd->count;i++)
     {
-        name    =sp->GetName(obj);
-        binding =sp->GetBinding(obj);
+        mdos->WriteUint8(sr->set);          //append in version 1
+        mdos->WriteUint8(sr->binding);
+        mdos->WriteAnsiTinyString(sr->name);
 
-        mdos->WriteUint8(binding);
-        mdos->WriteAnsiTinyString(name);
-
-        std::cout<<hint<<"["<<name.c_str()<<"] binding: "<<binding<<std::endl;
+        std::cout<<"layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
+        ++sr;
     }
 
-    dos->WriteUint32(mos.GetSize());
-    dos->Write(mos.GetData(),mos.GetSize());
+    dos->WriteUint32(mos.Tell());
+    dos->Write(mos.GetData(),mos.Tell());
 }
 
-void OutputShaderConfig(ShaderParse *sp,DataOutputStream *dos)
+glsl_compiler::SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag)
 {
-    OutputShaderResource(sp,dos,sp->GetUBO(),       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          "uniform_buffer");
-    OutputShaderResource(sp,dos,sp->GetSampler(),   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  "combined_image_sampler");
+    if(source[0]==0xEF
+     &&source[1]==0xBB
+     &&source[2]==0xBF)
+        source+=3;
+
+    glsl_compiler::SPVData *spv=glsl_compiler::Compile(flag,(char *)source);
+
+    if(!spv)return(false);
+
+    const bool result=spv->result;
+
+    if(!result)
+    {
+        std::cerr<<"glsl compile failed."<<std::endl;
+        std::cerr<<"info: "<<spv->log<<std::endl;
+        std::cerr<<"debug info: "<<spv->debug_log<<std::endl;
+
+        glsl_compiler::Free(spv);
+        return(nullptr);
+    }
+
+    std::cout<<"Compile successed! spv length "<<spv->spv_length<<" bytes."<<std::endl;
+
+    return spv;
 }
 
 bool CompileShader(const OSString &filename)
 {
     int64 size;
 
-    AutoDeleteArray<char> source=(char *)filesystem::LoadFileToMemory(filename,size,true);
+    AutoDeleteArray<uint8> source=(uint8 *)filesystem::LoadFileToMemory(filename,size,true);
 
     if(!source)
+    {
+        os_err<<OS_TEXT("Load Shader file [")<<filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
+        return(false);
+    }
+    else
+    {
+        os_out<<OS_TEXT("Load Shader file [")<<filename.c_str()<<OS_TEXT("] successed!")<<std::endl;
+    }
+
+    const UTF8String ext_name=to_u8(filesystem::ClipFileExtName(filename,false));
+
+    const uint32_t flag=glsl_compiler::GetType(ext_name.c_str());
+
+    glsl_compiler::SPVData *spv=CompileShaderToSPV(source,flag);
+
+    if(!spv)
         return(false);
 
-    const OSString ext_name=filesystem::ClipFileExtName(filename,false);
-
-    VkShaderStageFlagBits flag;
-    SPIRVData spirv;
-    uint32 spv_size=0;
-
-    if(CompileShaderToSPV(source,ext_name,spirv,flag))
     {
         const OSString spv_filename=filename+OS_TEXT(".spv");
-        spv_size=spirv.size()*sizeof(uint32);
 
-        if(filesystem::SaveMemoryToFile(spv_filename,spirv.data(),spv_size)!=spv_size)
+        if(filesystem::SaveMemoryToFile(spv_filename,spv->spv_data,spv->spv_length)!=spv->spv_length)
         {
+            os_err<<OS_TEXT("Save SPV file [")<<spv_filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
             std::cerr<<"save to file error!"<<std::endl;
             return(false);
+        }
+        else
+        {
+            os_out<<OS_TEXT("Save SPV file [")<<spv_filename.c_str()<<OS_TEXT("] successed!")<<std::endl;
         }
     }
 
     {
         const OSString sr_filename=filename+OS_TEXT(".shader");
 
-        OpenFileOutputStream fos(sr_filename,fomCreateTrunc);
-        DataOutputStream *dos=new LEDataOutputStream(fos);
+        MemoryOutputStream mos;
+        AutoDelete<DataOutputStream> dos=new LEDataOutputStream(&mos);
 
         dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
-        dos->WriteUint8(0);
+        dos->WriteUint8(1);     //version
         dos->WriteUint32(flag);
-        dos->WriteUint32(spv_size);
-        dos->Write(spirv.data(),spv_size);
+        dos->WriteUint32(spv->spv_length);
+        dos->Write(spv->spv_data,spv->spv_length);
 
-        os_out<<OS_TEXT("SPV Data: ")<<spv_size<<OS_TEXT(" bytes.")<<std::endl;
+        OutputShaderStage(spv->input,dos,"in");
+        OutputShaderStage(spv->output,dos,"out");
+        
+        OutputShaderResource(spv->resource,(uint32_t)glsl_compiler::VkDescriptor::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
+        OutputShaderResource(spv->resource,(uint32_t)glsl_compiler::VkDescriptor::UNIFORM_BUFFER,dos,"uniform_buffer");
+        OutputShaderResource(spv->resource,(uint32_t)glsl_compiler::VkDescriptor::STORAGE_BUFFER,dos,"storage_buffer");
 
-        ShaderParse sp(spirv.data(),spirv.size()*sizeof(uint32));
-
-        OutputShaderStage(&sp,sp.GetStageInputs(),dos,"Input");
-        OutputShaderStage(&sp,sp.GetStageOutputs(),dos,"Output");
-        OutputShaderConfig(&sp,dos);
-
-        delete dos;
-        fos->Close();
+        if(filesystem::SaveMemoryToFile(sr_filename,mos.GetData(),mos.Tell()))
+            os_out<<OS_TEXT("Save Shader file [")<<sr_filename.c_str()<<OS_TEXT("] successed, total ")<<mos.Tell()<<OS_TEXT(" bytes.")<<std::endl;
+        else
+            os_err<<OS_TEXT("Save Shader file [")<<sr_filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
     }
 
     return(true);
@@ -178,7 +276,7 @@ bool CompileShader(const OSString &filename)
 
 int os_main(int argc,os_char **argv)
 {
-    os_out<<OS_TEXT("ShaderCompiler 1.0")<<std::endl;
+    os_out<<OS_TEXT("ShaderCompiler 1.1")<<std::endl;
     os_out<<OS_TEXT("Copyright (C) www.hyzgame.com")<<std::endl;
     os_out<<std::endl;
 
@@ -199,11 +297,15 @@ int os_main(int argc,os_char **argv)
         return 0;
     }
 
-    InitShaderCompiler();
+    if(!glsl_compiler::Init())
+    {
+        std::cerr<<"Init GLSLCompiler plug-in failed."<<std::endl;
+        return(-1);
+    }
 
     CompileShader(argv[1]);
 
-    CloseShaderCompiler();
+    glsl_compiler::Close();
 
     return 0;
 }

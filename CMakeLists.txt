@@ -13,38 +13,29 @@ IF(CM_BUILD_GUI_TOOLS)
 #    target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 ENDIF(CM_BUILD_GUI_TOOLS)
 
-set(VULKAN_SPIRV_LIBS   GenericCodeGen
-                        glslang
-                        HLSL
-                        MachineIndependent
-                        OGLCompiler
-                        OSDependent
-                        SPIRV
-                        SPIRV-Tools
-                        SPIRV-Tools-opt
-                        spirv-cross-core)
+SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
+							GLSLCompiler.cpp)
 
 SET(SHADER_MODULE_SOURCE    ShaderModule.h
                             ShaderModule.cpp)
 
-add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
-target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil ${VULKAN_SPIRV_LIBS})
+#add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
+#target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil ${VULKAN_SPIRV_LIBS})
 
-add_executable(ShaderCompiler ShaderCompiler.cpp glsl2spv.h glsl2spv.cpp VKShaderParse.h ${SHADER_MODULE_SOURCE})
+add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE} ${SHADER_MODULE_SOURCE})
 
 target_link_libraries(ShaderCompiler PRIVATE    CMCore 
                                                 CMPlatform
                                                 CMUtil
                                                 CMSceneGraph
-                                                ${VULKAN_SPIRV_LIBS}
                                                 libexpat)
 
 if(UNIX)
-    target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
-    target_link_libraries(ShaderCompiler PRIVATE dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
+#    target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
+    target_link_libraries(ShaderCompiler PRIVATE dl ${RENDER_LIBRARY})
 endif()
 
 IF(WIN32)
-    set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
+#    set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
     set_debugger_directory(ShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF()
