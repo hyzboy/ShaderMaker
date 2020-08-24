@@ -39,34 +39,59 @@ namespace shader
 
             void CharData(const char *str,const int str_length) override
             {
-                if(ubo)
-                    LoadStringFromText(ubo->cpp_file,(void *)str,str_length,UTF8CharSet);
+                if(!ubo)return;
+
+                ubo->cpp_files.Add(UTF8String((u8char *)str,str_length));
             }
         };//class CPPElementCreater:public ElementCreater
         
-        class CodeElementCreater:public ElementCreater
+        class UBOCodeElementCreater:public ElementCreater
         {
             UBO *ubo;
 
         public:
 
-            CodeElementCreater():ElementCreater("code"){ubo=nullptr;}
-            virtual ~CodeElementCreater()=default;
+            UBOCodeElementCreater():ElementCreater("code"){ubo=nullptr;}
+            virtual ~UBOCodeElementCreater()=default;
             
             void SetUBO(UBO *su){ubo=su;}
-            void End() override {ubo=nullptr;}
+            void End() override 
+            {
+                const int lines=ubo->codes.GetCount();
+
+                std::cout<<"uniform"<<std::endl<<"{"<<std::endl;
+
+                for(int i=0;i<lines;i++)
+                    std::cout<<"    "<<ubo->codes.GetString(i).c_str()<<std::endl;
+
+                std::cout<<"};"<<std::endl;
+
+                ubo=nullptr;
+            }
 
             void CharData(const char *str,const int str_length) override
             {
+                if(!str||!*str||str_length<=0)return;
+                if(str_length==1)
+                    if(hgl::isspace(*str))return;
+
                 if(ubo)
-                    LoadStringListFromText(ubo->codes,(void *)str,str_length,UTF8CharSet);
+                {
+                    UTF8String u8str;
+                    LoadStringFromText(u8str,(void *)str,str_length,UTF8CharSet);
+
+                    u8str.Trim();
+
+                    if(!u8str.IsEmpty())
+                        ubo->codes.Add(u8str);
+                }
             }
-        };//class CodeElementCreater:public ElementCreater
+        };//class UBOCodeElementCreater:public ElementCreater
 
         class UBOElementCreater:public ElementCreater
         {
             CPPElementCreater cpp_ec;
-            CodeElementCreater code_ec;
+            UBOCodeElementCreater code_ec;
 
             Module *shader_module;
             UBO *ubo;
@@ -146,9 +171,13 @@ namespace shader
     {
         Module *sm=new Module;
 
+        sm->filename=filename;
+
         ShaderRootElementCreater root_ec(sm);
         ElementParseCreater epc(&root_ec);
         XMLParse xp(&epc);
+
+        xp.Start();
 
         if(!XMLParseFile(&xp,filename))
         {

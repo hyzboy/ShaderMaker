@@ -277,7 +277,7 @@ bool CompileShader(const OSString &filename)
 int os_main(int argc,os_char **argv)
 {
     os_out<<OS_TEXT("ShaderCompiler 1.1")<<std::endl;
-    os_out<<OS_TEXT("Copyright (C) www.hyzgame.com")<<std::endl;
+    os_out<<OS_TEXT("Copyright (C) " HGL_OFFICAL_WEB)<<std::endl;
     os_out<<std::endl;
 
     if(argc<2)
