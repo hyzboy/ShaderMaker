@@ -13,7 +13,7 @@ namespace shader
         {
         public:
 
-            AuthorElementCreater():ElementCreater("author"){}
+            AuthorElementCreater():ElementCreater(u8"author"){}
             virtual ~AuthorElementCreater()=default;
         };//class AuthorElementCreater:public ElementCreater
 
@@ -21,7 +21,7 @@ namespace shader
         {
         public:
 
-            TimeElementCreater():ElementCreater("time"){}
+            TimeElementCreater():ElementCreater(u8"time"){}
             virtual ~TimeElementCreater()=default;
         };//class TimeElementCreater:public ElementCreater
 
@@ -31,13 +31,13 @@ namespace shader
 
         public:
 
-            CPPElementCreater():ElementCreater("cpp"){sm=nullptr;}
+            CPPElementCreater():ElementCreater(u8"cpp"){sm=nullptr;}
             virtual ~CPPElementCreater()=default;
 
             void Set(SubModule *_sm){sm=_sm;}
             void End() override {sm=nullptr;}
 
-            void CharData(const char *str,const int str_length) override
+            void CharData(const u8char *str,const int str_length) override
             {
                 if(!sm)return;
 
@@ -51,7 +51,7 @@ namespace shader
 
         public:
 
-            UBOCodeElementCreater():ElementCreater("code"){ubo=nullptr;}
+            UBOCodeElementCreater():ElementCreater(u8"code"){ubo=nullptr;}
             virtual ~UBOCodeElementCreater()=default;
             
             void SetUBO(UBO *su){ubo=su;}
@@ -69,7 +69,7 @@ namespace shader
                 ubo=nullptr;
             }
 
-            void CharData(const char *str,const int str_length) override
+            void CharData(const u8char *str,const int str_length) override
             {
                 if(!str||!*str||str_length<=0)return;
                 if(str_length==1)
@@ -98,13 +98,13 @@ namespace shader
 
         public:
 
-            UBOElementCreater(Module *sm):ElementCreater("ubo")
+            UBOElementCreater(Module *sm):ElementCreater(u8"ubo")
             {
                 shader_module=sm;
                 ubo=nullptr;
 
-                Registry("cpp",&cpp_ec);
-                Registry("code",&code_ec);
+                Registry(&cpp_ec);
+                Registry(&code_ec);
             }
 
             virtual ~UBOElementCreater()=default;
@@ -119,12 +119,12 @@ namespace shader
                 return(true);
             }
 
-            void Attr(const char *flag,const char *info) override
+            void Attr(const u8char *flag,const u8char *info) override
             {
                 if(!ubo)return;
 
-                if(strcmp(flag,"name")==0)ubo->name=info;else
-                if(strcmp(flag,"value")==0)ubo->value_name=info;                
+                if(strcmp(flag,u8"name")==0)ubo->name=info;else
+                if(strcmp(flag,u8"value")==0)ubo->value_name=info;                
             }
 
             void End() override
@@ -147,16 +147,16 @@ namespace shader
 
         public:
 
-            VertexAttrribElementCreater(Module *sm):ElementCreater("vertex_attrib"){shader_module=sm;}
+            VertexAttrribElementCreater(Module *sm):ElementCreater(u8"vertex_attrib"){shader_module=sm;}
             virtual ~VertexAttrribElementCreater()=default;
             
-            void Attr(const char *flag,const char *info) override
+            void Attr(const u8char *flag,const u8char *info) override
             {
                 if(!shader_module)return;
 
-                if(strcmp(flag,"type")==0)graph::ParseVertexAttribType(&vat,info);else
-                if(strcmp(flag,"name")==0)name=(u8char *)info;else
-                if(strcmp(flag,"comment")==0)comment=(u8char *)info;
+                if(strcmp(flag,u8"type")==0)graph::ParseVertexAttribType(&vat,info);else
+                if(strcmp(flag,u8"name")==0)name=(u8char *)info;else
+                if(strcmp(flag,u8"comment")==0)comment=(u8char *)info;
             }
 
             void End() override
@@ -171,7 +171,7 @@ namespace shader
 
                 shader_module->shader_stage.Add(ss);
 
-                const char *type_string=graph::GetVertexAttribName(&(ss->type));
+                const u8char *type_string=graph::GetVertexAttribName(&(ss->type));
 
                 std::cout<<"shader stage: "<<type_string<<" "<<name.c_str()<<";\t//"<<comment.c_str()<<std::endl;
             }
@@ -186,15 +186,15 @@ namespace shader
 
         public:
 
-            RootElementCreater(Module *sm):ElementCreater("root")
+            RootElementCreater(Module *sm):ElementCreater(u8"root")
             {
                 shader_module=sm;
 
                 va_ec=new VertexAttrribElementCreater(sm);
                 ubo_ec=new UBOElementCreater(sm);
 
-                Registry("vertex_attrib",va_ec);
-                Registry("ubo",ubo_ec);
+                Registry(va_ec);
+                Registry(ubo_ec);
             }
 
             virtual ~RootElementCreater()
@@ -212,12 +212,12 @@ namespace shader
 
         public:
 
-            ShaderElementCreater(Module *sm):ElementCreater("shader")
+            ShaderElementCreater(Module *sm):ElementCreater(u8"shader")
             {
                 shader_module=sm;
                 root_ec=new RootElementCreater(sm);
 
-                Registry("root",root_ec);
+                Registry(root_ec);
             }
 
             ~ShaderElementCreater()
