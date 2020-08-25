@@ -4,6 +4,7 @@
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/DataOutputStream.h>
 #include<hgl/io/MemoryOutputStream.h>
+#include<hgl/graph/VertexAttrib.h>
 #include"GLSLCompiler.h"
 
 #include"ShaderModule.h"
@@ -13,110 +14,6 @@ using namespace hgl::io;
 
 constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
 constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
-
-enum class SPIRBaseType
-{
-	Unknown,
-	Void,
-	Boolean,
-	SByte,
-	UByte,
-	Short,
-	UShort,
-	Int,
-	UInt,
-	Int64,
-	UInt64,
-	AtomicCounter,
-	Half,
-	Float,
-	Double,
-	Struct,
-	Image,
-	SampledImage,
-	Sampler,
-	AccelerationStructure,
-	RayQuery,
-
-	// Keep internal types at the end.
-	ControlPointArray,
-	Char
-};
-
-constexpr char *SPIRBaseTypeName[]=
-{
-    "Unknown",
-    "Void",
-    "Boolean",
-    "SByte",
-    "UByte",
-    "Short",
-    "UShort",
-    "Int",
-    "UInt",
-    "Int64",
-    "UInt64",
-    "AtomicCounter",
-    "Half",
-    "Float",
-    "Double",
-    "Struct",
-    "Image",
-    "SampledImage",
-    "Sampler",
-    "AccelerationStructureNV",
-
-    // Keep internal types at the end.
-    "ControlPointArray",
-    "Char"
-};
-
-bool ToStageName(char *str,const enum class SPIRBaseType base_type,const uint32_t vec_size)
-{
-    if(vec_size==1)
-    {
-        switch(base_type)
-        {
-            case SPIRBaseType::Boolean: strcpy(str,"bool");break;
-            case SPIRBaseType::SByte:
-            case SPIRBaseType::Short:
-            case SPIRBaseType::Int:
-            case SPIRBaseType::Int64:   strcpy(str,"int");break;
-            case SPIRBaseType::UByte:
-            case SPIRBaseType::UShort:
-            case SPIRBaseType::UInt:
-            case SPIRBaseType::UInt64:  strcpy(str,"uint");break;
-            case SPIRBaseType::Float:   strcpy(str,"float");break;
-            case SPIRBaseType::Double:  strcpy(str,"double");break;
-            default:return(false);
-        }
-    }
-    else
-    {
-        switch(base_type)
-        {
-            case SPIRBaseType::Boolean: strcpy(str,"bvec ");break;
-            case SPIRBaseType::SByte:
-            case SPIRBaseType::Short:
-            case SPIRBaseType::Int:
-            case SPIRBaseType::Int64:   strcpy(str,"ivec ");break;
-            case SPIRBaseType::UByte:
-            case SPIRBaseType::UShort:
-            case SPIRBaseType::UInt:
-            case SPIRBaseType::UInt64:  strcpy(str,"uvec ");break;
-            case SPIRBaseType::Float:   strcpy(str,"vec ");break;
-            case SPIRBaseType::Double:  strcpy(str,"dvec ");break;
-            default:return(false);
-        }
-
-        if(base_type==SPIRBaseType::Float)
-            str[3]='0'+vec_size;
-        else
-            str[4]='0'+vec_size;
-    }
-
-    return(true);
-}
 
 void OutputShaderStage(const glsl_compiler::ShaderStageData &ssd,DataOutputStream *dos,const char *hint)
 {
@@ -128,17 +25,21 @@ void OutputShaderStage(const glsl_compiler::ShaderStageData &ssd,DataOutputStrea
     AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
 
     const glsl_compiler::ShaderStage *ss=ssd.items;
+    VertexAttribType vat;
+    const char *type_string;
 
-    char type_string[8];
-    
     for(size_t i=0;i<ssd.count;i++)
     {
         mdos->WriteUint8(ss->location);
-        mdos->WriteUint8(ss->base_type);
+        mdos->WriteUint8(ss->basetype);
         mdos->WriteUint8(ss->vec_size);
         mdos->WriteAnsiTinyString(ss->name);
 
-        ToStageName(type_string,(enum class SPIRBaseType)ss->base_type,ss->vec_size);
+        vat.basetype=VertexAttribBaseType(ss->basetype);
+        vat.vec_size=ss->vec_size;
+
+        type_string=GetVertexAttribName(&vat);
+
         std::cout<<"layout(location="<<int(ss->location)<<") "<<hint<<" "<<type_string<<" "<<ss->name<<std::endl;
         ++ss;
     }
@@ -291,7 +192,7 @@ int os_main(int argc,os_char **argv)
 
     if(ext_name.CaseComp(OS_TEXT("xml"))==0)
     {
-        shader::Module *sm=shader::LoadXMLShader(filename);
+        shader::Module *sm=shader::LoadXMLShader(shader::XMLShaderModuleType::VertexAttrib,filename);
 
         SAFE_CLEAR(sm);
         return 0;

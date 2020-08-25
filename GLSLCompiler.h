@@ -2,6 +2,10 @@
 #define HGL_GLSL_COMPILER_INCLUDE
 
 #include<inttypes.h>
+#include<hgl/graph/VertexAttrib.h>
+
+using namespace hgl;
+using namespace hgl::graph;
 
 namespace glsl_compiler
 {
@@ -28,8 +32,8 @@ namespace glsl_compiler
     {
         char name[128];
         uint8_t location;
-        uint8_t base_type;
-        uint8_t vec_size;
+        uint32_t basetype;      //现在改对应hgl/graph/VertexAttrib中的enum class VertexAttribBaseType
+        uint32_t vec_size;
     };//
 
     struct ShaderStageData
