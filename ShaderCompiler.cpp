@@ -7,8 +7,6 @@
 #include<hgl/graph/VertexAttrib.h>
 #include"GLSLCompiler.h"
 
-#include"ShaderModule.h"
-
 using namespace hgl;
 using namespace hgl::io;
 
@@ -185,17 +183,6 @@ int os_main(int argc,os_char **argv)
     {
         os_out<<OS_TEXT("Example: ShaderCompiler [shader filename]")<<std::endl;
         return(0);
-    }
-
-    const OSString filename=argv[1];
-    const OSString ext_name=filesystem::ClipFileExtName(filename,false);
-
-    if(ext_name.CaseComp(OS_TEXT("xml"))==0)
-    {
-        shader::Module *sm=shader::LoadXMLShader(shader::XMLShaderModuleType::VertexAttrib,filename);
-
-        SAFE_CLEAR(sm);
-        return 0;
     }
 
     if(!glsl_compiler::Init())

@@ -19,23 +19,36 @@ SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
 SET(SHADER_MODULE_SOURCE    ShaderModule.h
                             ShaderModule.cpp)
 
-#add_executable(ShaderMaker ${SM_HEADER_FILES} ${SM_SOURCE_FILES})
-#target_link_libraries(ShaderMaker PRIVATE CMCore CMPlatform CMUtil ${VULKAN_SPIRV_LIBS})
+SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
+                            ShaderLib.cpp)
 
-add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE} ${SHADER_MODULE_SOURCE})
+SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
+SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_MODULE_SOURCE})
+SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
-target_link_libraries(ShaderCompiler PRIVATE    CMCore 
-                                                CMPlatform
-                                                CMUtil
-                                                CMSceneGraph
-                                                libexpat)
+# add_executable(ShaderMaker  ShaderMaker.cpp
+#                             ShaderMaker.h
+#                             ${GLSL_COMPILER_SOURCE}
+#                             ${SHADER_MODULE_SOURCE}
+#                             ${SHADER_LIBRARY_SOURCE})
+
+add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE})
+
+SET(SHADER_COMPILER_LIBRARY CMCore
+                            CMPlatform
+                            CMUtil
+                            CMSceneGraph
+                            libexpat)
+
+# target_link_libraries(ShaderMaker PRIVATE ${SHADER_COMPILER_LIBRARY})
+target_link_libraries(ShaderCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
 
 if(UNIX)
 #    target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
-    target_link_libraries(ShaderCompiler PRIVATE dl ${RENDER_LIBRARY})
+   target_link_libraries(ShaderCompiler PRIVATE dl ${RENDER_LIBRARY})
 endif()
 
 IF(WIN32)
-#    set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
+#     set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
     set_debugger_directory(ShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF()
