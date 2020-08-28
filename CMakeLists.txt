@@ -26,11 +26,10 @@ SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_MODULE_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
-# add_executable(ShaderMaker  ShaderMaker.cpp
-#                             ShaderMaker.h
-#                             ${GLSL_COMPILER_SOURCE}
-#                             ${SHADER_MODULE_SOURCE}
-#                             ${SHADER_LIBRARY_SOURCE})
+add_executable(ShaderMaker  ShaderMaker.cpp
+                            ${GLSL_COMPILER_SOURCE}
+                            ${SHADER_MODULE_SOURCE}
+                            ${SHADER_LIBRARY_SOURCE})
 
 add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE})
 
