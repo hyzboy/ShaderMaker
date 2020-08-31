@@ -203,28 +203,6 @@ namespace shader
                 SAFE_CLEAR(va_ec);
             }
         };//class RootElementCreater:public ElementCreater
-
-        class ShaderElementCreater:public ElementCreater
-        {
-            Module *shader_module;
-
-            RootElementCreater *root_ec;
-
-        public:
-
-            ShaderElementCreater(Module *sm):ElementCreater(u8"shader")
-            {
-                shader_module=sm;
-                root_ec=new RootElementCreater(sm);
-
-                Registry(root_ec);
-            }
-
-            ~ShaderElementCreater()
-            {
-                SAFE_CLEAR(root_ec);
-            }
-        };//class ShaderElementCreater:public ElementCreater
     }//namespace
 
     Module *LoadXMLShader(const XMLShaderModuleType &type_hint,const OSString &filename)
@@ -233,8 +211,8 @@ namespace shader
 
         sm->filename=filename;
 
-        ShaderElementCreater shader_ec(sm);
-        ElementParseCreater epc(&shader_ec);
+        RootElementCreater root_ec(sm);
+        ElementParseCreater epc(&root_ec);
         XMLParse xp(&epc);
 
         xp.Start();

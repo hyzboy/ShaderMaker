@@ -20,7 +20,11 @@ SET(SHADER_MODULE_SOURCE    ShaderModule.h
                             ShaderModule.cpp)
 
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
-                            ShaderLib.cpp)
+                            ShaderLib.cpp
+                            ShaderLibParse.h
+                            SLP_Folder.cpp
+                            SLP_Files.cpp
+                            SLP_Root.cpp)
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_MODULE_SOURCE})
