@@ -1,4 +1,5 @@
 #include"ShaderLibParse.h"
+#include<iostream>
 
 namespace shader_lib
 {
@@ -23,6 +24,6 @@ namespace shader_lib
 
     void FolderElementCreater::End()
     {
-                
+        std::cout<<"sub folder: "<<path.c_str()
     }
 }//namespace shader_lib

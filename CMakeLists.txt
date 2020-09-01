@@ -43,15 +43,15 @@ SET(SHADER_COMPILER_LIBRARY CMCore
                             CMSceneGraph
                             libexpat)
 
-# target_link_libraries(ShaderMaker PRIVATE ${SHADER_COMPILER_LIBRARY})
+target_link_libraries(ShaderMaker PRIVATE ${SHADER_COMPILER_LIBRARY})
 target_link_libraries(ShaderCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
 
 if(UNIX)
-#    target_link_libraries(ShaderMaker PRIVATE jsoncpp expat dl ${RENDER_LIBRARY} ${Vulkan_LIBRARY})
-   target_link_libraries(ShaderCompiler PRIVATE dl ${RENDER_LIBRARY})
+   target_link_libraries(ShaderMaker PRIVATE dl)
+   target_link_libraries(ShaderCompiler PRIVATE dl)
 endif()
 
 IF(WIN32)
-#     set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
+    set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
     set_debugger_directory(ShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF()

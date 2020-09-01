@@ -1,4 +1,5 @@
 #include"ShaderLibParse.h"
+#include<iostream>
 
 namespace shader_lib
 {
@@ -7,6 +8,6 @@ namespace shader_lib
         int len;
         u8char *trim_str=trim(str,len);
 
-
+        std::cout<<"file: "<<str<<std::endl;
     }
 }//namespace shader_lib

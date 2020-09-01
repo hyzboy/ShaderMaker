@@ -83,8 +83,7 @@ namespace shader_lib
         xml::ElementParseCreater epc(&root_ec);
         xml::XMLParse xml(&epc);
 
-
-
+        return xml::XMLParseFile(&xml,filename);
     }
 
     void Clear()
