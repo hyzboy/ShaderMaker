@@ -11,16 +11,21 @@ namespace shader_lib
     {
         enum class FolderType
         {
-            Module,
+            Module=0,
             Varying,
         };//
+
+        OSString uplevel_path;
 
         OSString path;
         FolderType type;
 
     public:
 
-        FolderElementCreater():xml::ElementCreater("folder"){}
+        FolderElementCreater(const OSString &ulp):xml::ElementCreater("folder")
+        {
+            uplevel_path=ulp;
+        }
         virtual ~FolderElementCreater()=default;
 
         bool Start() override;
@@ -40,12 +45,14 @@ namespace shader_lib
 
     class ShaderLibRootElementCreater:public xml::ElementCreater
     {
+        OSString cur_path;
+
         FolderElementCreater *folder;
         FilesElementerCreater *files;
 
     public:
 
-        ShaderLibRootElementCreater();
+        ShaderLibRootElementCreater(const OSString &);
         virtual ~ShaderLibRootElementCreater();
     };//class ShaderLibRootElementCreater:public xml::ElementCreater
 }//namespace shader_lib

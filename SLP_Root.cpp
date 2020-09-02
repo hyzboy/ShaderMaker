@@ -2,9 +2,11 @@
 
 namespace shader_lib
 {
-    ShaderLibRootElementCreater::ShaderLibRootElementCreater():xml::ElementCreater("root")
+    ShaderLibRootElementCreater::ShaderLibRootElementCreater(const OSString &cp):xml::ElementCreater("root")
     {
-        folder=new FolderElementCreater();
+        cur_path=cp;
+
+        folder=new FolderElementCreater(cur_path);
         files=new FilesElementerCreater();
 
         Registry(folder);

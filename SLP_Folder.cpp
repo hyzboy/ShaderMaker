@@ -1,4 +1,5 @@
 #include"ShaderLibParse.h"
+#include<hgl/filesystem/FileSystem.h>
 #include<iostream>
 
 namespace shader_lib
@@ -24,6 +25,10 @@ namespace shader_lib
 
     void FolderElementCreater::End()
     {
-        std::cout<<"sub folder: "<<path.c_str()
+        constexpr os_char *typename_string[]={OS_TEXT("module"),OS_TEXT("varying")};
+
+        const OSString fullname=filesystem::MergeFilename(uplevel_path,path);
+
+        os_out<<OS_TEXT("sub folder[")<<typename_string[size_t(type)]<<OS_TEXT("]: ")<<fullname.c_str()<<std::endl;
     }
 }//namespace shader_lib

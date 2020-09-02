@@ -4,7 +4,7 @@
 
 using namespace hgl;
 
-int main(int argc,os_char **argv)
+int os_main(int argc,os_char **argv)
 {
     std::cout<<"ShaderMaker v1.0 (offical web: "<<HGL_OFFICAL_WEB<<")"<<std::endl<<std::endl;
 
@@ -14,7 +14,7 @@ int main(int argc,os_char **argv)
         return 0;
     }
 
-    std::cout<<"shader_libs path: "<<argv[1]<<std::endl;
+    os_out<<"shader_libs path: "<<argv[1]<<std::endl;
 
     shader_lib::Init(argv[1]);
 
