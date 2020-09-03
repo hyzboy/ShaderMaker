@@ -2,6 +2,7 @@
 #define HGL_SHADER_LIB_PARSE_INCLUDE
 
 #include<hgl/util/xml/ElementParseCreater.h>
+#include<hgl/type/StringList.h>
 
 namespace shader_lib
 {
@@ -9,16 +10,9 @@ namespace shader_lib
 
     class FolderElementCreater:public xml::ElementCreater
     {
-        enum class FolderType
-        {
-            Module=0,
-            Varying,
-        };//
-
         OSString uplevel_path;
 
         OSString path;
-        FolderType type;
 
     public:
 
@@ -35,12 +29,28 @@ namespace shader_lib
 
     class FilesElementerCreater:public xml::ElementCreater
     {
+        enum class FileType
+        {
+            GLSL=0,
+            Varying,
+        };
+
+        FileType type;
+
+        OSStringList file_list;
+
     public:
 
-        FilesElementerCreater():xml::ElementCreater("files"){}
+        FilesElementerCreater():xml::ElementCreater("files")
+        {
+            type=FileType::GLSL;
+        }
         virtual ~FilesElementerCreater()=default;
     
+        bool Start() override;
+        void Attr(const u8char *flag,const u8char *info) override;
         void CharData(const u8char *str,const int str_length) override;
+        void End() override;
     };//class FilesElementerCreater:public xml::ElementCreater
 
     class ShaderLibRootElementCreater:public xml::ElementCreater

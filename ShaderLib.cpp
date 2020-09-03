@@ -9,9 +9,7 @@ namespace shader_lib
 {
     using namespace hgl;
 
-    constexpr os_char shader_libs_filename[]=OS_TEXT("shader_libs.xml");
-
-    bool Init(const OSString &path)
+    bool LoadFromFolder(const OSString &path)
     {
         const OSString filename=filesystem::MergeFilename(path,OSString(shader_libs_filename));
 

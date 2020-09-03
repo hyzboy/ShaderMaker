@@ -1,7 +1,7 @@
 #ifndef HGL_GLSL_COMPILER_INCLUDE
 #define HGL_GLSL_COMPILER_INCLUDE
 
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 namespace glsl_compiler
 {
     bool Init();

@@ -16,7 +16,7 @@ int os_main(int argc,os_char **argv)
 
     os_out<<"shader_libs path: "<<argv[1]<<std::endl;
 
-    shader_lib::Init(argv[1]);
+    shader_lib::LoadFromFolder(argv[1]);
 
     return 0;
 }
