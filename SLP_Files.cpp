@@ -4,6 +4,10 @@
 
 namespace shader_lib
 {
+    bool LoadVarying(const hgl::OSString &);
+    bool LoadXmlGLSL(const hgl::OSString &);
+    bool LoadRawGLSL(const OSString &);
+
     void FilesElementerCreater::Attr(const u8char *flag,const u8char *info)
     {
         if(hgl::stricmp(flag,U8_TEXT("type"))==0)
@@ -44,6 +48,19 @@ namespace shader_lib
             if(ext_name.CaseComp(OS_TEXT("xml"))==0)
             {
                 os_out<<OS_TEXT("    XML file: ")<<fullname.c_str()<<std::endl;
+
+                if(type==FileType::Varying)
+                    LoadVarying(fullname);
+                else
+                if(type==FileType::GLSL)
+                    LoadXmlGLSL(fullname);
+            }
+            else
+            if(ext_name.CaseComp(OS_TEXT("glsl"))==0)
+            {                
+                os_out<<OS_TEXT("   GLSL file: ")<<fullname.c_str()<<std::endl;
+
+                LoadRawGLSL(fullname);
             }
             else
             {

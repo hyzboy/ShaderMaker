@@ -4,7 +4,7 @@
 #include<hgl/type/StringList.h>
 #include<hgl/type/DateTime.h>
 #include<hgl/graph/VertexAttrib.h>
-namespace shader
+namespace shader_lib
 {
     using namespace hgl;
 
@@ -75,7 +75,5 @@ namespace shader
         ObjectList<ShaderStage> shader_stage;
         ObjectList<UBO>         ubo_list;
     };//struct Module
-
-    Module *LoadXMLShader(const XMLShaderModuleType &type_hint,const OSString &filename);
-}//namespace shader
+}//namespace shader_lib
 #endif//SHADER_COMPILER_MODULE_INCLUDE

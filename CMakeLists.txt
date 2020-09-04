@@ -16,18 +16,18 @@ ENDIF(CM_BUILD_GUI_TOOLS)
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
 							GLSLCompiler.cpp)
 
-SET(SHADER_MODULE_SOURCE    ShaderModule.h
-                            ShaderModule.cpp)
-
-SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
+SET(SHADER_LIBRARY_SOURCE   ShaderModule.h
+                            ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
                             SLP_Folder.cpp
                             SLP_Files.cpp
-                            SLP_Root.cpp)
+                            SLP_Root.cpp
+                            SLPF_RawGLSL.cpp
+                            SLPF_XmlGLSL.cpp
+                            SLPF_Varying.cpp)
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
-SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_MODULE_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
 add_executable(ShaderMaker  ShaderMaker.cpp
