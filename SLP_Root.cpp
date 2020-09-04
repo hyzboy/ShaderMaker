@@ -7,7 +7,7 @@ namespace shader_lib
         cur_path=cp;
 
         folder=new FolderElementCreater(cur_path);
-        files=new FilesElementerCreater();
+        files=new FilesElementerCreater(cur_path);
 
         Registry(folder);
         Registry(files);

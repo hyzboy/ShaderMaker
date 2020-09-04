@@ -5,7 +5,7 @@
 
 namespace shader_lib
 {
-    bool FolderElementCreater::Start()
+    bool FolderElementCreater::Init()
     {
         path.Clear();
         return(true);

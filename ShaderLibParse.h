@@ -22,7 +22,7 @@ namespace shader_lib
         }
         virtual ~FolderElementCreater()=default;
 
-        bool Start() override;
+        bool Init() override;
         void Attr(const u8char *flag,const u8char *info) override;
         void End() override;
     };//class FolderElementCreater:public xml::ElementCreater
@@ -33,7 +33,11 @@ namespace shader_lib
         {
             GLSL=0,
             Varying,
+
+            ENUM_CLASS_RANGE(GLSL,Varying)
         };
+
+        OSString pathname;
 
         FileType type;
 
@@ -41,16 +45,16 @@ namespace shader_lib
 
     public:
 
-        FilesElementerCreater():xml::ElementCreater("files")
+        FilesElementerCreater(const OSString &path):xml::ElementCreater("files")
         {
+            pathname=path;
             type=FileType::GLSL;
         }
         virtual ~FilesElementerCreater()=default;
     
-        bool Start() override;
         void Attr(const u8char *flag,const u8char *info) override;
+        bool Start() override;
         void CharData(const u8char *str,const int str_length) override;
-        void End() override;
     };//class FilesElementerCreater:public xml::ElementCreater
 
     class ShaderLibRootElementCreater:public xml::ElementCreater
