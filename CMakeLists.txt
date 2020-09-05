@@ -36,7 +36,9 @@ if(CM_BUILD_GUI_TOOLS)
                             gui/MainWindow.cpp
                             gui/MainWindow.h
                             gui/DLG_About.cpp
-                            gui/DLG_About.h)
+                            gui/DLG_About.h
+                            gui/ShaderLibTree.cpp
+                            gui/ShaderLibTree.h)
 
     source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
 ELSE()
