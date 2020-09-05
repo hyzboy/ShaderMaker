@@ -10,7 +10,6 @@ set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp Shade
 IF(CM_BUILD_GUI_TOOLS)
     set(IDENTIFIER "com.hyzgame.shadermaker")
 
-#    target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 ENDIF(CM_BUILD_GUI_TOOLS)
 
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
@@ -30,7 +29,20 @@ SET(SHADER_LIBRARY_SOURCE   ShaderModule.h
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
-add_executable(ShaderMaker  ShaderMaker.cpp
+if(CM_BUILD_GUI_TOOLS)
+	SET(SHADER_MAKER_SOURCE	gui/ShaderMakerGUI.cpp
+                            gui/ShaderMaker.qrc
+                            gui/MainWindow.cpp
+                            gui/MainWindow.h
+                            gui/DLG_About.cpp
+                            gui/DLG_About.h)
+
+    source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
+ELSE()
+	SET(SHADER_MAKER_SOURCE	ShaderMaker.cpp)
+ENDIF()
+
+add_executable(ShaderMaker  ${SHADER_MAKER_SOURCE}
                             ${GLSL_COMPILER_SOURCE}
                             ${SHADER_MODULE_SOURCE}
                             ${SHADER_LIBRARY_SOURCE})
@@ -42,6 +54,11 @@ SET(SHADER_COMPILER_LIBRARY CMCore
                             CMUtil
                             CMSceneGraph
                             libexpat)
+
+if(CM_BUILD_GUI_TOOLS)
+    target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+    set_target_properties(ShaderMaker PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+ENDIF()
 
 target_link_libraries(ShaderMaker PRIVATE ${SHADER_COMPILER_LIBRARY})
 target_link_libraries(ShaderCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
