@@ -58,7 +58,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     about_text->setFrameShape(QFrame::NoFrame);
     about_text->setHtml("<html><body>\n"
                         "<p>ShaderMaker</p>\n"
-                        "<p>Copyright (C) 2018-2020 " HGL_OFFICAL_WEB ".</p>"
+                        "<p>Copyright (C) 2018-2020 " HGL_OFFICAL_WEB "</p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
 
@@ -67,12 +67,18 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     lib_text->setFrameShape(QFrame::NoFrame);
     lib_text->setHtml(  "<html><body>\n"
                         "<ul>"
-                        "<li> Qt " QT_VERSION_STR
-                        "</li>\n"
-                        "<li> GLSLCompiler v1.02"
-                        "</li>\n"
-                        "<li> CMGameEngine 2020"
-                        "</li>\n"
+                            "<li> <a href=\"https://www.qt.io/\">Qt " QT_VERSION_STR "</a></li>\n"
+                            "<li> <a href=\"https://github.com/libexpat/libexpat\">libexpat</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/GLSLCompiler\">GLSLCompiler v1.02</a></li>\n"
+                            "<ul>"
+                                "<li> <a href=\"https://github.com/KhronosGroup/glslang\">glslang</a></li>\n"
+                                "<li> <a href=\"https://github.com/KhronosGroup/SPIRV-Cross\">SPIRV-Cross</a></li>\n"
+                            "</ul>"
+                            "<li> <a href=\"https://github.com/hyzboy/CMCMakeModule\">CMCMakeModule</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/CMCore\">CMCore</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/CMUtil\">CMUtil</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/CMSceneGraph\">CMSceneGraph</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/CMPlatform\">CMPlatform</a></li>\n"
                         "</ul></body></html>");
     tab->addTab(lib_text,tr("Libraries"));
 

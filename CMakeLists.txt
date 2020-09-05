@@ -32,6 +32,7 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 if(CM_BUILD_GUI_TOOLS)
 	SET(SHADER_MAKER_SOURCE	gui/ShaderMakerGUI.cpp
                             gui/ShaderMaker.qrc
+                            gui/MainWindowMenu.cpp
                             gui/MainWindow.cpp
                             gui/MainWindow.h
                             gui/DLG_About.cpp
