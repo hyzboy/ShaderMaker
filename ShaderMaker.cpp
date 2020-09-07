@@ -18,5 +18,10 @@ int os_main(int argc,os_char **argv)
 
     shader_lib::LoadFromFolder(argv[1]);
 
+    if(argc>2)
+    {
+        shader_lib::LoadXMLShader(argv[2]);
+    }
+
     return 0;
 }
