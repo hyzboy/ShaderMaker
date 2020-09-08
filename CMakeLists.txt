@@ -23,8 +23,7 @@ SET(SHADER_LIBRARY_SOURCE   ShaderModule.h
                             SLP_Root.cpp
                             SLPF_RawGLSL.cpp
                             SLPF_XmlGLSL.cpp
-                            SLPF_Varying.cpp
-                            LoadXMLShader.cpp)
+                            SLPF_Varying.cpp)
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
@@ -42,7 +41,8 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 #
 #     source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
 # ELSE()
-	SET(SHADER_MAKER_SOURCE	ShaderMaker.cpp)
+	SET(SHADER_MAKER_SOURCE	ShaderMaker.cpp
+                            LoadXMLShader.cpp)
 # ENDIF()
 
 add_executable(ShaderMaker  ${SHADER_MAKER_SOURCE}

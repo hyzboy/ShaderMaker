@@ -2,6 +2,7 @@
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/type/StringList.h>
+#include"ShaderLib.h"
 
 namespace shader_lib
 {
@@ -9,33 +10,13 @@ namespace shader_lib
 
     namespace
     {
-        class FileListElementCreater:public xml::ElementCreater
-        {
-            UTF8StringList file_list;
-
-        public:
-
-            FileListElementCreater(const u8char *str):xml::ElementCreater(str){}
-            virtual ~FileListElementCreater()=default;
-
-            void CharData(const u8char *str,const int str_length) override
-            {
-                int len=str_length;
-
-                const u8char *trim_str=trim(str,len);
-
-                if(len>0)
-                    file_list.Add(UTF8String(trim_str,len));
-            }
-        };//class FileListElementCreater:public xml::ElementCreater
-        
         class CodesElementCreater:public xml::ElementCreater
         {
-            UTF8StringList codes;
+            UTF8StringList *codes;
 
         public:
 
-            CodesElementCreater(const u8char *str):xml::ElementCreater(str){}
+            CodesElementCreater(const u8char *str,UTF8StringList *c):xml::ElementCreater(str){codes=c;}
             virtual ~CodesElementCreater()=default;
 
             void CharData(const u8char *str,const int str_length) override
@@ -45,7 +26,7 @@ namespace shader_lib
                 const u8char *trim_str=trim(str,len);
 
                 if(len>0)
-                    codes.Add(UTF8String(trim_str,len));
+                    codes->Add(UTF8String(trim_str,len));
             }
         };//class CodesElementCreater:public xml::ElementCreater
 
@@ -53,19 +34,21 @@ namespace shader_lib
         {
             OSString filename;
 
-            FileListElementCreater *in,*out,*mdl;
-            CodesElementCreater *codes_main;
+            XMLShader *xml_shader;
+
+            CodesElementCreater *in,*out,*mdl,*codes_main;
 
         public:
 
-            XMLShaderRootElementCreater(const OSString &fn):xml::ElementCreater("root")
+            XMLShaderRootElementCreater(const OSString &fn,XMLShader *xs):xml::ElementCreater("root")
             {
                 filename=fn;
+                xml_shader=xs;
 
-                in=new FileListElementCreater(u8"in");
-                out=new FileListElementCreater(u8"out");
-                mdl=new FileListElementCreater(u8"module");
-                codes_main=new CodesElementCreater(u8"main");
+                in=new CodesElementCreater(u8"in",&(xml_shader->in));
+                out=new CodesElementCreater(u8"out",&(xml_shader->out));
+                mdl=new CodesElementCreater(u8"module",&(xml_shader->modules));
+                codes_main=new CodesElementCreater(u8"main",&(xml_shader->main));
 
                 Registry(in);
                 Registry(out);
@@ -83,17 +66,25 @@ namespace shader_lib
         };//class XMLShaderRootElementCreater:public xml::ElementCreater
     }//namespace
 
-    bool LoadXMLShader(const OSString &filename)
+    XMLShader *LoadXMLShader(const OSString &filename)
     {
         if(!filesystem::FileExist(filename))
-            return(false);
+            return(nullptr);
 
-        XMLShaderRootElementCreater root_ec(filename);
+        XMLShader *xml_shader=new XMLShader;
+
+        XMLShaderRootElementCreater root_ec(filename,xml_shader);
         xml::ElementParseCreater epc(&root_ec);
         xml::XMLParse xml(&epc);
 
         xml.Start();
 
-        return xml::XMLParseFile(&xml,filename);        
+        if(!xml::XMLParseFile(&xml,filename))
+        {
+            delete xml_shader;
+            return(nullptr);
+        }
+
+        return xml_shader;
     }
 }//namespace shader_lib

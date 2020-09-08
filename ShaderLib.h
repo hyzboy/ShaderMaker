@@ -1,4 +1,4 @@
-#include<hgl/type/String.h>
+#include<hgl/type/StringList.h>
 
 namespace shader_lib
 {
@@ -9,5 +9,28 @@ namespace shader_lib
     bool LoadFromFolder(const OSString &);
     void Clear();
 
-    bool LoadXMLShader(const OSString &);
+    struct Varying
+    {
+        UTF8String type;
+        UTF8String name;
+        UTF8String comment;
+    };//
+    
+    using VaryingConfig=ObjectList<Varying>;
+
+    bool CheckVarying(const UTF8String &name);
+    bool CheckVarying(const UTF8StringList &vary_list);
+    
+    VaryingConfig *GetVarying(const UTF8String &name);
+
+    struct XMLShader
+    {
+        UTF8StringList in;
+        UTF8StringList out;
+        UTF8StringList modules;
+
+        UTF8StringList main;
+    };//struct XMLShader
+
+    XMLShader *LoadXMLShader(const OSString &);
 }//namespace shader_lib
