@@ -120,11 +120,9 @@ namespace shader_lib
             return(false);
         }
 
-        const OSString fn=filesystem::ClipFilename(filename);
+        const OSString fn=filesystem::ClipFileMainname(filename);
 
-        const UTF8String name=to_u8(filesystem::ClipFileMainname(fn));
-
-        varying_config_list.Add(name,vc);
+        varying_config_list.Add(to_u8(fn),vc);
         return(true);
     }
 }//namespace shader_lib

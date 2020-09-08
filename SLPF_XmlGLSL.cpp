@@ -2,6 +2,7 @@
 #include<hgl/type/String.h>
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
+#include<hgl/filesystem/FileSystem.h>
 
 namespace shader_lib
 {
@@ -9,6 +10,8 @@ namespace shader_lib
 
     namespace
     {
+        MapObject<UTF8String,Module> module_list;   
+
         class CPPElementCreater:public xml::ElementCreater
         {
             SubModule *sm;
@@ -148,6 +151,28 @@ namespace shader_lib
         };//class RootElementCreater:public ElementCreater
     }//namespace
 
+    bool CheckXmlModule(const UTF8String &name)
+    {
+        return module_list.KeyExist(name);
+    }
+
+    bool CheckXmlModule(const UTF8StringList &module_list)
+    {
+        const int count=module_list.GetCount();
+
+        if(count<=0)return(true);
+
+        for(int i=0;i<count;i++)
+            if(!CheckXmlModule(module_list.GetString(i)))return(false);
+
+        return(true);
+    }
+
+    Module *GetXmlModule(const UTF8String &name)
+    {
+        return module_list[name];
+    }
+
     bool LoadXmlGLSL(const hgl::OSString &filename)
     {
         Module *sm=new Module;
@@ -161,6 +186,10 @@ namespace shader_lib
         xml.Start();
 
         os_out<<OS_TEXT("      XMLGLSL config filename: ")<<filename.c_str()<<std::endl;
+
+        const OSString mn=filesystem::ClipFileMainname(filename);
+
+        module_list.Add(to_u8(mn),sm);
 
         return xml::XMLParseFile(&xml,filename);
     }

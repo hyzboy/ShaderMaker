@@ -1,4 +1,5 @@
 #include"ShaderLib.h"
+#include"ShaderModule.h"
 #include<hgl/platform/Platform.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
@@ -11,12 +12,16 @@ class ShaderMaker
     shader_lib::XMLShader *xs;
     UTF8StringList shader_text;
 
+    int ubo_binding;
+
 private:
 
     bool CheckShader()
     {
         if(!shader_lib::CheckVarying(xs->in))return(false);
         if(!shader_lib::CheckVarying(xs->out))return(false);
+        if(!shader_lib::CheckRawModule(xs->raw))return(false);
+        if(!shader_lib::CheckXmlModule(xs->modules))return(false);
 
         return(true);
     }
@@ -27,6 +32,22 @@ private:
                         u8" * the Shader created by ShaderMaker (" HGL_OFFICAL_WEB_U8 u8")\n"
                         u8" */\n"
                         u8"#version 450 core\n");
+    }
+
+    void OutComment(const UTF8String &str)
+    {   
+        u8char comment[81]=U8_TEXT("//------------------------------------------------------------------------------");
+
+        memcpy(comment+4,str.c_str(),str.Length());
+
+        shader_text.Add(comment);
+    }
+    
+    UTF8String space_line;
+
+    void OutEnter()
+    {
+        shader_text.Add(space_line);
     }
 
     int MakeVarying(const UTF8String &type,int binding,const UTF8String &vary_name)
@@ -56,16 +77,87 @@ private:
         const int count=vary_list.GetCount();
 
         if(count<=0)return;
+        
+        OutComment(U8_TEXT(" Begin [")+type+U8_TEXT("] "));
 
         for(int i=0;i<count;i++)
             binding=MakeVarying(type,binding,vary_list.GetString(i));
+
+        OutComment(U8_TEXT(" End [")+type+U8_TEXT("] "));
+        OutEnter();
+    }
+
+    void MakeRaw()
+    {
+        const int count=xs->raw.GetCount();
+
+        UTF8String rn;
+        UTF8StringList *rm;
+
+        for(int i=0;i<count;i++)
+        {
+            rn=xs->raw.GetString(i);
+            rm=shader_lib::GetRawModule(rn);
+            
+            OutComment(U8_TEXT(" Raw Begin [")+rn+U8_TEXT("] "));
+            shader_text.Add(*rm);
+            OutComment(U8_TEXT(" Raw End [")+rn+U8_TEXT("] "));
+            OutEnter();
+        }
+    }
+
+    void MakeUBO(shader_lib::UBO *ubo)
+    {
+        shader_text.Add(U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform ")+ubo->name);
+        shader_text.Add(U8_TEXT("{"));
+
+        const int count=ubo->codes.GetCount();
+        for(int i=0;i<count;i++)
+            shader_text.Add(U8_TEXT("    ")+ubo->codes.GetString(i));
+
+        shader_text.Add(U8_TEXT("}")+ubo->value_name+U8_TEXT(";"));
+    }
+
+    void MakeModule(shader_lib::Module *m)
+    {
+        // UBO
+        {
+            const int count=m->ubo_list.GetCount();
+            
+            shader_lib::UBO **ubo=m->ubo_list.GetData();
+
+            for(int i=0;i<count;i++)
+            {
+                MakeUBO(*ubo);
+                ++ubo;
+            }
+        }
+    }
+
+    void MakeModules()
+    {
+        const int count=xs->modules.GetCount();
+
+        UTF8String name;
+        shader_lib::Module *m;
+
+        for(int i=0;i<count;i++)
+        {
+            name=xs->modules.GetString(i);
+            m=shader_lib::GetXmlModule(name);
+            
+            OutComment(U8_TEXT(" Module Begin [")+name+U8_TEXT("] "));
+            MakeModule(m);
+            OutComment(U8_TEXT(" Module End [")+name+U8_TEXT("] "));
+            OutEnter();
+        }
     }
 
     void MakeMainFunc()
     {
-        shader_text.Add(U8_TEXT("\nvoid main()\n{"));
+        shader_text.Add(U8_TEXT("void main()\n{"));
         shader_text.Add(xs->main);
-        shader_text.Add(U8_TEXT(")"));
+        shader_text.Add(U8_TEXT("}"));
     }
 
 public:
@@ -73,6 +165,7 @@ public:
     ShaderMaker(shader_lib::XMLShader *_xs)
     {
         xs=_xs;
+        ubo_binding=0;
     }
 
     bool Make()
@@ -82,6 +175,10 @@ public:
         CreateHeader();
 
         MakeVarying(U8_TEXT("in"),xs->in);
+
+        MakeRaw();
+
+        MakeModules();
 
         MakeVarying(U8_TEXT("out"),xs->out);
 

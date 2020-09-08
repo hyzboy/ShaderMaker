@@ -2,15 +2,18 @@
     <in>
         position3f
     </in>
-    
+
     <out>
         position4f
     </out>
-    
+
     <module>
         WorldMatrix
-        PushConstant3D
     </module>
+
+    <raw>
+        PushConstant3D
+    </raw>
 
     <main>
         out_Position=vec4(Position,1.0)*pc.local_to_world*world.mvp;

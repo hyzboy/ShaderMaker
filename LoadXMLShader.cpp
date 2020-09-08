@@ -36,7 +36,7 @@ namespace shader_lib
 
             XMLShader *xml_shader;
 
-            CodesElementCreater *in,*out,*mdl,*codes_main;
+            CodesElementCreater *in,*out,*mdl,*raw,*codes_main;
 
         public:
 
@@ -48,17 +48,20 @@ namespace shader_lib
                 in=new CodesElementCreater(u8"in",&(xml_shader->in));
                 out=new CodesElementCreater(u8"out",&(xml_shader->out));
                 mdl=new CodesElementCreater(u8"module",&(xml_shader->modules));
+                raw=new CodesElementCreater(u8"raw",&(xml_shader->raw));
                 codes_main=new CodesElementCreater(u8"main",&(xml_shader->main));
 
                 Registry(in);
                 Registry(out);
                 Registry(mdl);
+                Registry(raw);
                 Registry(codes_main);
             }
 
             virtual ~XMLShaderRootElementCreater()
             {
                 delete codes_main;
+                delete raw;
                 delete mdl;
                 delete out;
                 delete in;
