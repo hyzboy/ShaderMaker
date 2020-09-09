@@ -7,6 +7,12 @@
 
 using namespace hgl;
 
+enum class VaryingType
+{
+    Input,
+    Output
+};
+
 class ShaderMaker
 {
     shader_lib::XMLShader *xs;
@@ -36,9 +42,10 @@ private:
 
     void OutComment(const UTF8String &str)
     {   
-        u8char comment[81]=U8_TEXT("//------------------------------------------------------------------------------");
+        u8char comment[81]=U8_TEXT("//-- ---------------------------------------------------------------------------");
 
-        memcpy(comment+4,str.c_str(),str.Length());
+        memcpy(comment+5,str.c_str(),str.Length());
+        comment[5+str.Length()]=' ';
 
         shader_text.Add(comment);
     }
@@ -50,7 +57,7 @@ private:
         shader_text.Add(space_line);
     }
 
-    int MakeVarying(const UTF8String &type,int binding,const UTF8String &vary_name)
+    int MakeVarying(const VaryingType &type,int binding,const UTF8String &vary_name)
     {
         shader_lib::VaryingConfig *vc=shader_lib::GetVarying(vary_name);
 
@@ -61,7 +68,10 @@ private:
 
         for(int i=0;i<count;i++)
         {
-            shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") ")+type+U8_TEXT(" ")+(*v)->type+U8_TEXT(" ")+type+U8_TEXT("_")+(*v)->name+U8_TEXT(";"));
+            if(type==VaryingType::Input)
+                shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+            else
+                shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
 
             ++v;
             ++binding;
@@ -70,20 +80,26 @@ private:
         return binding;
     }
 
-    void MakeVarying(const UTF8String &type,const UTF8StringList &vary_list)
+    void MakeVarying(const VaryingType &type,const UTF8StringList &vary_list)
     {
         int binding=0;
 
         const int count=vary_list.GetCount();
 
         if(count<=0)return;
+
+        const u8char *varying_type_str[]=
+        {
+            U8_TEXT("[in]"),
+            U8_TEXT("[out]")
+        };
         
-        OutComment(U8_TEXT(" Begin [")+type+U8_TEXT("] "));
+        OutComment(U8_TEXT("Begin ")+UTF8String(varying_type_str[size_t(type)]));
 
         for(int i=0;i<count;i++)
             binding=MakeVarying(type,binding,vary_list.GetString(i));
 
-        OutComment(U8_TEXT(" End [")+type+U8_TEXT("] "));
+        OutComment(U8_TEXT("End ")+UTF8String(varying_type_str[size_t(type)]));
         OutEnter();
     }
 
@@ -99,9 +115,9 @@ private:
             rn=xs->raw.GetString(i);
             rm=shader_lib::GetRawModule(rn);
             
-            OutComment(U8_TEXT(" Raw Begin [")+rn+U8_TEXT("] "));
+            OutComment(U8_TEXT("Raw Begin [")+rn+U8_TEXT("]"));
             shader_text.Add(*rm);
-            OutComment(U8_TEXT(" Raw End [")+rn+U8_TEXT("] "));
+            OutComment(U8_TEXT("Raw End [")+rn+U8_TEXT("]"));
             OutEnter();
         }
     }
@@ -116,6 +132,8 @@ private:
             shader_text.Add(U8_TEXT("    ")+ubo->codes.GetString(i));
 
         shader_text.Add(U8_TEXT("}")+ubo->value_name+U8_TEXT(";"));
+
+        ++ubo_binding;
     }
 
     void MakeModule(shader_lib::Module *m)
@@ -146,9 +164,9 @@ private:
             name=xs->modules.GetString(i);
             m=shader_lib::GetXmlModule(name);
             
-            OutComment(U8_TEXT(" Module Begin [")+name+U8_TEXT("] "));
+            OutComment(U8_TEXT("Module Begin [")+name+U8_TEXT("]"));
             MakeModule(m);
-            OutComment(U8_TEXT(" Module End [")+name+U8_TEXT("] "));
+            OutComment(U8_TEXT("Module End [")+name+U8_TEXT("]"));
             OutEnter();
         }
     }
@@ -174,13 +192,13 @@ public:
         
         CreateHeader();
 
-        MakeVarying(U8_TEXT("in"),xs->in);
+        MakeVarying(VaryingType::Input,xs->in);
 
         MakeRaw();
 
         MakeModules();
 
-        MakeVarying(U8_TEXT("out"),xs->out);
+        MakeVarying(VaryingType::Output,xs->out);
 
         MakeMainFunc();
 
