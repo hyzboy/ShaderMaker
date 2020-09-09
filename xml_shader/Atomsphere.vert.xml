@@ -7,9 +7,9 @@
         position4f
     </out>
 
-    <module>
-        WorldMatrix
-    </module>
+    <uniform>
+        WorldMatrix world;
+    </uniform>
 
     <raw>
         PushConstant3D
