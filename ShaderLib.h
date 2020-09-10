@@ -1,5 +1,4 @@
 #include<hgl/type/StringList.h>
-#include"ShaderModule.h"
 
 namespace shader_lib
 {
@@ -21,18 +20,25 @@ namespace shader_lib
 
     bool CheckVarying(const UTF8StringList &vary_list);
     bool CheckRawModule(const UTF8StringList &raw_list);
-    bool CheckXmlModule(const UTF8StringList &module_list);
+    bool CheckStruct(const UTF8StringList &struct_list);
     
     VaryingConfig *GetVarying(const UTF8String &name);    
     UTF8StringList *GetRawModule(const UTF8String &name);
-    Module *GetXmlModule(const UTF8String &name);
+    bool AddStruct(UTF8StringList &shader_text,const UTF8String &name);
+
+    struct Uniform
+    {
+        UTF8String type_name;
+        UTF8String value_name;
+    };
 
     struct XMLShader
     {
         UTF8StringList in;
         UTF8StringList out;
         UTF8StringList raw;
-        UTF8StringList modules;
+        UTF8StringList struct_block;
+        ObjectList<Uniform> uniforms;
 
         UTF8StringList main;
     };//struct XMLShader

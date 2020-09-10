@@ -14,8 +14,7 @@ set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp Shade
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
 							GLSLCompiler.cpp)
 
-SET(SHADER_LIBRARY_SOURCE   ShaderModule.h
-                            ShaderLib.h
+SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
                             SLP_Folder.cpp

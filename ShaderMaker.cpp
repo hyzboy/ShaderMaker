@@ -1,5 +1,4 @@
 #include"ShaderLib.h"
-#include"ShaderModule.h"
 #include<hgl/platform/Platform.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
@@ -27,7 +26,7 @@ private:
         if(!shader_lib::CheckVarying(xs->in))return(false);
         if(!shader_lib::CheckVarying(xs->out))return(false);
         if(!shader_lib::CheckRawModule(xs->raw))return(false);
-        if(!shader_lib::CheckXmlModule(xs->modules))return(false);
+//        if(!shader_lib::CheckStruct(xs->struct_block))return(false);
 
         return(true);
     }
@@ -103,6 +102,19 @@ private:
         OutEnter();
     }
 
+    void MakeStruct(const UTF8StringList &struct_list)
+    {
+        const int count=struct_list.GetCount();
+
+        if(count<=0)return;
+        
+        OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" structs"));
+        for(int i=0;i<count;i++)
+            shader_lib::AddStruct(shader_text,struct_list.GetString(i));
+        OutComment(U8_TEXT("End structs"));
+        OutEnter();
+    }
+
     void MakeRaw()
     {
         const int count=xs->raw.GetCount();
@@ -122,53 +134,21 @@ private:
         }
     }
 
-    void MakeUBO(shader_lib::UBO *ubo)
+    void MakeUniforms()
     {
-        shader_text.Add(U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform ")+ubo->name);
-        shader_text.Add(U8_TEXT("{"));
+        const int count=xs->uniforms.GetCount();
+        shader_lib::Uniform **ubo=xs->uniforms.GetData();
 
-        const int count=ubo->codes.GetCount();
-        for(int i=0;i<count;i++)
-            shader_text.Add(U8_TEXT("    ")+ubo->codes.GetString(i));
-
-        shader_text.Add(U8_TEXT("}")+ubo->value_name+U8_TEXT(";"));
-
-        ++ubo_binding;
-    }
-
-    void MakeModule(shader_lib::Module *m)
-    {
-        // UBO
-        {
-            const int count=m->ubo_list.GetCount();
-            
-            shader_lib::UBO **ubo=m->ubo_list.GetData();
-
-            for(int i=0;i<count;i++)
-            {
-                MakeUBO(*ubo);
-                ++ubo;
-            }
-        }
-    }
-
-    void MakeModules()
-    {
-        const int count=xs->modules.GetCount();
-
-        UTF8String name;
-        shader_lib::Module *m;
+        OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" uniforms"));
 
         for(int i=0;i<count;i++)
         {
-            name=xs->modules.GetString(i);
-            m=shader_lib::GetXmlModule(name);
-            
-            OutComment(U8_TEXT("Module Begin [")+name+U8_TEXT("]"));
-            MakeModule(m);
-            OutComment(U8_TEXT("Module End [")+name+U8_TEXT("]"));
-            OutEnter();
+            shader_text.Add(U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform ")+(*ubo)->type_name+U8_TEXT(" ")+(*ubo)->value_name+U8_TEXT(";"));
+
+            ++ubo_binding;
         }
+        OutComment(U8_TEXT("End uniforms"));
+        OutEnter();
     }
 
     void MakeMainFunc()
@@ -194,9 +174,11 @@ public:
 
         MakeVarying(VaryingType::Input,xs->in);
 
-        MakeRaw();
+        MakeStruct(xs->struct_block);
 
-        MakeModules();
+        MakeUniforms();
+
+        MakeRaw();
 
         MakeVarying(VaryingType::Output,xs->out);
 
