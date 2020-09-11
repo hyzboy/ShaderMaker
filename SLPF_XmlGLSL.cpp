@@ -119,6 +119,7 @@ namespace shader_lib
             shader_text.Add(u8"    "+ss->codes.GetString(i));
 
         shader_text.Add(u8"};");
+        return(true);
     }
 
     bool LoadXmlGLSL(const hgl::OSString &filename)

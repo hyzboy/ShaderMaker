@@ -189,15 +189,9 @@ public:
 
     bool Save(const OSString &filename)
     {
-        io::FileOutputStream fos;
+        const UTF8String str=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
 
-        if(!fos.CreateTrunc(filename))
-            return(false);
-
-        io::UTF8TextOutputStream tos(&fos);
-
-        tos.WriteText(shader_text);
-        return(true);
+        return filesystem::SaveMemoryToFile(filename,str.c_str(),str.Length());
     }   
 };//class ShaderMaker
 

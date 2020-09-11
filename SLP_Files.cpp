@@ -34,7 +34,9 @@ namespace shader_lib
         int len=str_length;
         const u8char *trim_str=trim(str,len);
 
-        if(trim_str)
+        if(!trim_str)
+            return;
+
         {
             const OSString filename=to_oschar(trim_str,len);
             const OSString fullname=filesystem::MergeFilename(pathname,filename);
