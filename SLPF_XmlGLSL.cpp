@@ -17,26 +17,24 @@ namespace shader_lib
 
         MapObject<UTF8String,ShaderStruct> struct_list;   
                 
-        class StructElementCreater:public xml::ElementCreater
+        class StructElementCreater:public xml::ElementAttribute
         {
             UTF8String name;
             ShaderStruct *ss;
 
         public:
 
-            StructElementCreater():ElementCreater(u8"struct"){ss=nullptr;}
+            StructElementCreater():ElementAttribute(u8"struct"){ss=nullptr;}
             virtual ~StructElementCreater()=default;
 
-            bool Init() override
+            bool Start() override
             {
                 ss=new ShaderStruct;
-                return(true);
-            }
 
-            void Attr(const u8char *attr,const u8char *info) override
-            {
-                if(hgl::stricmp(attr,u8"name")==0)name=info;else
-                if(hgl::stricmp(attr,u8"cpp")==0)ss->cpp=info;
+                name=(*this)[u8"name"];
+                ss->cpp=(*this)[u8"cpp"];
+
+                return(true);
             }
 
             void CharData(const u8char *str,const int str_length) override
@@ -67,7 +65,7 @@ namespace shader_lib
                 struct_list.Add(name,ss);
                 ss=nullptr;
             }
-        };//class StructElementCreater:public ElementCreater
+        };//class StructElementCreater:public ElementAttribute
 
         class RootElementCreater:public xml::ElementCreater
         {        

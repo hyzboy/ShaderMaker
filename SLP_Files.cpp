@@ -8,23 +8,18 @@ namespace shader_lib
     bool LoadXmlGLSL(const hgl::OSString &);
     bool LoadRawGLSL(const OSString &);
 
-    void FilesElementerCreater::Attr(const u8char *flag,const u8char *info)
-    {
-        if(hgl::stricmp(flag,U8_TEXT("type"))==0)
-        {
-            if(hgl::stricmp(info,U8_TEXT("glsl"))==0)type=FileType::GLSL;else
-            if(hgl::stricmp(info,U8_TEXT("varying"))==0)type=FileType::Varying;
-        }
-    }
+    const u8char *filetype_name[]={U8_TEXT("GLSL"),U8_TEXT("Varying")};
 
     bool FilesElementerCreater::Start()
     {
-        constexpr os_char *filetype_name[]={OS_TEXT("GLSL"),OS_TEXT("Varying")};
+        const UTF8String type_str=(*this)[u8"type"];
+
+        type=(FileType)string_to_enum<u8char>(filetype_name,type_str.c_str());
 
         if(!RangeCheck<FileType>(type))
         {
             std::cout<<"  Files type error!"<<std::endl;
-            return(false);
+            type=FileType::GLSL;
         }
         else
         {

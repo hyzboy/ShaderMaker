@@ -13,38 +13,28 @@ namespace shader_lib
     {
         MapObject<UTF8String,VaryingConfig> varying_config_list;
     //-------------------------------------------------------------------------------
-        class VaryingElementCreater:public xml::ElementCreater
+        class VaryingElementCreater:public xml::ElementAttribute
         {
             VaryingConfig *vc;
             Varying *vary;
 
-            UTF8String type;
-            UTF8String name;
-            UTF8String comment;
-
         public:
 
-            VaryingElementCreater(VaryingConfig *_vc):xml::ElementCreater("varying")
+            VaryingElementCreater(VaryingConfig *_vc):xml::ElementAttribute("varying")
             {
                 vc=_vc;
                 vary=nullptr;
             }
 
-            bool Init() override
+            bool Start() override
             {
-                type.Clear();
-                name.Clear();
-                comment.Clear();
-
                 vary=new Varying;
-                return(true);
-            }
 
-            void Attr(const u8char *flag,const u8char *info) override
-            {
-                if(hgl::stricmp(flag,U8_TEXT("type"))==0)vary->type=info;else
-                if(hgl::stricmp(flag,U8_TEXT("name"))==0)vary->name=info;else
-                if(hgl::stricmp(flag,U8_TEXT("comment"))==0)vary->comment=info;
+                vary->type=(*this)[u8"type"];
+                vary->name=(*this)[u8"name"];
+                vary->comment=(*this)[u8"comment"];
+
+                return(true);
             }
 
             void End()
@@ -56,7 +46,7 @@ namespace shader_lib
                 vc->Add(vary);
                 vary=nullptr;
             }
-        };//class VaryingElementCreater:public xml::ElementCreater
+        };//class VaryingElementCreater:public xml::ElementAttribute
 
         class VaryingRootElementCreater:public xml::ElementCreater
         {

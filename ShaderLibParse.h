@@ -8,7 +8,7 @@ namespace shader_lib
 {
     using namespace hgl;
 
-    class FolderElementCreater:public xml::ElementCreater
+    class FolderElementCreater:public xml::ElementAttribute
     {
         OSString uplevel_path;
 
@@ -16,18 +16,16 @@ namespace shader_lib
 
     public:
 
-        FolderElementCreater(const OSString &ulp):xml::ElementCreater("folder")
+        FolderElementCreater(const OSString &ulp):xml::ElementAttribute("folder")
         {
             uplevel_path=ulp;
         }
         virtual ~FolderElementCreater()=default;
+        
+        void CharData(const u8char *str,const int str_length) override;
+    };//class FolderElementCreater:public xml::ElementAttribute
 
-        bool Init() override;
-        void Attr(const u8char *flag,const u8char *info) override;
-        void End() override;
-    };//class FolderElementCreater:public xml::ElementCreater
-
-    class FilesElementerCreater:public xml::ElementCreater
+    class FilesElementerCreater:public xml::ElementAttribute
     {
         enum class FileType
         {
@@ -45,17 +43,16 @@ namespace shader_lib
 
     public:
 
-        FilesElementerCreater(const OSString &path):xml::ElementCreater("files")
+        FilesElementerCreater(const OSString &path):xml::ElementAttribute("files")
         {
             pathname=path;
             type=FileType::GLSL;
         }
         virtual ~FilesElementerCreater()=default;
     
-        void Attr(const u8char *flag,const u8char *info) override;
         bool Start() override;
         void CharData(const u8char *str,const int str_length) override;
-    };//class FilesElementerCreater:public xml::ElementCreater
+    };//class FilesElementerCreater:public xml::ElementAttribute
 
     class ShaderLibRootElementCreater:public xml::ElementCreater
     {
