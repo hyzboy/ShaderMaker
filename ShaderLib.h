@@ -24,7 +24,7 @@ namespace shader_lib
     
     VaryingConfig *GetVarying(const UTF8String &name);    
     UTF8StringList *GetRawModule(const UTF8String &name);
-    bool AddStruct(UTF8StringList &shader_text,const UTF8String &name);
+    bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
 
     struct Uniform
     {

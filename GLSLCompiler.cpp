@@ -1,3 +1,4 @@
+#include"GLSLCompiler.h"
 #include<hgl/platform/ExternalModule.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/Map.h>
@@ -12,66 +13,6 @@ using namespace hgl::graph;
 
 namespace glsl_compiler
 {
-    enum class VkDescriptor         //等同VkDescriptorType
-    {
-        SAMPLER = 0,
-        COMBINED_IMAGE_SAMPLER = 1,
-        SAMPLED_IMAGE = 2,
-        STORAGE_IMAGE = 3,
-        UNIFORM_TEXEL_BUFFER = 4,
-        STORAGE_TEXEL_BUFFER = 5,
-        UNIFORM_BUFFER = 6,
-        STORAGE_BUFFER = 7,
-        UNIFORM_BUFFER_DYNAMIC = 8,
-        STORAGE_BUFFER_DYNAMIC = 9,
-        INPUT_ATTACHMENT = 10,
-
-        BEGIN_RANGE=SAMPLER,
-        END_RANGE=INPUT_ATTACHMENT,
-        RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
-    };
-
-    struct ShaderStage
-    {
-        char name[128];
-        uint8_t location;
-        uint32_t basetype;      //现在改对应hgl/graph/VertexAttrib中的enum class VertexAttribBaseType
-        uint32_t vec_size;
-    };//
-
-    struct ShaderStageData
-    {
-        uint32_t count;
-        ShaderStage *items;
-    };
-
-    struct ShaderResource
-    {
-        char name[128];
-
-        uint8_t set;
-        uint8_t binding;
-    };
-
-    struct ShaderResourceData
-    {
-        uint32_t count;
-        ShaderResource *items;
-    };
-
-    struct SPVData
-    {
-        bool result;
-        char *log;
-        char *debug_log;
-
-        uint32_t *spv_data;
-        uint32_t spv_length;
-
-        ShaderStageData input,output;
-        ShaderResourceData resource[size_t(VkDescriptor::RANGE_SIZE)];
-    };
-
     struct GLSLCompilerInterface
     {
         bool        (*Init)();
@@ -222,9 +163,9 @@ namespace glsl_compiler
     SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag)
     {
         if(source[0]==0xEF
-            &&source[1]==0xBB
-            &&source[2]==0xBF)
-            source+=3;
+         &&source[1]==0xBB
+         &&source[2]==0xBF)
+           source+=3;
 
         glsl_compiler::SPVData *spv=glsl_compiler::Compile(flag,(char *)source);
 
@@ -249,6 +190,36 @@ namespace glsl_compiler
 
     constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
     constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
+
+    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag)
+    {
+        MemoryOutputStream mos;
+        AutoDelete<DataOutputStream> dos=new LEDataOutputStream(&mos);
+
+        dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
+        dos->WriteUint8(1);     //version
+        dos->WriteUint32(flag);
+        dos->WriteUint32(spv->spv_length);
+        dos->Write(spv->spv_data,spv->spv_length);
+
+        OutputShaderStage(spv->input,dos,"in");
+        OutputShaderStage(spv->output,dos,"out");
+        
+        OutputShaderResource(spv->resource,(uint32_t)Descriptor::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
+        OutputShaderResource(spv->resource,(uint32_t)Descriptor::UNIFORM_BUFFER,dos,"uniform_buffer");
+        OutputShaderResource(spv->resource,(uint32_t)Descriptor::STORAGE_BUFFER,dos,"storage_buffer");
+
+        if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell()))
+        {
+            os_out<<OS_TEXT("Save Shader file [")<<filename.c_str()<<OS_TEXT("] successed, total ")<<mos.Tell()<<OS_TEXT(" bytes.")<<std::endl;
+            return(true);
+        }
+        else
+        {
+            os_err<<OS_TEXT("Save Shader file [")<<filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
+            return(false);
+        }
+    }
 
     bool CompileShader(const OSString &filename)
     {
@@ -275,46 +246,6 @@ namespace glsl_compiler
         if(!spv)
             return(false);
 
-        {
-            const OSString spv_filename=filename+OS_TEXT(".spv");
-
-            if(filesystem::SaveMemoryToFile(spv_filename,spv->spv_data,spv->spv_length)!=spv->spv_length)
-            {
-                os_err<<OS_TEXT("Save SPV file [")<<spv_filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
-                std::cerr<<"save to file error!"<<std::endl;
-                return(false);
-            }
-            else
-            {
-                os_out<<OS_TEXT("Save SPV file [")<<spv_filename.c_str()<<OS_TEXT("] successed!")<<std::endl;
-            }
-        }
-
-        {
-            const OSString sr_filename=filename+OS_TEXT(".shader");
-
-            MemoryOutputStream mos;
-            AutoDelete<DataOutputStream> dos=new LEDataOutputStream(&mos);
-
-            dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
-            dos->WriteUint8(1);     //version
-            dos->WriteUint32(flag);
-            dos->WriteUint32(spv->spv_length);
-            dos->Write(spv->spv_data,spv->spv_length);
-
-            OutputShaderStage(spv->input,dos,"in");
-            OutputShaderStage(spv->output,dos,"out");
-        
-            OutputShaderResource(spv->resource,(uint32_t)VkDescriptor::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
-            OutputShaderResource(spv->resource,(uint32_t)VkDescriptor::UNIFORM_BUFFER,dos,"uniform_buffer");
-            OutputShaderResource(spv->resource,(uint32_t)VkDescriptor::STORAGE_BUFFER,dos,"storage_buffer");
-
-            if(filesystem::SaveMemoryToFile(sr_filename,mos.GetData(),mos.Tell()))
-                os_out<<OS_TEXT("Save Shader file [")<<sr_filename.c_str()<<OS_TEXT("] successed, total ")<<mos.Tell()<<OS_TEXT(" bytes.")<<std::endl;
-            else
-                os_err<<OS_TEXT("Save Shader file [")<<sr_filename.c_str()<<OS_TEXT("] failed!")<<std::endl;
-        }
-
-        return(true);
+        return SaveSPV2Shader(filename+OS_TEXT(".shader"),spv,flag);
     }
 }//}//namespace glsl_compiler

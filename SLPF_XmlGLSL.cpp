@@ -99,7 +99,7 @@ namespace shader_lib
         return(true);
     }
 
-    bool AddStruct(UTF8StringList &shader_text,const UTF8String &name)
+    bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back)
     {
         ShaderStruct *ss=struct_list[name];
 
@@ -109,16 +109,20 @@ namespace shader_lib
         const int lines=ss->codes.GetCount();
 
         if(ss->cpp.IsEmpty())
-        shader_text.Add(u8"struct "+name);
+        shader_text.Add(front+u8" "+name);
         else
-        shader_text.Add(u8"struct "+name+u8"    // C++: "+ss->cpp);
+        shader_text.Add(front+u8" "+name+u8"    // C++: "+ss->cpp);
         
         shader_text.Add(u8"{");
 
         for(int i=0;i<lines;i++)
             shader_text.Add(u8"    "+ss->codes.GetString(i));
 
-        shader_text.Add(u8"};");
+        if(back.IsEmpty())
+            shader_text.Add(u8"};");
+        else
+            shader_text.Add(u8"}"+back+u8";");
+
         return(true);
     }
 

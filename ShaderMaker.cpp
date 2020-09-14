@@ -1,4 +1,5 @@
 #include"ShaderLib.h"
+#include"GLSLCompiler.h"
 #include<hgl/platform/Platform.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
@@ -16,6 +17,10 @@ class ShaderMaker
 {
     shader_lib::XMLShader *xs;
     UTF8StringList shader_text;
+    UTF8String shader_source;
+
+    uint32_t shader_type;
+    glsl_compiler::SPVData *spv_data;
 
     int ubo_binding;
 
@@ -102,19 +107,6 @@ private:
         OutEnter();
     }
 
-    void MakeStruct(const UTF8StringList &struct_list)
-    {
-        const int count=struct_list.GetCount();
-
-        if(count<=0)return;
-        
-        OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" structs"));
-        for(int i=0;i<count;i++)
-            shader_lib::AddStruct(shader_text,struct_list.GetString(i));
-        OutComment(U8_TEXT("End structs"));
-        OutEnter();
-    }
-
     void MakeRaw()
     {
         const int count=xs->raw.GetCount();
@@ -141,9 +133,13 @@ private:
 
         OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" uniforms"));
 
+        UTF8String front;
+
         for(int i=0;i<count;i++)
         {
-            shader_text.Add(U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform ")+(*ubo)->type_name+U8_TEXT(" ")+(*ubo)->value_name+U8_TEXT(";"));
+            front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");
+
+            shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
 
             ++ubo_binding;
         }
@@ -164,17 +160,22 @@ public:
     {
         xs=_xs;
         ubo_binding=0;
+        spv_data=nullptr;
     }
 
-    bool Make()
+    ~ShaderMaker()
+    {
+        if(spv_data)
+            glsl_compiler::Free(spv_data);
+    }
+
+    bool Make(const UTF8String &ext_name)
     {
         if(!CheckShader())return(false);
         
         CreateHeader();
 
         MakeVarying(VaryingType::Input,xs->in);
-
-        MakeStruct(xs->struct_block);
 
         MakeUniforms();
 
@@ -184,16 +185,66 @@ public:
 
         MakeMainFunc();
 
+        {
+            shader_source=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
+
+            shader_type=glsl_compiler::GetType(ext_name.c_str());
+
+            spv_data=glsl_compiler::CompileShaderToSPV((uint8 *)shader_source.c_str(),shader_type);
+        }
+
         return(true);
     }
 
-    bool Save(const OSString &filename)
+    bool SaveToGLSL(const OSString &filename)
     {
-        const UTF8String str=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
-
-        return filesystem::SaveMemoryToFile(filename,str.c_str(),str.Length());
+        return filesystem::SaveMemoryToFile(filename,shader_source.c_str(),shader_source.Length());
     }   
+
+    bool SaveToSPV(const OSString &filename)
+    {
+        if(!spv_data)return(false);
+
+        return filesystem::SaveMemoryToFile(filename,spv_data->spv_data,spv_data->spv_length);
+    }
+
+    bool SaveToShader(const OSString &filename)
+    {    
+        if(!spv_data)return(false);
+
+        return glsl_compiler::SaveSPV2Shader(filename,spv_data,shader_type);
+    }
 };//class ShaderMaker
+
+bool LoadXMLShader(const OSString &filename)
+{
+    AutoDelete<shader_lib::XMLShader> xs=shader_lib::LoadXMLShader(filename);
+
+    if(!xs)return(-1);
+
+    ShaderMaker sm(xs);
+
+    /*  example
+
+            filename:   1.vert.xml
+            short_name: 1.vert
+            ext_name:   vert
+            glsl_name:  1.vert.glsl
+            spv:        1.vert.spv
+            shader:     1.vert.shader
+    */
+
+    const OSString short_name=filesystem::TrimFileExtName(filename,true);
+    const UTF8String ext_name=to_u8(filesystem::ClipFileExtName(short_name,false));
+
+    if(!sm.Make(ext_name))return(-2);
+
+    sm.SaveToGLSL(short_name+OS_TEXT(".glsl"));
+    sm.SaveToSPV(short_name+OS_TEXT(".spv"));
+    sm.SaveToShader(short_name+OS_TEXT(".shader"));
+
+    return(true);
+}
 
 int os_main(int argc,os_char **argv)
 {
@@ -205,26 +256,21 @@ int os_main(int argc,os_char **argv)
         return 0;
     }
 
+    if(!glsl_compiler::Init())
+    {
+        std::cerr<<"Init GLSLCompiler failed!"<<std::endl;
+        return -1;
+    }
+
     os_out<<"shader_libs path: "<<argv[1]<<std::endl;
 
     shader_lib::LoadFromFolder(argv[1]);
 
     if(argc<=2)return(0);
 
-    {
-        const OSString xs_fn=argv[2];
+    LoadXMLShader(argv[2]);
 
-        AutoDelete<shader_lib::XMLShader> xs=shader_lib::LoadXMLShader(xs_fn);
-
-        if(!xs)return(-1);
-
-        ShaderMaker sm(xs);
-
-        if(!sm.Make())return(-2);
-
-        return sm.Save(xs_fn+OS_TEXT(".glsl"));
-    }
+    glsl_compiler::Close();
 
     return 0;
 }
-
