@@ -42,7 +42,8 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 # ELSE()
 	SET(SHADER_MAKER_SOURCE	main.cpp
                             ShaderMaker.cpp
-                            ParseXMLShader.cpp)
+                            ParseXMLShader.cpp
+                            ParseXMLMaterial.cpp)
 # ENDIF()
 
 add_executable(ShaderMaker  ${SHADER_MAKER_SOURCE}

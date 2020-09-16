@@ -37,10 +37,18 @@ namespace shader_lib
         {
             XMLShader *xml_shader;
 
+            uint binding;
+
         public:
 
-            UniformElementCreater(XMLShader *xs):xml::ElementCreater(u8"uniform"){xml_shader=xs;}
+            UniformElementCreater(XMLShader *xs):xml::ElementCreater(u8"uniform"){xml_shader=xs;binding=0;}
             virtual ~UniformElementCreater()=default;
+
+            void Attr(const u8char *flag,const u8char *info) override
+            {
+                if(hgl::stricmp(flag,"binding")==0)
+                    hgl::stou(info,binding);
+            }
 
             void CharData(const u8char *str,const int str_length) override
             {
@@ -60,7 +68,8 @@ namespace shader_lib
                     Uniform *ubo=new Uniform;
 
                     ubo->type_name=UTF8String(left_str,ll);
-                    ubo->value_name =UTF8String(right_str,rl);
+                    ubo->value_name=UTF8String(right_str,rl);
+                    ubo->binding=binding;
 
                     if(xml_shader->struct_block.Find(ubo->type_name)==-1)
                         xml_shader->struct_block.Add(ubo->type_name);
@@ -101,7 +110,7 @@ namespace shader_lib
                 Registry(uniform);
             }
 
-            virtual ~XMLShaderRootElementCreater()
+            ~XMLShaderRootElementCreater()
             {
                 delete uniform;
 
@@ -116,7 +125,10 @@ namespace shader_lib
     XMLShader *LoadXMLShader(const OSString &filename)
     {
         if(!filesystem::FileExist(filename))
+        {
+            os_out<<OS_TEXT("filename <")<<filename.c_str()<<OS_TEXT("> don't exist!")<<std::endl;
             return(nullptr);
+        }
 
         XMLShader *xml_shader=new XMLShader;
 

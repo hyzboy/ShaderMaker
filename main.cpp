@@ -4,7 +4,10 @@
 
 using namespace hgl;
 
-bool LoadXMLShaderFromFile(const OSString &filename);
+namespace shader_lib
+{
+    XMLMaterial *LoadXMLMaterial(const OSString &filename);
+}//namespace shader_lib
 
 int os_main(int argc,os_char **argv)
 {
@@ -28,7 +31,9 @@ int os_main(int argc,os_char **argv)
 
     if(argc<=2)return(0);
 
-    LoadXMLShaderFromFile(argv[2]);
+    os_out<<"material filename: "<<argv[2]<<std::endl;
+
+    shader_lib::LoadXMLMaterial(argv[2]);
 
     glsl_compiler::Close();
 

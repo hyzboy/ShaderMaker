@@ -14,7 +14,7 @@ namespace shader_lib
     {
         const UTF8String type_str=(*this)[u8"type"];
 
-        type=(FileType)string_to_enum<u8char>(filetype_name,type_str.c_str());
+        type=(FileType)string_serial_from_list<u8char>(filetype_name,type_str.c_str());
 
         if(!RangeCheck<FileType>(type))
         {

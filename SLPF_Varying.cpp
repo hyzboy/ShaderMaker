@@ -82,7 +82,15 @@ namespace shader_lib
         if(count<=0)return(true);
 
         for(int i=0;i<count;i++)
-            if(!CheckVarying(vary_list.GetString(i)))return(false);
+        {
+            const auto &vary=vary_list.GetString(i);
+
+            if(!CheckVarying(vary))
+            {
+                std::cerr<<"can't find Varing: "<<vary.c_str()<<std::endl;
+                return(false);
+            }
+        }
 
         return(true);
     }

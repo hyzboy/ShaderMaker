@@ -1,0 +1,4 @@
+<root>
+    <shader type="vert" filename="Atmosphere"/>
+	<shader type="frag" filename="Atmosphere"/>
+</root>
