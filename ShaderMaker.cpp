@@ -216,7 +216,7 @@ public:
     }
 };//class ShaderMaker
 
-bool LoadXMLShader(const OSString &filename)
+bool LoadXMLShaderFromFile(const OSString &filename)
 {
     AutoDelete<shader_lib::XMLShader> xs=shader_lib::LoadXMLShader(filename);
 
@@ -244,33 +244,4 @@ bool LoadXMLShader(const OSString &filename)
     sm.SaveToShader(short_name+OS_TEXT(".shader"));
 
     return(true);
-}
-
-int os_main(int argc,os_char **argv)
-{
-    std::cout<<"ShaderMaker v1.0 (offical web: "<<HGL_OFFICAL_WEB<<")"<<std::endl<<std::endl;
-
-    if(argc<2)
-    {
-        std::cout<<"example: ShaderMaker <shader_libs path> [material filename]"<<std::endl<<std::endl;
-        return 0;
-    }
-
-    if(!glsl_compiler::Init())
-    {
-        std::cerr<<"Init GLSLCompiler failed!"<<std::endl;
-        return -1;
-    }
-
-    os_out<<"shader_libs path: "<<argv[1]<<std::endl;
-
-    shader_lib::LoadFromFolder(argv[1]);
-
-    if(argc<=2)return(0);
-
-    LoadXMLShader(argv[2]);
-
-    glsl_compiler::Close();
-
-    return 0;
 }

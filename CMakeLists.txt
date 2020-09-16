@@ -40,8 +40,9 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 #
 #     source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
 # ELSE()
-	SET(SHADER_MAKER_SOURCE	ShaderMaker.cpp
-                            LoadXMLShader.cpp)
+	SET(SHADER_MAKER_SOURCE	main.cpp
+                            ShaderMaker.cpp
+                            ParseXMLShader.cpp)
 # ENDIF()
 
 add_executable(ShaderMaker  ${SHADER_MAKER_SOURCE}
