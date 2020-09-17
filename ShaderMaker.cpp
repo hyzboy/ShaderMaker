@@ -215,9 +215,9 @@ namespace shader_lib
 
         if(!sm.Make(ext_name))return(-2);
 
-        xs->SaveToGLSL(short_name+OS_TEXT(".glsl"));
-        xs->SaveToSPV(short_name+OS_TEXT(".spv"));
-        xs->SaveToShader(short_name+OS_TEXT(".shader"));
+        //xs->SaveToGLSL(short_name+OS_TEXT(".glsl"));
+        //xs->SaveToSPV(short_name+OS_TEXT(".spv"));
+        //xs->SaveToShader(short_name+OS_TEXT(".shader"));
 
         return(true);
     }

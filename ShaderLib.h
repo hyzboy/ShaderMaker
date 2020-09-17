@@ -54,7 +54,7 @@ namespace shader_lib
 
     struct XMLMaterial
     {
-        uint32 shader_bits;
+        uint32 shader_bits=0;
         MapObject<uint32,XMLShader> shaders;
     };//struct XMLMaterial
 }//namespace shader_lib
