@@ -182,6 +182,10 @@ namespace shader_lib
             if(!CheckShader())return(false);
             
             shader_type=glsl_compiler::GetType(ext_name.c_str());
+
+            const char *ShaderFileTypeName[]={"vert","tesc","tese","geom","frag","comp","mesh","task","rgen","rint","rahit","rchit","rmiss","rcall"};
+
+            ubo_binding=string_serial_from_list(ShaderFileTypeName,ext_name.c_str())*16;
         
             CreateHeader();
 

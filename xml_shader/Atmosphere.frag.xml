@@ -1,7 +1,7 @@
 <root>
     <in>position4f</in>
     <out>FragColor</out>
-    <uniform binding="10">Atmosphere sun;</uniform>
+    <uniform>Atmosphere sun;</uniform>
     <raw>Atmosphere</raw>
 
     <main>
