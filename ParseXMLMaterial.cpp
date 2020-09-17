@@ -2,6 +2,7 @@
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/type/StringList.h>
+#include<hgl/io/MemoryOutputStream.h>
 #include"ShaderLib.h"
 #include"GLSLCompiler.h"
 
@@ -102,6 +103,54 @@ namespace shader_lib
         };//class XMLMaterialRootElementCreater:public xml::ElementCreater
     }//namespace
 
+    void SaveSPV(io::DataOutputStream *global_dos,const uint32_t flag,glsl_compiler::SPVData *spv)
+    {
+        io::MemoryOutputStream mos;
+
+        glsl_compiler::SaveSPV2Shader(&mos,spv,flag,false);
+
+        global_dos->WriteUint32(mos.Tell());
+        global_dos->Write(mos.GetData(),mos.Tell());
+    }
+
+    bool SaveMaterial(const OSString &filename,XMLMaterial *xm)
+    {
+        if(!xm)return(false);
+
+        constexpr char MaterialFileHeader[]=u8"Material\x1A";
+        constexpr uint MaterialFileHeaderLength=sizeof(MaterialFileHeader)-1;
+
+        io::MemoryOutputStream mos;
+        io::LEDataOutputStream dos(&mos);
+
+        dos.Write(MaterialFileHeader,MaterialFileHeaderLength);
+        dos.WriteUint8(1);                                                      //version
+
+        dos.WriteUint32(xm->shader_bits);
+
+        const uint count=xm->shaders.GetCount();
+        auto **sp=xm->shaders.GetDataList();
+        for(uint i=0;i<count;i++)
+        {
+            SaveSPV(&dos,
+                    (*sp)->left,
+                    (*sp)->right->spv_data);
+
+            ++sp;
+        }
+
+        if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
+        {
+            os_out<<OS_TEXT("Save Material file<")<<filename.c_str()<<OS_TEXT("> ok!")<<std::endl;
+            return(true);
+        }
+        else
+        {
+            os_out<<OS_TEXT("Convert Material file failed!")<<std::endl;
+            return(false);
+        }
+    }
+
     XMLMaterial *LoadXMLMaterial(const OSString &filename)
     {
         if(!filesystem::FileExist(filename))
@@ -125,6 +174,10 @@ namespace shader_lib
         }
         
         os_out<<OS_TEXT("Load XML Material file<")<<filename.c_str()<<OS_TEXT("> ok!")<<std::endl;
+
+        const OSString mat_filename=filesystem::TrimFileExtName(filename,true);
+
+        SaveMaterial(mat_filename,xml_material);
 
         return xml_material;
     }

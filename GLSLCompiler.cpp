@@ -191,12 +191,16 @@ namespace glsl_compiler
     constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
     constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
-    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag)
+    bool SaveSPV2Shader(MemoryOutputStream *mos,const SPVData *spv,const uint32_t flag,const bool include_file_header)
     {
-        MemoryOutputStream mos;
-        AutoDelete<DataOutputStream> dos=new LEDataOutputStream(&mos);
+        if(!mos)return(false);
+        if(!spv)return(false);
 
-        dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
+        AutoDelete<DataOutputStream> dos=new LEDataOutputStream(mos);
+
+        if(include_file_header)
+            dos->Write(SHADER_FILE_HEADER,SHADER_FILE_HEADER_BYTES);
+
         dos->WriteUint8(1);     //version
         dos->WriteUint32(flag);
         dos->WriteUint32(spv->spv_length);
@@ -208,6 +212,17 @@ namespace glsl_compiler
         OutputShaderResource(spv->resource,(uint32_t)Descriptor::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
         OutputShaderResource(spv->resource,(uint32_t)Descriptor::UNIFORM_BUFFER,dos,"uniform_buffer");
         OutputShaderResource(spv->resource,(uint32_t)Descriptor::STORAGE_BUFFER,dos,"storage_buffer");
+
+        return(true);
+    }
+
+    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag)
+    {
+        if(!spv)return(false);
+
+        MemoryOutputStream mos;
+
+        SaveSPV2Shader(&mos,spv,flag,true);
 
         if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell()))
         {

@@ -3,6 +3,15 @@
 
 #include<hgl/type/String.h>
 #include<stdint.h>
+
+namespace hgl
+{
+    namespace io
+    {
+        class MemoryOutputStream;
+    }
+}
+
 namespace glsl_compiler
 {
     using namespace hgl;
@@ -70,7 +79,8 @@ namespace glsl_compiler
 
     uint32_t GetType(const char *ext_name);
     
-    SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag);
+    SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag);    
+    bool SaveSPV2Shader(hgl::io::MemoryOutputStream *mos,const SPVData *spv,const uint32_t flag,const bool include_file_header);
     bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag);
 
     void Free(SPVData *spv_data);
