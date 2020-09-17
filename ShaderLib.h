@@ -1,5 +1,8 @@
+#pragma once
+
 #include<hgl/type/StringList.h>
 #include<hgl/type/Map.h>
+#include"XMLShader.h"
 
 namespace shader_lib
 {
@@ -26,25 +29,6 @@ namespace shader_lib
     VaryingConfig *GetVarying(const UTF8String &name);    
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
-
-    struct Uniform
-    {
-        UTF8String type_name;
-        UTF8String value_name;
-
-        uint binding;
-    };
-
-    struct XMLShader
-    {
-        UTF8StringList in;
-        UTF8StringList out;
-        UTF8StringList raw;
-        UTF8StringList struct_block;
-        ObjectList<Uniform> uniforms;
-
-        UTF8StringList main;
-    };//struct XMLShader
 
     XMLShader *LoadXMLShader(const OSString &);
 

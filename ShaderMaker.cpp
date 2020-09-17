@@ -19,10 +19,6 @@ namespace shader_lib
     {
         shader_lib::XMLShader *xs;
         UTF8StringList shader_text;
-        UTF8String shader_source;
-
-        uint32_t shader_type;
-        glsl_compiler::SPVData *spv_data;
 
         int ubo_binding;
 
@@ -77,7 +73,7 @@ namespace shader_lib
                 if(type==VaryingType::Input)
                     shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
                 else
-                if(shader_type==shader_lib::ssbFragment)                
+                if(xs->shader_type==shader_lib::ssbFragment)                
                     shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
                 else
                     shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
@@ -168,20 +164,15 @@ namespace shader_lib
         {
             xs=_xs;
             ubo_binding=0;
-            spv_data=nullptr;
         }
 
-        ~ShaderMaker()
-        {
-            if(spv_data)
-                glsl_compiler::Free(spv_data);
-        }
+        ~ShaderMaker()=default;
 
         bool Make(const UTF8String &ext_name)
         {
             if(!CheckShader())return(false);
             
-            shader_type=glsl_compiler::GetType(ext_name.c_str());
+            xs->shader_type=glsl_compiler::GetType(ext_name.c_str());
 
             const char *ShaderFileTypeName[]={"vert","tesc","tese","geom","frag","comp","mesh","task","rgen","rint","rahit","rchit","rmiss","rcall"};
 
@@ -199,32 +190,7 @@ namespace shader_lib
 
             MakeMainFunc();
 
-            {
-                shader_source=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
-
-                spv_data=glsl_compiler::CompileShaderToSPV((uint8 *)shader_source.c_str(),shader_type);
-            }
-
-            return(true);
-        }
-
-        bool SaveToGLSL(const OSString &filename)
-        {
-            return filesystem::SaveMemoryToFile(filename,shader_source.c_str(),shader_source.Length());
-        }   
-
-        bool SaveToSPV(const OSString &filename)
-        {
-            if(!spv_data)return(false);
-
-            return filesystem::SaveMemoryToFile(filename,spv_data->spv_data,spv_data->spv_length);
-        }
-
-        bool SaveToShader(const OSString &filename)
-        {    
-            if(!spv_data)return(false);
-
-            return glsl_compiler::SaveSPV2Shader(filename,spv_data,shader_type);
+            return xs->SetShaderSource(shader_text);
         }
     };//class ShaderMaker
 
@@ -249,9 +215,9 @@ namespace shader_lib
 
         if(!sm.Make(ext_name))return(-2);
 
-        sm.SaveToGLSL(short_name+OS_TEXT(".glsl"));
-        sm.SaveToSPV(short_name+OS_TEXT(".spv"));
-        sm.SaveToShader(short_name+OS_TEXT(".shader"));
+        xs->SaveToGLSL(short_name+OS_TEXT(".glsl"));
+        xs->SaveToSPV(short_name+OS_TEXT(".spv"));
+        xs->SaveToShader(short_name+OS_TEXT(".shader"));
 
         return(true);
     }

@@ -17,6 +17,8 @@ SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
+                            XMLShader.h
+                            XMLShader.cpp
                             SLP_Folder.cpp
                             SLP_Files.cpp
                             SLP_Root.cpp
