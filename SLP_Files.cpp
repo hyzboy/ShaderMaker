@@ -4,11 +4,15 @@
 
 namespace shader_lib
 {
-    bool LoadVarying(const hgl::OSString &);
-    bool LoadXmlGLSL(const hgl::OSString &);
+    bool LoadVarying(const OSString &);
+    bool LoadXmlGLSL(const OSString &);
     bool LoadRawGLSL(const OSString &);
 
-    const u8char *filetype_name[]={U8_TEXT("GLSL"),U8_TEXT("Varying")};
+    const u8char *filetype_name[]=
+    {
+        U8_TEXT("GLSL"),
+        U8_TEXT("Varying"),
+    };
 
     bool FilesElementerCreater::Start()
     {

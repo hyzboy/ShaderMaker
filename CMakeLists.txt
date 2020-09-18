@@ -42,18 +42,20 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 #
 #     source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
 # ELSE()
-	SET(SHADER_MAKER_SOURCE	main.cpp
-                            ShaderMaker.cpp
-                            ParseXMLShader.cpp
-                            ParseXMLMaterial.cpp)
+	SET(MATERIAL_COMPILER_SOURCE	MaterialCompiler.cpp
+                                    ShaderMaker.cpp
+                                    ParseXMLShader.cpp
+                                    ParseXMLMaterial.cpp)
 # ENDIF()
 
-add_executable(ShaderMaker  ${SHADER_MAKER_SOURCE}
-                            ${GLSL_COMPILER_SOURCE}
-                            ${SHADER_MODULE_SOURCE}
-                            ${SHADER_LIBRARY_SOURCE})
+add_executable(MaterialCompiler ${MATERIAL_COMPILER_SOURCE}
+                                ${GLSL_COMPILER_SOURCE}
+                                ${SHADER_MODULE_SOURCE}
+                                ${SHADER_LIBRARY_SOURCE})
 
 add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE})
+
+add_executable(PipelineCompiler PipelineCompiler.cpp LoadXMLPipeline.cpp)
 
 SET(SHADER_COMPILER_LIBRARY CMCore
                             CMPlatform
@@ -66,15 +68,17 @@ SET(SHADER_COMPILER_LIBRARY CMCore
 #     set_target_properties(ShaderMaker PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
 # ENDIF()
 
-target_link_libraries(ShaderMaker PRIVATE ${SHADER_COMPILER_LIBRARY})
 target_link_libraries(ShaderCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
+target_link_libraries(PipelineCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
+target_link_libraries(MaterialCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
 
 if(UNIX)
-   target_link_libraries(ShaderMaker PRIVATE dl)
    target_link_libraries(ShaderCompiler PRIVATE dl)
+   target_link_libraries(MaterialCompiler PRIVATE dl)
 endif()
 
 IF(WIN32)
-    set_debugger_directory(ShaderMaker ${CMAKE_CURRENT_SOURCE_DIR})
     set_debugger_directory(ShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR})
+    set_debugger_directory(PipelineCompiler ${CMAKE_CURRENT_SOURCE_DIR})
+    set_debugger_directory(MaterialCompiler ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF()
