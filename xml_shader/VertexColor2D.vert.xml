@@ -1,0 +1,16 @@
+<root>
+    <in>
+        position2f
+        color3f
+    </in>
+
+    <out>color3f</out>
+
+    <uniform>
+        WorldMatrix world;
+    </uniform>
+    <main>
+        out_Color=Color;
+        gl_Position=vec4(Position,0.0,1.0)*world.ortho;
+    </main>
+</root>

@@ -1,0 +1,9 @@
+﻿<root>
+    <in>color3f</in>
+    <out>FragColor</out>
+
+    <main>
+        FragColor=vec4(Color,1.0);
+    </main>
+</root>
+

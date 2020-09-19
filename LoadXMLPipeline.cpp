@@ -6,6 +6,10 @@
 
 using namespace hgl;
 
+VK_NAMESPACE_BEGIN
+    void SetDefault(VkPipelineColorBlendAttachmentState *cba);
+VK_NAMESPACE_END
+
 namespace
 {
     const u8char *polygon_mode[]={u8"fill",u8"line",u8"point",u8""};
@@ -396,15 +400,18 @@ namespace
     };//class DepthStencilElement:public xml::ElementAttribute
 
     class ColorBlendAttachmentElement:public xml::ElementAttribute
-    {            
-        List<VkPipelineColorBlendAttachmentState> *att_list;
+    {
+        int atta_count;
+
+        VkPipelineColorBlendAttachmentState *att_list;
 
         VkPipelineColorBlendAttachmentState cba;
 
     public:
 
-        ColorBlendAttachmentElement(List<VkPipelineColorBlendAttachmentState> *pcbas_list):xml::ElementAttribute("attachment")
+        ColorBlendAttachmentElement(VkPipelineColorBlendAttachmentState *pcbas_list):xml::ElementAttribute("attachment")
         {
+            atta_count=0;
             att_list=pcbas_list;
 
             cba.blendEnable         = VK_FALSE;
@@ -416,6 +423,8 @@ namespace
             cba.alphaBlendOp        = VK_BLEND_OP_ADD;
             cba.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         }
+
+        int GetAttaCount()const{return atta_count;}
 
         bool Start() override
         {
@@ -439,25 +448,23 @@ namespace
             cba.dstAlphaBlendFactor =ToEnum<VkBlendFactor>(blend_factor,"DstAlpha",VK_BLEND_FACTOR_ZERO);
             cba.colorBlendOp        =blend_op_list[ToSerial(blend_op,"color",0)];
 
-            att_list->Add(cba);
+            hgl_cpy(att_list+atta_count,&cba);
+            ++atta_count;
             return(true);
         }
     };//class ColorBlendAttachmentElement:public xml::ElementAttribute
 
     class ColorBlendElement:public xml::ElementAttribute
     {
-        List<VkPipelineColorBlendAttachmentState> *attachments;
-
         ColorBlendAttachmentElement *cba;
 
         VkPipelineColorBlendStateCreateInfo *color_blend;
 
     public:
 
-        ColorBlendElement(VkPipelineColorBlendStateCreateInfo *cbsci,List<VkPipelineColorBlendAttachmentState> *cba_list):xml::ElementAttribute("ColorBlend")
+        ColorBlendElement(VkPipelineColorBlendStateCreateInfo *cbsci,VkPipelineColorBlendAttachmentState *cba_list):xml::ElementAttribute("ColorBlend")
         { 
             color_blend=cbsci;
-            attachments=cba_list;
 
             color_blend->sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
             color_blend->pNext = nullptr;
@@ -465,13 +472,13 @@ namespace
             color_blend->logicOpEnable = VK_FALSE;
             color_blend->logicOp = VK_LOGIC_OP_CLEAR;
             color_blend->attachmentCount = 0;
-            color_blend->pAttachments = nullptr;
+            color_blend->pAttachments = cba_list;
             color_blend->blendConstants[0] = 0.0f;
             color_blend->blendConstants[1] = 0.0f;
             color_blend->blendConstants[2] = 0.0f;
             color_blend->blendConstants[3] = 0.0f;
 
-            cba=new ColorBlendAttachmentElement(attachments);
+            cba=new ColorBlendAttachmentElement(cba_list);
 
             Registry(cba);
         }
@@ -491,8 +498,7 @@ namespace
 
         void End()
         {
-            color_blend->attachmentCount = attachments->GetCount();
-            color_blend->pAttachments = attachments->GetData();
+            color_blend->attachmentCount = cba->GetAttaCount();
 
             const UTF8String blend_constants=ToString("BlendConstants");
 
@@ -502,7 +508,7 @@ namespace
 
     class RootElementCreater:public xml::ElementAttribute
     {
-        VK_NAMESPACE::VKPipelineData *data;
+        VK_NAMESPACE::PipelineData *data;
 
         TessellationElement *tess;
         RasterizerElement *rasterizer;
@@ -512,15 +518,15 @@ namespace
 
     public:
 
-        RootElementCreater(VK_NAMESPACE::VKPipelineData *pd):ElementAttribute(u8"root")
+        RootElementCreater(VK_NAMESPACE::PipelineData *pd):ElementAttribute(u8"root")
         {
             data=pd;
 
-            tess=new TessellationElement(&(data->tessellation));
-            rasterizer=new RasterizerElement(&(data->rasterizer));
-            ms=new MultisampleElement(&(data->multisample));
-            ds=new DepthStencilElement(&(data->depthStencilState));
-            cb=new ColorBlendElement(&(data->colorBlending),&(data->colorBlendAttachments));
+            tess=new TessellationElement(data->tessellation);
+            rasterizer=new RasterizerElement(data->rasterization);
+            ms=new MultisampleElement(data->multi_sample);
+            ds=new DepthStencilElement(data->depth_stencil);
+            cb=new ColorBlendElement(data->color_blend,data->color_blend_attachments);
                 
             Registry(tess);
             Registry(rasterizer);
@@ -540,15 +546,37 @@ namespace
 
         bool Start() override
         {
-            data->pipelineInfo.stageCount=ToUInteger("stageCount");
+            data->pipeline_info.stageCount=ToUInteger("stageCount");
             return(true);
         }
     };//class RootElementCreater:public ElementAttribute
 }//namespace
 
-VK_NAMESPACE::VKPipelineData *LoadPipeline(const hgl::OSString &filename)
+VK_NAMESPACE::PipelineData *LoadPipeline(const hgl::OSString &filename)
 {
-    VK_NAMESPACE::VKPipelineData *data=new VK_NAMESPACE::VKPipelineData;
+    VK_NAMESPACE::PipelineData *data=new VK_NAMESPACE::PipelineData;
+    {
+        data->tessellation              =hgl_zero_new<VkPipelineTessellationStateCreateInfo>();
+        data->rasterization             =hgl_zero_new<VkPipelineRasterizationStateCreateInfo>();
+        data->multi_sample              =hgl_zero_new<VkPipelineMultisampleStateCreateInfo>();
+        data->sample_mask               =hgl_zero_new<VkSampleMask>(VK_NAMESPACE::MAX_SAMPLE_MASK_COUNT);
+        data->multi_sample->pSampleMask =nullptr;
+    
+        data->depth_stencil             =hgl_zero_new<VkPipelineDepthStencilStateCreateInfo>();
+        data->color_blend               =hgl_zero_new<VkPipelineColorBlendStateCreateInfo>();
+
+        data->color_blend_attachments   =hgl_zero_new<VkPipelineColorBlendAttachmentState>(32);      //暂时不可能MRT输出32个，就这样了
+        data->color_blend->pAttachments=data->color_blend_attachments;
+        
+        data->pipeline_info.pTessellationState =data->tessellation;
+        data->pipeline_info.pRasterizationState=data->rasterization;
+        data->pipeline_info.pMultisampleState  =data->multi_sample;
+        data->pipeline_info.pDepthStencilState =data->depth_stencil;
+        data->pipeline_info.pColorBlendState   =data->color_blend;
+        
+        data->alpha_test=0;
+        data->alpha_blend=false;
+    }
 
     RootElementCreater root_ec(data);
     xml::ElementParseCreater epc(&root_ec);
