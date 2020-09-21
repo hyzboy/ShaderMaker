@@ -1,0 +1,4 @@
+<root>
+    <shader type="vert" filename="Position2D"/>
+    <shader type="frag" filename="FragColor"/>
+</root>

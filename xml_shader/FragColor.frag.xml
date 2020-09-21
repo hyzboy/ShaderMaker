@@ -1,7 +1,7 @@
 <root>
-    <uniform>WorldMatrix fs_world;</uniform>
+    <uniform>WorldMatrix frag_world;</uniform>
     <out>FragColor</out>
     <main>
-    FragColor=vec4(gl_FragCoord.xy/fragment_world.viewport_resolution,0,1);
+    FragColor=vec4(gl_FragCoord.xy/frag_world.viewport_resolution,0,1);
     </main>
 </root>
