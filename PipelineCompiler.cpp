@@ -3,7 +3,11 @@
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
 
-VK_NAMESPACE::VKPipelineData *LoadPipeline(const hgl::OSString &filename);
+VK_NAMESPACE::PipelineData *LoadPipeline(const hgl::OSString &filename);
+
+VK_NAMESPACE_BEGIN
+    bool SaveToFile(const OSString &filename,PipelineData *pd);
+VK_NAMESPACE_END
 
 int os_main(int argc,os_char **argv)
 {
@@ -19,7 +23,7 @@ int os_main(int argc,os_char **argv)
 
     os_out<<OS_TEXT("pipeline filename: ")<<xml_filename.c_str()<<std::endl;
 
-    VK_NAMESPACE::VKPipelineData *pd=LoadPipeline(xml_filename);
+    VK_NAMESPACE::PipelineData *pd=LoadPipeline(xml_filename);
     
     if(pd)
     {
