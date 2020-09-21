@@ -1,0 +1,14 @@
+<root>
+    <in>
+        position2f
+        texcoord2f
+    </in>
+    <out>texcoord2f</out>
+
+    <uniform>WorldMatrix world;</uniform>
+
+    <main>
+        out_TexCoord=TexCoord;
+        gl_Position=vec4(Position,0.0,1.0)*world.ortho;
+    </main>
+</root>

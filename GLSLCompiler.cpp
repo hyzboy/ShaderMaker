@@ -109,6 +109,8 @@ namespace glsl_compiler
         VertexAttribType vat;
         const char *type_string;
 
+        std::cout<<ssd.count<<" stage "<<hint<<std::endl;
+
         for(size_t i=0;i<ssd.count;i++)
         {
             mdos->WriteUint8(ss->location);
@@ -121,7 +123,7 @@ namespace glsl_compiler
 
             type_string=GetVertexAttribName(&vat);
 
-            std::cout<<"layout(location="<<int(ss->location)<<") "<<hint<<" "<<type_string<<" "<<ss->name<<std::endl;
+            std::cout<<"    layout(location="<<int(ss->location)<<") "<<hint<<" "<<type_string<<" "<<ss->name<<std::endl;
             ++ss;
         }
 
@@ -152,7 +154,7 @@ namespace glsl_compiler
             mdos->WriteUint8(sr->binding);
             mdos->WriteAnsiTinyString(sr->name);
 
-            std::cout<<"layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
+            std::cout<<"    layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
             ++sr;
         }
 

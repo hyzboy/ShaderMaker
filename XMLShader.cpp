@@ -17,7 +17,17 @@ namespace shader_lib
 
         spv_data=glsl_compiler::CompileShaderToSPV((uint8 *)shader_source.c_str(),shader_type);
 
-        return spv_data;
+        if(!spv_data->result)
+        {
+            std::cerr<<"GLSL Compiler Error:"<<std::endl;
+            std::cerr<<"          log: "<<spv_data->log<<std::endl;
+            std::cerr<<"    debug log: "<<spv_data->debug_log<<std::endl;
+            std::cerr<<std::endl;
+
+            return(false);
+        }
+
+        return(true);
     }
 
     bool XMLShader::SaveToGLSL(const OSString &filename)

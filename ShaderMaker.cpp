@@ -213,9 +213,18 @@ namespace shader_lib
         const OSString short_name=filesystem::TrimFileExtName(filename,true);
         const UTF8String ext_name=to_u8(filesystem::ClipFileExtName(short_name,false));
 
-        if(!sm.Make(ext_name))return(-2);
+        std::cout<<"------ Generate "<<ext_name.c_str()<<" shader ------"<<std::endl;
 
-        //xs->SaveToGLSL(short_name+OS_TEXT(".glsl"));
+        if(!sm.Make(ext_name))
+        {
+            const OSString glsl_filename=short_name+OS_TEXT(".glsl");
+
+            os_err<<OS_TEXT("Error GLSL: ")<<glsl_filename.c_str()<<std::endl;
+
+            xs->SaveToGLSL(glsl_filename);
+            return(-2);
+        }
+        
         //xs->SaveToSPV(short_name+OS_TEXT(".spv"));
         //xs->SaveToShader(short_name+OS_TEXT(".shader"));
 
