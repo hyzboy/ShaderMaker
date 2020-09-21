@@ -11,7 +11,7 @@ namespace
     const u8char *polygon_mode[]={u8"fill",u8"line",u8"point",u8""};
     const u8char *cull_mode[]={u8"none",u8"front",u8"back",u8"front_and_back",u8""};
     const u8char *front_face[]={u8"ccw",u8"cw",u8""};
-    const u8char *stencil_op[]={u8"keep",u8"0",u8"replace",u8"+clamp",u8"-clamp",u8"inv",u8"+wrap",u8"-wrap",u8""};
+    const u8char *stencil_op[]={u8"keep",u8"zero",u8"replace",u8"+clamp",u8"-clamp",u8"inv",u8"+wrap",u8"-wrap",u8""};
     const u8char *compare_op[]=
     {
         u8"never",
