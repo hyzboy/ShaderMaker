@@ -1,0 +1,9 @@
+<root>
+    <in>texcoord2f</in>
+    <out>FragColor</out>
+    <uniform>sampler2D tex;</uniform>
+    <raw>HQFilter</raw>
+    <main>
+    FragColor=hqfilter(tex,TexCoord);
+    </main>
+</root>

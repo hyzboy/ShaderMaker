@@ -1,6 +1,7 @@
 #include<hgl/type/StringList.h>
 #include<hgl/type/Map.h>
 #include<hgl/filesystem/FileSystem.h>
+#include<iostream>
 
 namespace shader_lib
 {
@@ -22,8 +23,18 @@ namespace shader_lib
 
         if(count<=0)return(true);
 
+        UTF8String name;
+
         for(int i=0;i<count;i++)
-            if(!CheckRawModule(raw_list.GetString(i)))return(false);
+        {
+            name=raw_list.GetString(i);
+
+            if(!CheckRawModule(name))
+            {
+                std::cerr<<u8"can't find RAW Module: "<<name.c_str()<<std::endl;
+                return(false);
+            }
+        }
 
         return(true);
     }
@@ -46,6 +57,10 @@ namespace shader_lib
         os_out<<"      RawGLSL Load successed: "<<filename.c_str()<<std::endl;
 
         const OSString fn=filesystem::ClipFileMainname(filename);
+
+        const UTF8String raw_name=to_u8(fn);
+
+        std::cout<<u8"Raw Module: "<<raw_name.c_str()<<std::endl;
 
         raw_shader_list.Add(to_u8(fn),file);
 
