@@ -1,0 +1,14 @@
+<root>
+    <in>
+        position3f
+        color4f
+    </in>
+    <out>color3f</out>
+    <uniform>WorldMatrix world;</uniform>
+    <raw>PushConstant3D</raw>
+
+    <main>
+        out_Color=Color.rgb;
+        gl_Position=vec4(Position,1.0)*pc.local_to_world*world.mvp;
+    </main>
+</root>
