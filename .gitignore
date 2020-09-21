@@ -1,3 +1,4 @@
 *.shader
 *.spv
 *.vert
+/xml_shader/*.material
