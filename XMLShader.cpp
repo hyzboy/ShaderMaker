@@ -17,12 +17,17 @@ namespace shader_lib
 
         spv_data=glsl_compiler::CompileShaderToSPV((uint8 *)shader_source.c_str(),shader_type);
 
-        if(!spv_data->result)
+        if(!spv_data
+         ||!spv_data->result)
         {
             std::cerr<<"GLSL Compiler Error:"<<std::endl;
-            std::cerr<<"          log: "<<spv_data->log<<std::endl;
-            std::cerr<<"    debug log: "<<spv_data->debug_log<<std::endl;
-            std::cerr<<std::endl;
+
+            if(spv_data)
+            {
+                std::cerr<<"          log: "<<spv_data->log<<std::endl;
+                std::cerr<<"    debug log: "<<spv_data->debug_log<<std::endl;
+                std::cerr<<std::endl;
+            }
 
             return(false);
         }
