@@ -1,0 +1,14 @@
+<root>
+    <in>texcoord2f</in>
+    <out>FragColor</out>
+    <uniform>
+        sampler2D lum_texture;
+        ColorMaterial color_material;
+    </uniform>
+
+    <main>
+        float lum=texture(lum_texture,TexCoord).r;
+
+        FragColor=vec4(color_material.color.rgb*lum,color_material.color.a);
+    </main>
+</root>

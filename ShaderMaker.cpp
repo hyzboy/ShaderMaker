@@ -157,6 +157,7 @@ namespace shader_lib
                 shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
 
                 ++ubo_binding;
+                ++ubo;
             }
             OutComment(U8_TEXT("End uniforms"));
             OutEnter();
