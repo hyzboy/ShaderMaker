@@ -9,8 +9,8 @@
         vec4 lt=vec4(Position.xy,vec2(0,1));
         vec4 rb=vec4(Position.zw,vec2(0,1));
 
-        vec4 lt_fin=lt*world.ortho;
-        vec4 rb_fin=rb*world.ortho;
+        vec4 lt_fin=world.ortho*lt;
+        vec4 rb_fin=world.ortho*rb;
 
         out_TexCoord=TexCoord;
 

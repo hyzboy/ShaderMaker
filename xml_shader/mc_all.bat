@@ -1,0 +1,11 @@
+call mc.bat .\Atmosphere.material.xml
+call mc.bat .\FragColor.material.xml
+call mc.bat .\LumTextureRect2D.material.xml
+call mc.bat .\PureColor2D.material.xml
+call mc.bat .\Texture2D.material.xml
+call mc.bat .\Texture2DHQ.material.xml
+call mc.bat .\Texture2DHQPC.material.xml
+call mc.bat .\Texture2DPC.material.xml
+call mc.bat .\TextureRect2D.material.xml
+call mc.bat .\VertexColor2D.material.xml
+call mc.bat .\VertexColor3D.material.xml

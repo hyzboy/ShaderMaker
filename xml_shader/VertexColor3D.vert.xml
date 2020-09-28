@@ -9,6 +9,6 @@
 
     <main>
         out_Color=Color.rgb;
-        gl_Position=vec4(Position,1.0)*pc.local_to_world*world.mvp;
+        gl_Position=world.mvp*pc.local_to_world*vec4(Position,1.0);
     </main>
 </root>

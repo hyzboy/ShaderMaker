@@ -123,6 +123,8 @@ namespace shader_lib
         {
             const int count=xs->raw.GetCount();
 
+            if(count<=0)return;
+
             UTF8String rn;
             UTF8StringList *rm;
 
@@ -141,6 +143,9 @@ namespace shader_lib
         void MakeUniforms()
         {
             const int count=xs->uniforms.GetCount();
+
+            if(count<=0)return;
+
             shader_lib::Uniform **ubo=xs->uniforms.GetData();
 
             OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" uniforms"));
@@ -152,9 +157,16 @@ namespace shader_lib
                 if((*ubo)->binding>ubo_binding)
                     ubo_binding=(*ubo)->binding;
 
-                front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");
-
-                shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
+                if(shader_lib::CheckStruct((*ubo)->type_name))
+                {
+                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(",row_major) uniform");
+                    shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
+                }
+                else
+                {
+                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");                    
+                    shader_text.Add(front+u8" "+(*ubo)->type_name+u8" "+(*ubo)->value_name+u8";");
+                }
 
                 ++ubo_binding;
                 ++ubo;
@@ -227,14 +239,19 @@ namespace shader_lib
 
         std::cout<<"------ Generate "<<ext_name.c_str()<<" shader ------"<<std::endl;
 
-        if(!sm.Make(ext_name))
+        const bool result=sm.Make(ext_name);
+
         {
             const OSString glsl_filename=short_name+OS_TEXT(".glsl");
 
-            os_err<<OS_TEXT("Error GLSL: ")<<glsl_filename.c_str()<<std::endl;
-
             xs->SaveToGLSL(glsl_filename);
-            return(false);
+
+            if(!result)
+            {
+                os_err<<OS_TEXT("Error GLSL: ")<<glsl_filename.c_str()<<std::endl;
+
+                return(false);
+            }
         }
         
         //xs->SaveToSPV(short_name+OS_TEXT(".spv"));
