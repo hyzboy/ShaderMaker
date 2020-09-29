@@ -19,6 +19,13 @@ namespace shader_lib
         uint binding;
     };
 
+    struct GeometryAttribute
+    {
+        UTF8String in;
+        UTF8String out;
+        uint max_vertices;
+    };
+
     struct XMLShader
     {
         UTF8StringList in;
@@ -26,6 +33,8 @@ namespace shader_lib
         UTF8StringList raw;
         UTF8StringList struct_block;
         ObjectList<Uniform> uniforms;
+
+        GeometryAttribute geom;
 
         UTF8StringList main;
 

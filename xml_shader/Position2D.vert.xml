@@ -2,6 +2,6 @@
     <in>position2f</in>
     <uniform>WorldMatrix world;</uniform>
     <main>
-        gl_Position=vec4(Position,0.0,1.0)*world.ortho;
+        gl_Position=world.ortho*vec4(Position,0.0,1.0);
     </main>
 </root>

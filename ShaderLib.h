@@ -24,6 +24,7 @@ namespace shader_lib
 
     bool CheckVarying(const UTF8StringList &vary_list);
     bool CheckRawModule(const UTF8StringList &raw_list);
+    bool CheckStruct(const UTF8String &struct_name);
     bool CheckStruct(const UTF8StringList &struct_list);
     
     VaryingConfig *GetVarying(const UTF8String &name);    

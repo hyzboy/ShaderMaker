@@ -79,12 +79,34 @@ namespace shader_lib
             }
         };//class UniformElementCreater:public xml::ElementCreater
 
+        class GeomElementAttrib:public xml::ElementAttribute
+        {
+            GeometryAttribute *geom;
+
+        public:
+
+            GeomElementAttrib(GeometryAttribute *ga):xml::ElementAttribute("geom")
+            {
+                geom=ga;
+            }
+            
+            bool Start() override
+            {
+                geom->in=this->ToString("in");
+                geom->out=this->ToString("out");
+                geom->max_vertices=this->ToUInteger("max_vertices");
+
+                return(true);
+            }
+        };//class GeomElementAttrib:public xml::ElementAttribute
+
         class XMLShaderRootElementCreater:public xml::ElementCreater
         {
             OSString filename;
 
             XMLShader *xml_shader;
 
+            GeomElementAttrib *geom;
             CodesElementCreater *in,*out,*raw,*codes_main;
             UniformElementCreater *uniform;
 
@@ -102,16 +124,20 @@ namespace shader_lib
 
                 uniform=new UniformElementCreater(xml_shader);
 
+                geom=new GeomElementAttrib(&(xml_shader->geom));
+
                 Registry(in);
                 Registry(out);
                 Registry(raw);
                 Registry(codes_main);
 
                 Registry(uniform);
+                Registry(geom);
             }
 
             ~XMLShaderRootElementCreater()
             {
+                delete geom;
                 delete uniform;
 
                 delete codes_main;

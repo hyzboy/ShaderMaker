@@ -1,4 +1,4 @@
 <root>
     <shader type="vert" filename="Texture2DPC"/>
-    <shader type="frag" filename="Texture2D"/>
+    <shader type="frag" filename="Texture"/>
 </root>

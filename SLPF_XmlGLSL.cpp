@@ -103,11 +103,8 @@ namespace shader_lib
     {
         ShaderStruct *ss=struct_list[name];
 
-        if(!ss) //没有找到，视为原生类型，如sampler2D等
-        {
-            shader_text.Add(front+u8" "+name+u8" "+back+u8";");
-            return(true);
-        }
+        if(!ss)
+            return(false);
             
         const int lines=ss->codes.GetCount();
 

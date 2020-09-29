@@ -16,7 +16,7 @@
     </raw>
 
     <main>
-        out_Position=vec4(Position,1.0)*pc.local_to_world*world.mvp;
+        out_Position=world.mvp*pc.local_to_world*vec4(Position,1.0);
         gl_Position=out_Position;
     </main>
 </root>

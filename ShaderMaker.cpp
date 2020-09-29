@@ -40,6 +40,12 @@ namespace shader_lib
                             u8" * the Shader created by ShaderMaker (" HGL_OFFICAL_WEB_U8 u8")\n"
                             u8" */\n"
                             u8"#version 450 core\n");
+
+            if(xs->shader_type==shader_lib::ssbGeometry)
+            {
+                shader_text.Add(u8"layout("+xs->geom.in+u8") in;");
+                shader_text.Add(u8"layout("+xs->geom.out+u8",max_vertices="+UTF8String::valueOf(xs->geom.max_vertices)+u8") out;\n");
+            }
         }
 
         void OutComment(const UTF8String &str)
@@ -71,7 +77,12 @@ namespace shader_lib
             for(int i=0;i<count;i++)
             {
                 if(type==VaryingType::Input)
-                    shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                {
+                    if(xs->shader_type==shader_lib::ssbGeometry)
+                        shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT("[];"));
+                    else
+                        shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                }
                 else
                 if(xs->shader_type==shader_lib::ssbFragment)                
                     shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
@@ -112,6 +123,8 @@ namespace shader_lib
         {
             const int count=xs->raw.GetCount();
 
+            if(count<=0)return;
+
             UTF8String rn;
             UTF8StringList *rm;
 
@@ -130,6 +143,9 @@ namespace shader_lib
         void MakeUniforms()
         {
             const int count=xs->uniforms.GetCount();
+
+            if(count<=0)return;
+
             shader_lib::Uniform **ubo=xs->uniforms.GetData();
 
             OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" uniforms"));
@@ -141,11 +157,19 @@ namespace shader_lib
                 if((*ubo)->binding>ubo_binding)
                     ubo_binding=(*ubo)->binding;
 
-                front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");
-
-                shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
+                if(shader_lib::CheckStruct((*ubo)->type_name))
+                {
+                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(",row_major) uniform");
+                    shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
+                }
+                else
+                {
+                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");                    
+                    shader_text.Add(front+u8" "+(*ubo)->type_name+u8" "+(*ubo)->value_name+u8";");
+                }
 
                 ++ubo_binding;
+                ++ubo;
             }
             OutComment(U8_TEXT("End uniforms"));
             OutEnter();
@@ -196,7 +220,7 @@ namespace shader_lib
 
     bool XMLShaderMaker(const OSString &filename,shader_lib::XMLShader *xs)
     {
-        if(!xs)return(-1);
+        if(!xs)return(false);
 
         ShaderMaker sm(xs);
 
@@ -215,14 +239,19 @@ namespace shader_lib
 
         std::cout<<"------ Generate "<<ext_name.c_str()<<" shader ------"<<std::endl;
 
-        if(!sm.Make(ext_name))
+        const bool result=sm.Make(ext_name);
+
         {
             const OSString glsl_filename=short_name+OS_TEXT(".glsl");
 
-            os_err<<OS_TEXT("Error GLSL: ")<<glsl_filename.c_str()<<std::endl;
-
             xs->SaveToGLSL(glsl_filename);
-            return(-2);
+
+            if(!result)
+            {
+                os_err<<OS_TEXT("Error GLSL: ")<<glsl_filename.c_str()<<std::endl;
+
+                return(false);
+            }
         }
         
         //xs->SaveToSPV(short_name+OS_TEXT(".spv"));
