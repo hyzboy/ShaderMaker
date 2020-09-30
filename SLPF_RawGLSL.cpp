@@ -17,23 +17,23 @@ namespace shader_lib
         return raw_shader_list.KeyExist(name);
     }
     
-    bool CheckRawModule(const UTF8StringList &raw_list)
+    bool CheckRawModule(const Sets<UTF8String> &raw_list)
     {        
         const int count=raw_list.GetCount();
 
         if(count<=0)return(true);
 
-        UTF8String name;
+        UTF8String *name=raw_list.GetData();
 
         for(int i=0;i<count;i++)
         {
-            name=raw_list.GetString(i);
-
-            if(!CheckRawModule(name))
+            if(!CheckRawModule(*name))
             {
-                std::cerr<<u8"can't find RAW Module: "<<name.c_str()<<std::endl;
+                std::cerr<<u8"can't find RAW Module: "<<name->c_str()<<std::endl;
                 return(false);
             }
+
+            ++name;
         }
 
         return(true);

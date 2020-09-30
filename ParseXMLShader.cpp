@@ -32,6 +32,29 @@ namespace shader_lib
                     codes->Add(UTF8String(trim_str,len));
             }
         };//class CodesElementCreater:public xml::ElementCreater
+
+        class SetsElementCreater:public xml::ElementCreater
+        {
+            Sets<UTF8String> *codes;
+
+        public:
+
+            SetsElementCreater(const u8char *str,Sets<UTF8String> *c):xml::ElementCreater(str)
+            {
+                codes=c;
+            }
+            virtual ~SetsElementCreater()=default;
+
+            void CharData(const u8char *str,const int str_length) override
+            {
+                int len=str_length;
+
+                const u8char *trim_str=trim(str,len);
+
+                if(trim_str)
+                    codes->Add(UTF8String(trim_str,len));
+            }
+        };//class SetsElementCreater:public xml::ElementCreater
         
         class UniformElementCreater:public xml::ElementCreater
         {
@@ -107,7 +130,8 @@ namespace shader_lib
             XMLShader *xml_shader;
 
             GeomElementAttrib *geom;
-            CodesElementCreater *in,*out,*raw,*codes_main;
+            CodesElementCreater *in,*out,*modules,*codes_main;
+            SetsElementCreater *raw;
             UniformElementCreater *uniform;
 
         public:
@@ -119,7 +143,8 @@ namespace shader_lib
 
                 in=new CodesElementCreater(u8"in",&(xml_shader->in));
                 out=new CodesElementCreater(u8"out",&(xml_shader->out));
-                raw=new CodesElementCreater(u8"raw",&(xml_shader->raw));
+                raw=new SetsElementCreater(u8"raw",&(xml_shader->raw));
+                modules=new CodesElementCreater(u8"module",&(xml_shader->modules));
                 codes_main=new CodesElementCreater(u8"main",&(xml_shader->main));
 
                 uniform=new UniformElementCreater(xml_shader);
@@ -129,6 +154,7 @@ namespace shader_lib
                 Registry(in);
                 Registry(out);
                 Registry(raw);
+                Registry(modules);
                 Registry(codes_main);
 
                 Registry(uniform);
@@ -141,6 +167,7 @@ namespace shader_lib
                 delete uniform;
 
                 delete codes_main;
+                delete modules;
                 delete raw;
                 delete out;
                 delete in;

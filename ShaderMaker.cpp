@@ -24,6 +24,29 @@ namespace shader_lib
 
     private:
 
+        bool ExpendDepend(const UTF8String &module_name)
+        {
+            XMLShaderModule *xsm=GetShaderModule(module_name);
+
+            for(int i=0;i<xsm->depend_raw_list.GetCount();i++)
+                xs->raw.Add(xsm->depend_raw_list.GetString(i));
+
+            return(true);
+        }
+
+        bool ExpendDepend()
+        {
+            if(!shader_lib::CheckModules(xs->modules))return(false);
+
+            const uint count=xs->modules.GetCount();
+
+            for(uint i=0;i<count;i++)
+                if(!ExpendDepend(xs->modules.GetString(i)))
+                    return(false);
+
+            return(true);
+        }
+
         bool CheckShader()
         {
             if(!shader_lib::CheckVarying(xs->in))return(false);
@@ -125,18 +148,19 @@ namespace shader_lib
 
             if(count<=0)return;
 
-            UTF8String rn;
+            UTF8String *rn=xs->raw.GetData();
             UTF8StringList *rm;
 
             for(int i=0;i<count;i++)
             {
-                rn=xs->raw.GetString(i);
-                rm=shader_lib::GetRawModule(rn);
+                rm=shader_lib::GetRawModule(*rn);
             
-                OutComment(U8_TEXT("Raw Begin [")+rn+U8_TEXT("]"));
+                OutComment(U8_TEXT("Raw Begin [")+(*rn)+U8_TEXT("]"));
                 shader_text.Add(*rm);
-                OutComment(U8_TEXT("Raw End [")+rn+U8_TEXT("]"));
+                OutComment(U8_TEXT("Raw End [")+(*rn)+U8_TEXT("]"));
                 OutEnter();
+
+                ++rn;
             }
         }
 
@@ -194,6 +218,8 @@ namespace shader_lib
 
         bool Make(const UTF8String &ext_name)
         {
+            ExpendDepend();
+
             if(!CheckShader())return(false);
             
             xs->shader_type=glsl_compiler::GetType(ext_name.c_str());

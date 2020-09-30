@@ -1,0 +1,5 @@
+<root>
+    <shader type="vert" filename="Position2f"/>
+    <shader type="geom" filename="Line2Rectangle"/>
+    <shader type="frag" filename="PureRGB_inAlpha"/>
+</root>

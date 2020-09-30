@@ -2,6 +2,7 @@
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/filesystem/FileSystem.h>
+#include"XMLShader.h"
 
 namespace shader_lib
 {
@@ -15,16 +16,23 @@ namespace shader_lib
             UTF8StringList codes;
         };//
 
-        MapObject<UTF8String,ShaderStruct> struct_list;   
-                
+        MapObject<UTF8String,ShaderStruct> struct_list;
+
+        MapObject<UTF8String,XMLShaderModule> xml_module_list;
+
         class StructElementCreater:public xml::ElementAttribute
-        {
+        {        
+            XMLShaderModule *xsm;
             UTF8String name;
             ShaderStruct *ss;
 
         public:
 
-            StructElementCreater():ElementAttribute(u8"struct"){ss=nullptr;}
+            StructElementCreater(XMLShaderModule *sm):ElementAttribute(u8"struct")
+            {
+                xsm=sm;
+                ss=nullptr;
+            }
             virtual ~StructElementCreater()=default;
 
             bool Start() override
@@ -63,22 +71,91 @@ namespace shader_lib
                 std::cout<<"        };"<<std::endl;
 
                 struct_list.Add(name,ss);
+
+                xsm->struct_list.Add(name);
                 ss=nullptr;
             }
         };//class StructElementCreater:public ElementAttribute
 
-        class RootElementCreater:public xml::ElementCreater
-        {        
-            StructElementCreater struct_ec;
+        class DependElementCreater:public xml::ElementCreater
+        {
+            UTF8StringList *depend_list;
 
         public:
 
-            RootElementCreater():ElementCreater(u8"root")
+            DependElementCreater(const u8char *name,UTF8StringList *dl):ElementCreater(name)
             {
-                Registry(&struct_ec);
+                depend_list=dl;
             }
 
-            virtual ~RootElementCreater()=default;
+            void CharData(const u8char *str,const int str_length) override
+            {
+                if(!str||!*str||str_length<=0)return;
+                if(str_length==1)
+                    if(hgl::isspace(*str))return;
+                    
+                int len=str_length;
+                const u8char *trim_str=hgl::trim(str,len);
+
+                if(trim_str&&len>0)
+                    depend_list->Add(UTF8String(trim_str,len));
+            }
+        };//class DependElementCreater:public xml::ElementCreater
+
+        class CodeElementCreater:public xml::ElementCreater
+        {
+            XMLShaderModule *xsm;
+
+        public:
+
+            CodeElementCreater(XMLShaderModule *sm):ElementCreater(u8"code")
+            {
+                xsm=sm;
+            }
+
+            void CharData(const u8char *str,const int str_length) override
+            {
+                if(!str||!*str||str_length<=0)return;
+                if(str_length==1)
+                    if(hgl::isspace(*str))return;
+                    
+                int len=str_length;
+                const u8char *trim_str=hgl::trim(str,len);
+
+                if(trim_str&&len>0)
+                    xsm->codes.Add(UTF8String(trim_str,len));
+            }
+        };//class CodeElementCreater:public xml::ElementCreater
+
+        class RootElementCreater:public xml::ElementCreater
+        {
+            XMLShaderModule *xsm;
+            
+            DependElementCreater *depend_raw;
+            CodeElementCreater *code;
+            StructElementCreater *struct_ec;
+
+        public:
+
+            RootElementCreater(XMLShaderModule *sm):ElementCreater(u8"root")
+            {
+                xsm=sm;
+
+                depend_raw=new DependElementCreater(u8"raw",&(xsm->depend_raw_list));
+                code=new CodeElementCreater(xsm);
+                struct_ec=new StructElementCreater(xsm);
+
+                Registry(depend_raw);
+                Registry(code);
+                Registry(struct_ec);
+            }
+
+            virtual ~RootElementCreater()
+            {
+                delete struct_ec;
+                delete code;
+                delete depend_raw;
+            }
         };//class RootElementCreater:public ElementCreater
     }//namespace
 
@@ -128,7 +205,9 @@ namespace shader_lib
 
     bool LoadXmlGLSL(const hgl::OSString &filename)
     {
-        RootElementCreater root_ec;
+        XMLShaderModule *xsm=new XMLShaderModule;
+
+        RootElementCreater root_ec(xsm);
         xml::ElementParseCreater epc(&root_ec);
         xml::XMLParse xml(&epc);
 
@@ -136,6 +215,38 @@ namespace shader_lib
 
         os_out<<OS_TEXT("      XMLGLSL config filename: ")<<filename.c_str()<<std::endl;
 
-        return xml::XMLParseFile(&xml,filename);
+        if(!xml::XMLParseFile(&xml,filename))
+        {
+            delete xsm;
+            return(false);
+        }
+
+        const OSString module_name=filesystem::ClipFileMainname(filename);
+
+        xml_module_list.Add(to_u8(module_name),xsm);
+
+        return(true);
+    }
+
+    bool CheckModule(const UTF8String &module_name)
+    {
+        return xml_module_list.KeyExist(module_name);
+    }
+
+    bool CheckModules(const UTF8StringList &module_list)
+    {
+        const int count=module_list.GetCount();
+
+        if(count<=0)return(true);
+
+        for(int i=0;i<count;i++)
+            if(!CheckModule(module_list.GetString(i)))return(false);
+
+        return(true);        
+    }
+
+    XMLShaderModule *GetShaderModule(const UTF8String &module_name)
+    {
+        return xml_module_list[module_name];
     }
 }//namespace shader_lib

@@ -1,0 +1,6 @@
+<root>
+    <in>alpha</in>
+    <out>FragColor</out>
+    <uniform>ColorMaterial color_material;</uniform>
+    <main>FragColor=vec4(color_material.color.rgb,color_material.color.a*Alpha);</main>
+</root>

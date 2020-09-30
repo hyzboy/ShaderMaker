@@ -1,6 +1,7 @@
 #pragma once
 
 #include<hgl/type/StringList.h>
+#include<hgl/type/Sets.h>
 
 namespace glsl_compiler
 {
@@ -25,13 +26,21 @@ namespace shader_lib
         UTF8String out;
         uint max_vertices;
     };
+    
+    struct XMLShaderModule
+    {
+        UTF8StringList depend_raw_list;
+        UTF8StringList struct_list;
+        UTF8StringList codes;
+    };//
 
     struct XMLShader
     {
         UTF8StringList in;
         UTF8StringList out;
-        UTF8StringList raw;
+        Sets<UTF8String> raw;
         UTF8StringList struct_block;
+        UTF8StringList modules;
         ObjectList<Uniform> uniforms;
 
         GeometryAttribute geom;

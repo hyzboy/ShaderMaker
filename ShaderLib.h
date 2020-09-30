@@ -23,9 +23,14 @@ namespace shader_lib
     using VaryingConfig=ObjectList<Varying>;
 
     bool CheckVarying(const UTF8StringList &vary_list);
-    bool CheckRawModule(const UTF8StringList &raw_list);
+    bool CheckRawModule(const Sets<UTF8String> &raw_list);
     bool CheckStruct(const UTF8String &struct_name);
     bool CheckStruct(const UTF8StringList &struct_list);
+
+    bool CheckModule(const UTF8String &module_name);
+    bool CheckModules(const UTF8StringList &module_list);
+
+    XMLShaderModule *GetShaderModule(const UTF8String &module_name);
     
     VaryingConfig *GetVarying(const UTF8String &name);    
     UTF8StringList *GetRawModule(const UTF8String &name);
