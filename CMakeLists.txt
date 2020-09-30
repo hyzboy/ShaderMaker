@@ -4,15 +4,31 @@ project(ShaderMaker)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
+SET(SHADER_COMPILER_LIBRARY CMCore
+                            CMPlatform
+                            CMUtil
+                            CMSceneGraph
+                            libexpat)
+
+macro(shader_maker_project project_name)
+    target_link_libraries(${project_name} PRIVATE ${SHADER_COMPILER_LIBRARY})
+
+    if(UNIX)
+        target_link_libraries(${project_name} PRIVATE dl)
+    endif()
+
+    IF(WIN32)
+        set_debugger_directory(${project_name}  ${CMAKE_CURRENT_SOURCE_DIR})
+    ENDIF()
+
+    set_property(TARGET ${project_name} PROPERTY FOLDER "ShaderMaker")
+endmacro()
+
 set(SM_HEADER_FILES ShaderDataType.h ShaderConfig.h ShaderLib.h glsl2spv.h ShaderMaker.h)
 set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp ShaderConfigParse.cpp ShaderMaker.cpp ForwardShading.cpp)
 
-# IF(CM_BUILD_GUI_TOOLS)
-#     set(IDENTIFIER "com.hyzgame.shadermaker")
-# ENDIF(CM_BUILD_GUI_TOOLS)
-
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
-							GLSLCompiler.cpp)
+                            GLSLCompiler.cpp)
 
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
@@ -29,56 +45,44 @@ SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
-# if(CM_BUILD_GUI_TOOLS)
-# 	SET(SHADER_MAKER_SOURCE	gui/ShaderMakerGUI.cpp
-#                             gui/ShaderMaker.qrc
-#                             gui/MainWindowMenu.cpp
-#                             gui/MainWindow.cpp
-#                             gui/MainWindow.h
-#                             gui/DLG_About.cpp
-#                             gui/DLG_About.h
-#                             gui/ShaderLibTree.cpp
-#                             gui/ShaderLibTree.h)
-#
-#     source_group("GUI" FILES ${SHADER_MAKER_SOURCE})
-# ELSE()
-	SET(MATERIAL_COMPILER_SOURCE	MaterialCompiler.cpp
-                                    ShaderMaker.cpp
-                                    ParseXMLShader.cpp
-                                    ParseXMLMaterial.cpp)
-# ENDIF()
+SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
+                                ParseXMLShader.cpp
+                                ParseXMLMaterial.cpp)
 
-add_executable(MaterialCompiler ${MATERIAL_COMPILER_SOURCE}
+add_executable(MaterialCompiler MaterialCompiler.cpp
+                                ${MATERIAL_COMPILER_SOURCE}
                                 ${GLSL_COMPILER_SOURCE}
-                                ${SHADER_MODULE_SOURCE}
                                 ${SHADER_LIBRARY_SOURCE})
 
 add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE})
 
 add_executable(PipelineCompiler PipelineCompiler.cpp LoadXMLPipeline.cpp)
 
-SET(SHADER_COMPILER_LIBRARY CMCore
-                            CMPlatform
-                            CMUtil
-                            CMSceneGraph
-                            libexpat)
+shader_maker_project(ShaderCompiler)
+shader_maker_project(PipelineCompiler)
+shader_maker_project(MaterialCompiler)
 
-# if(CM_BUILD_GUI_TOOLS)
-#     target_link_libraries(ShaderMaker PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
-#     set_target_properties(ShaderMaker PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
-# ENDIF()
+IF(CM_BUILD_GUI_TOOLS)
+    set(IDENTIFIER "com.hyzgame.materialeditor")
+    SET(MATERIAL_EDITOR_SOURCE  gui/MaterialEditor.cpp
+                                gui/MaterialEditor.qrc
+                                gui/MainWindowMenu.cpp
+                                gui/MainWindow.cpp
+                                gui/MainWindow.h
+                                gui/DLG_About.cpp
+                                gui/DLG_About.h
+                                gui/ShaderLibTree.cpp
+                                gui/ShaderLibTree.h)
 
-target_link_libraries(ShaderCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
-target_link_libraries(PipelineCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
-target_link_libraries(MaterialCompiler PRIVATE ${SHADER_COMPILER_LIBRARY})
+    source_group("GUI" FILES ${MATERIAL_EDITOR_SOURCE})
 
-if(UNIX)
-   target_link_libraries(ShaderCompiler PRIVATE dl)
-   target_link_libraries(MaterialCompiler PRIVATE dl)
-endif()
+    add_executable(MaterialEditor   ${MATERIAL_EDITOR_SOURCE}
+                                    ${MATERIAL_COMPILER_SOURCE}
+                                    ${GLSL_COMPILER_SOURCE}
+                                    ${SHADER_LIBRARY_SOURCE})
 
-IF(WIN32)
-    set_debugger_directory(ShaderCompiler ${CMAKE_CURRENT_SOURCE_DIR})
-    set_debugger_directory(PipelineCompiler ${CMAKE_CURRENT_SOURCE_DIR})
-    set_debugger_directory(MaterialCompiler ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(MaterialEditor PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+    set_target_properties(MaterialEditor PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+
+    shader_maker_project(MaterialEditor)
 ENDIF()

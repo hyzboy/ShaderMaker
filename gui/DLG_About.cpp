@@ -33,7 +33,7 @@ QWidget *DLGAbout::CreateIconAndNameLayout(QWidget *parent)
             fnt.setBold(true);
             fnt.setFamily("Tahoma");
             name_label->setFont(fnt);
-            name_label->setText(tr("ShaderMaker"));
+            name_label->setText(tr("MaterialEditor"));
             vlayout->addWidget(name_label);
         }
 
@@ -57,7 +57,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     about_text->setOpenExternalLinks(true);
     about_text->setFrameShape(QFrame::NoFrame);
     about_text->setHtml("<html><body>\n"
-                        "<p>ShaderMaker</p>\n"
+                        "<p>MaterialEditor</p>\n"
                         "<p>Copyright (C) 2018-2020 " HGL_OFFICAL_WEB "</p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
