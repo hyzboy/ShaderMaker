@@ -31,5 +31,4 @@ void MainWindow::Init()
     QWidget *root_widget=new QWidget(this);
     QHBoxLayout *root_h_layout=new QHBoxLayout(root_widget);
 
-    sl_tree=new QTreeWidget(this);
 }

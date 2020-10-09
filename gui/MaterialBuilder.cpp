@@ -2,15 +2,52 @@
 #include<QFont>
 #include<QStyle>
 #include<QDesktopWidget>
+#include<QMessageBox>
 #include"MainWindow.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
 #include"ShaderLib.h"
+#include<hgl/type/QTString.h>
 
 using namespace hgl;
 
+bool InitShaderLibPath(OSString &path)
+{
+    OSString cur_path;
+    OSString filename;
+    
+    if(!filesystem::GetLocalAppdataPath(cur_path))
+    {
+        QMessageBox::information(nullptr,"Fatal Error","Get path failed which Local AppData",QMessageBox::StandardButton::Abort);
+        
+        return(false);
+    }
+
+    filename=filesystem::MergeFilename(cur_path, OS_TEXT("shader_libs.config"));
+
+    if(!filesystem::FileExist(filename))
+    {
+        QMessageBox::information(nullptr, "Warning", toQString(OS_TEXT("We don't find the config file, please select a new folder.\nThe config file should use filename: \n\n\t")+filename), QMessageBox::StandardButton::Ok);
+
+        return(false);
+    }
+
+    return(true);
+}
+
 int main(int argc,char **argv)
 {
+    QApplication qt_app(argc, argv);
+
+    OSString cfg_path;
+
+    if(InitShaderLibPath(cfg_path))
+    {
+    }
+    else
+    {
+    }
+
     OSString cur_path;
 
     if(!filesystem::GetCurrentPath(cur_path))
@@ -27,7 +64,6 @@ int main(int argc,char **argv)
         return(-2);
     }
 
-    QApplication qt_app(argc,argv);
     
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
 
