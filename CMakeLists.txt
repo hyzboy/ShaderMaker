@@ -69,6 +69,7 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/GLSLSyntaxHighlighter.cpp
                                 gui/MainWindowMenu.cpp
                                 gui/MainWindow.cpp
+                                gui/MainWindowShaderLib.cpp
                                 gui/MainWindow.h
                                 gui/DLG_About.cpp
                                 gui/DLG_About.h

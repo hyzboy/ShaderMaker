@@ -29,7 +29,6 @@ private:    // shaderlib tree
     void VaryingClicked(QListWidgetItem *item);
     void RawClicked(QListWidgetItem *item);
     void StructClicked(QListWidgetItem *item);
-    void ModuleClicked(QListWidgetItem *item);
 
     QListWidget *CreateListWidget(const UTF8StringList &str_list,ShaderLibItemClickedFunc);
     QWidget *CreateShaderLibWidget(QWidget *parent);
