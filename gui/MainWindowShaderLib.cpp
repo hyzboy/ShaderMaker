@@ -72,11 +72,20 @@ void MainWindow::StructClicked(QListWidgetItem *item)
     sl_preview->setPlainText(toQString(str));
 }
 
+void MainWindow::ModuleClicked(QListWidgetItem *item)
+{
+    sl_preview->clear();
+
+    shader_lib::XMLShaderModule *sm=shader_lib::GetShaderModule(toUTF8String(item->text()));
+}
+
 QWidget *MainWindow::CreateShaderLibWidget(QWidget *parent)
 {
     QWidget *widget=new QWidget(parent);
     QVBoxLayout *layout=new QVBoxLayout(widget);
     QSplitter *splitter=new QSplitter(Qt::Vertical,widget);
+
+    layout->setContentsMargins(QMargins(0,0,0,0));
 
     {
         QTabWidget *tab=new QTabWidget(splitter);
@@ -85,6 +94,7 @@ QWidget *MainWindow::CreateShaderLibWidget(QWidget *parent)
             tab->addTab(CreateListWidget(shader_lib::GetVaryingList(),  &MainWindow::VaryingClicked ),"varying" );
             tab->addTab(CreateListWidget(shader_lib::GetRawModuleList(),&MainWindow::RawClicked     ),"raw"     );
             tab->addTab(CreateListWidget(shader_lib::GetStructList(),   &MainWindow::StructClicked  ),"struct"  );
+            tab->addTab(CreateListWidget(shader_lib::GetModuleList(),   &MainWindow::ModuleClicked  ),"module"  );
         }
 
         tab->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
