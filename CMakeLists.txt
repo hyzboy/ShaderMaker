@@ -66,6 +66,7 @@ IF(CM_BUILD_GUI_TOOLS)
     set(IDENTIFIER "com.hyzgame.materialbuilder")
     SET(MATERIAL_BUILDER_SOURCE gui/MaterialBuilder.cpp
                                 gui/MaterialBuilder.qrc
+                                gui/GLSLSyntaxHighlighter.cpp
                                 gui/MainWindowMenu.cpp
                                 gui/MainWindow.cpp
                                 gui/MainWindow.h

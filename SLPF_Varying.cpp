@@ -11,6 +11,7 @@ namespace shader_lib
 
     namespace
     {
+        UTF8StringList varying_list;
         MapObject<UTF8String,VaryingConfig> varying_config_list;
     //-------------------------------------------------------------------------------
         class VaryingElementCreater:public xml::ElementAttribute
@@ -70,6 +71,11 @@ namespace shader_lib
         };//class ShaderLibRootElementCreater:public xml::ElementCreater
     }//namespace
 
+    const UTF8StringList &GetVaryingList()
+    {
+        return varying_list;
+    }
+
     bool CheckVarying(const UTF8String &name)
     {
         return varying_config_list.KeyExist(name);
@@ -119,8 +125,11 @@ namespace shader_lib
         }
 
         const OSString fn=filesystem::ClipFileMainname(filename);
+        const UTF8String u8fn=to_u8(fn);
 
-        varying_config_list.Add(to_u8(fn),vc);
+        varying_config_list.Add(u8fn,vc);
+        varying_list.Add(u8fn);
+
         return(true);
     }
 }//namespace shader_lib

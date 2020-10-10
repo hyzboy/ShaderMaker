@@ -1,4 +1,11 @@
 #include<QMainWindow>
+#include<QTreeWidgetItem>
+#include<QListWidget>
+#include<QTextEdit>
+#include<QSyntaxHighlighter>
+#include<hgl/type/StringList.h>
+
+using namespace hgl;
 
 class MainWindow:public QMainWindow
 {
@@ -8,7 +15,24 @@ private:
 
     void about();
 
+private:
+
     void InitMenu();
+
+private:    // shaderlib tree
+
+    typedef void (MainWindow::*ShaderLibItemClickedFunc)(QListWidgetItem *);
+
+    QTextEdit *sl_preview;
+    QSyntaxHighlighter *highlighter;
+
+    void VaryingClicked(QListWidgetItem *item);
+    void RawClicked(QListWidgetItem *item);
+    void StructClicked(QListWidgetItem *item);
+    void ModuleClicked(QListWidgetItem *item);
+
+    QListWidget *CreateListWidget(const UTF8StringList &str_list,ShaderLibItemClickedFunc);
+    QWidget *CreateShaderLibWidget(QWidget *parent);
 
 public:
 

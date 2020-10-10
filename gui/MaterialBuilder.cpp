@@ -3,6 +3,8 @@
 #include<QStyle>
 #include<QDesktopWidget>
 #include<QMessageBox>
+#include<QDir>
+#include<QFileDialog>
 #include"MainWindow.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
@@ -18,18 +20,29 @@ bool InitShaderLibPath(OSString &path)
     
     if(!filesystem::GetLocalAppdataPath(cur_path))
     {
-        QMessageBox::information(nullptr,"Fatal Error","Get path failed which Local AppData",QMessageBox::StandardButton::Abort);
+        QMessageBox::warning(nullptr,"Fatal Error","Get path failed which Local AppData",QMessageBox::StandardButton::Abort);
         
         return(false);
     }
 
-    filename=filesystem::MergeFilename(cur_path, OS_TEXT("shader_libs.config"));
+    filename=filesystem::MergeFilename(cur_path,OS_TEXT("shader_libs.config"));
 
     if(!filesystem::FileExist(filename))
     {
-        QMessageBox::information(nullptr, "Warning", toQString(OS_TEXT("We don't find the config file, please select a new folder.\nThe config file should use filename: \n\n\t")+filename), QMessageBox::StandardButton::Ok);
+        QMessageBox::warning(nullptr, "Warning", toQString(OS_TEXT("We don't find the config file, please select a new folder.\nThe config file should use filename: \n\n\t")+filename), QMessageBox::StandardButton::Ok);
 
-        return(false);
+        QString path_name=QFileDialog::getExistingDirectory(nullptr,"Select directory of ShaderLib",toQString(cur_path),QFileDialog::ShowDirsOnly|QFileDialog::DontResolveSymlinks);
+
+        if(path_name.size()<=0)
+            return(false);
+
+        path=toOSString(path_name);
+
+        filesystem::SaveMemoryToFile(filename,path.c_str(),path.Length()*sizeof(os_char));
+    }
+    else
+    {
+        LoadStringFromTextFile(path,filename,OSCharSet);
     }
 
     return(true);
@@ -39,31 +52,16 @@ int main(int argc,char **argv)
 {
     QApplication qt_app(argc, argv);
 
-    OSString cfg_path;
+    OSString shader_lib_path;
 
-    if(InitShaderLibPath(cfg_path))
-    {
-    }
-    else
-    {
-    }
-
-    OSString cur_path;
-
-    if(!filesystem::GetCurrentPath(cur_path))
-    {
-        os_err<<OS_TEXT("GetCurrentPath failed!")<<std::endl;
+    if(!InitShaderLibPath(shader_lib_path))
         return(-1);
-    }
-
-    const OSString shader_lib_path=filesystem::MergeFilename(cur_path,OS_TEXT("shader_libs"));
 
     if(!shader_lib::LoadFromFolder(shader_lib_path))
     {
         os_err<<OS_TEXT("Load ShaderLib failed!")<<std::endl;
         return(-2);
     }
-
     
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
 

@@ -9,7 +9,13 @@ namespace shader_lib
 
     namespace
     {
+        UTF8StringList raw_shader_name_list;
         MapObject<UTF8String,UTF8StringList> raw_shader_list;
+    }
+
+    const UTF8StringList &GetRawModuleList()
+    {
+        return raw_shader_name_list;
     }
 
     bool CheckRawModule(const UTF8String &name)
@@ -62,7 +68,8 @@ namespace shader_lib
 
         std::cout<<u8"Raw Module: "<<raw_name.c_str()<<std::endl;
 
-        raw_shader_list.Add(to_u8(fn),file);
+        raw_shader_list.Add(raw_name,file);
+        raw_shader_name_list.Add(raw_name);
 
         const int count=file->GetCount();
 

@@ -16,8 +16,10 @@ namespace shader_lib
             UTF8StringList codes;
         };//
 
+        UTF8StringList struct_name_list;
         MapObject<UTF8String,ShaderStruct> struct_list;
 
+        UTF8StringList module_name_list;
         MapObject<UTF8String,XMLShaderModule> xml_module_list;
 
         class StructElementCreater:public xml::ElementAttribute
@@ -71,6 +73,7 @@ namespace shader_lib
                 std::cout<<"        };"<<std::endl;
 
                 struct_list.Add(name,ss);
+                struct_name_list.Add(name);
 
                 xsm->struct_list.Add(name);
                 ss=nullptr;
@@ -159,6 +162,11 @@ namespace shader_lib
         };//class RootElementCreater:public ElementCreater
     }//namespace
 
+    const UTF8StringList &GetStructList()
+    {
+        return struct_name_list;
+    }
+
     bool CheckStruct(const UTF8String &name)
     {
         return struct_list.KeyExist(name);
@@ -222,10 +230,17 @@ namespace shader_lib
         }
 
         const OSString module_name=filesystem::ClipFileMainname(filename);
+        const UTF8String u8name=to_u8(module_name);
 
-        xml_module_list.Add(to_u8(module_name),xsm);
+        xml_module_list.Add(u8name,xsm);
+        module_name_list.Add(u8name);
 
         return(true);
+    }
+
+    const UTF8StringList &GetModuleList()
+    {
+        return module_name_list;
     }
 
     bool CheckModule(const UTF8String &module_name)
