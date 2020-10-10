@@ -67,10 +67,14 @@ IF(CM_BUILD_GUI_TOOLS)
     SET(MATERIAL_BUILDER_SOURCE gui/MaterialBuilder.cpp
                                 gui/MaterialBuilder.qrc
                                 gui/GLSLSyntaxHighlighter.cpp
+                                gui/ConfigData.cpp
+                                gui/ConfigData.h
                                 gui/MainWindowMenu.cpp
                                 gui/MainWindow.cpp
                                 gui/MainWindowShaderLib.cpp
                                 gui/MainWindow.h
+                                gui/DLG_PathConfig.cpp
+                                gui/DLG_PathConfig.h
                                 gui/DLG_About.cpp
                                 gui/DLG_About.h
                                 gui/ShaderLibTree.cpp
