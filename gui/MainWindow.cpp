@@ -28,21 +28,32 @@ void MainWindow::Init()
     QHBoxLayout *layout=new QHBoxLayout(widget);
     QSplitter *splitter=new QSplitter(Qt::Horizontal,widget);
 
+   //左侧ShaderLib区/Material区
     {
-        QWidget *shader_lib=CreateShaderLibWidget(splitter);
+        QTabWidget *left_tab=new QTabWidget(splitter);
 
-        shader_lib->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
+        left_tab->addTab(CreateShaderLibraryWidget(),"Shader Library");
+        left_tab->addTab(CreateMaterialLibraryWidget(),"Your Material Library");
+
+        left_tab->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
     }
 
+    //右侧shader编辑区
     {
-        QTabWidget *shader_tab=new QTabWidget(splitter);
+        //QWidget *edit_area_widget=new QWidget(splitter);
+        //QVBoxLayout *edit_area_layout=new QVBoxLayout(edit_area_widget);
 
+        //第二排，编辑区
         {
-            shader_tab->addTab(CreateShaderEditorTabpage(),"Vertex");
-            shader_tab->addTab(CreateShaderEditorTabpage(),"Geometry");
-            shader_tab->addTab(CreateShaderEditorTabpage(),"Fragment");
+            QTabWidget *shader_tab=new QTabWidget(splitter);
+
+            {
+                shader_tab->addTab(CreateShaderEditorTabpage(),"Vertex");
+                shader_tab->addTab(CreateShaderEditorTabpage(),"Geometry");
+                shader_tab->addTab(CreateShaderEditorTabpage(),"Fragment");
+            }
+            shader_tab->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
         }
-        shader_tab->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     }
 
     {

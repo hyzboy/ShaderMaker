@@ -101,6 +101,11 @@ public:
         }
         //! [1]
 
+        sharpFormat.setForeground(Qt::darkGreen);
+        rule.pattern=QRegularExpression(QStringLiteral("#\\w*"));
+        rule.format=sharpFormat;
+        highlightingRules.append(rule);
+
         integerFormat.setForeground(Qt::red);
         rule.pattern=QRegularExpression(QStringLiteral("\\b\\+?\\-?[0-9]+e?\\+?\\-?[0-9]*\\b"));
         rule.format=integerFormat;
@@ -117,20 +122,16 @@ public:
         highlightingRules.append(rule);
 
         //! [2]
-        classFormat.setFontWeight(QFont::Bold);
-        classFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegularExpression(QStringLiteral("\\bQ[A-Za-z]+\\b"));
-        rule.format = classFormat;
-        highlightingRules.append(rule);
-        //! [2]
 
         //! [3]
         singleLineCommentFormat.setForeground(Qt::gray);
+        singleLineCommentFormat.setFontItalic(true);
         rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
         multiLineCommentFormat.setForeground(Qt::gray);
+        multiLineCommentFormat.setFontItalic(true);
         //! [3]
 
         //! [4]
@@ -141,7 +142,6 @@ public:
         //! [4]
 
         //! [5]
-        functionFormat.setFontItalic(true);
         functionFormat.setForeground(Qt::blue);
         rule.pattern = QRegularExpression(QStringLiteral("\\b[A-Za-z0-9_]+(?=\\()"));
         rule.format = functionFormat;
@@ -207,12 +207,13 @@ private:
     QRegularExpression commentStartExpression;
     QRegularExpression commentEndExpression;
 
+    QTextCharFormat sharpFormat;
     QTextCharFormat integerFormat;
     QTextCharFormat floatFormat;
     QTextCharFormat symbolFormat;
 
     QTextCharFormat keywordFormat;
-    QTextCharFormat classFormat;
+
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;

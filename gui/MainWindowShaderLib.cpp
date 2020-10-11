@@ -79,9 +79,9 @@ void MainWindow::ModuleClicked(QListWidgetItem *item)
     shader_lib::XMLShaderModule *sm=shader_lib::GetShaderModule(toUTF8String(item->text()));
 }
 
-QWidget *MainWindow::CreateShaderLibWidget(QWidget *parent)
+QWidget *MainWindow::CreateShaderLibraryWidget()
 {
-    QWidget *widget=new QWidget(parent);
+    QWidget *widget=new QWidget();
     QVBoxLayout *layout=new QVBoxLayout(widget);
     QSplitter *splitter=new QSplitter(Qt::Vertical,widget);
 
@@ -89,6 +89,8 @@ QWidget *MainWindow::CreateShaderLibWidget(QWidget *parent)
 
     {
         QTabWidget *tab=new QTabWidget(splitter);
+
+        tab->setTabPosition(QTabWidget::TabPosition::South);
 
         {
             tab->addTab(CreateListWidget(shader_lib::GetVaryingList(),  &MainWindow::VaryingClicked ),"varying" );
@@ -105,6 +107,7 @@ QWidget *MainWindow::CreateShaderLibWidget(QWidget *parent)
 
         highlighter=CreateGLSLSyntaxHighlighter(sl_preview->document());
 
+        sl_preview->setFrameShape(QFrame::NoFrame);
         sl_preview->setReadOnly(true);
         sl_preview->setLineWrapMode(QTextEdit::NoWrap);
         sl_preview->setTabStopWidth(4);

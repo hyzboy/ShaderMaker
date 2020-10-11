@@ -37,7 +37,9 @@ private:    // shaderlib tree
     void ModuleClicked(QListWidgetItem *item);
 
     QListWidget *CreateListWidget(const UTF8StringList &str_list,ShaderLibItemClickedFunc);
-    QWidget *CreateShaderLibWidget(QWidget *parent);
+
+    QWidget *CreateShaderLibraryWidget();
+    QWidget *CreateMaterialLibraryWidget();
 
 public:
 
