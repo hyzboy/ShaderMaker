@@ -3,6 +3,18 @@
 #include<QLabel>
 #include<QPushButton>
 #include<QFileDialog>
+#include<QMessageBox>
+#include<hgl/type/QTString.h>
+#include<hgl/filesystem/FileSystem.h>
+#include"ConfigData.h"
+
+using namespace hgl;
+using namespace hgl::filesystem;
+
+void SetShaderLibraryPath(const OSString &path);
+void SetMaterialSourcePath(const OSString &path);
+void SetMaterialOutputPath(const OSString &path);
+void SaveConfigData();
 
 class BrowserButton:public QPushButton
 {
@@ -34,7 +46,7 @@ public:
     }
 };//class BrowserButton:public QPushButton
 
-void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name)
+void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name,const OSString &str)
 {
     QLabel *lab=new QLabel(parent);
     lab->setText(name);
@@ -42,6 +54,7 @@ void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name)
     QLineEdit *edit=new QLineEdit(parent);
     edit->setMinimumWidth(512);
     edit->setReadOnly(true);
+    edit->setText(toQString(str));
 
     BrowserButton *but=new BrowserButton(parent,edit);
 
@@ -60,18 +73,82 @@ DLGPathConfig::DLGPathConfig()
     QWidget *widget=new QWidget(this);
     QVBoxLayout *layout=new QVBoxLayout(widget);
 
+    //三个目录“标签、输入框、浏览按钮”
     {
         QWidget *grid_widget=new QWidget(widget);
         grid_layout=new QGridLayout(grid_widget);
 
         {
-            CreateGroup(grid_widget,0,"ShaderLib path:");
-            CreateGroup(grid_widget,1,"Material path:");
-            CreateGroup(grid_widget,2,"Output path:");
+            CreateGroup(grid_widget,0,"Shader Library path:",   GetShaderLibraryPath());
+            CreateGroup(grid_widget,1,"Material Source path:",  GetMaterialSourcePath());
+            CreateGroup(grid_widget,2,"Material Output path:",  GetMaterialOutputPath());
         }
 
         layout->addWidget(grid_widget);
     }
 
+    //按钮区
+    {
+        QWidget *button_widget=new QWidget(widget);
+        QHBoxLayout *button_layout=new QHBoxLayout(button_widget);
+
+        //确定、取消按钮
+        {
+            QPushButton *ok_button=new QPushButton(button_widget);
+            ok_button->setText("OK");
+            connect(ok_button,&QPushButton::clicked,this,&DLGPathConfig::OnOKClicked);
+
+            button_layout->addWidget(ok_button,0,Qt::AlignRight);
+
+            QPushButton *cancel_button=new QPushButton(button_widget);
+            cancel_button->setText("Cancel");
+            connect(cancel_button,&QPushButton::clicked,this,&DLGPathConfig::OnCancelClicked);
+            
+            button_layout->addWidget(cancel_button,0,Qt::AlignLeft);
+        }
+
+        layout->addWidget(button_widget);
+    }
+
     resize(layout->sizeHint());
+}
+
+void DLGPathConfig::OnOKClicked()
+{
+    OSString s_path=toOSString(path_edit[0]->text());
+    OSString m_path=toOSString(path_edit[1]->text());
+    OSString o_path=toOSString(path_edit[2]->text());
+
+    if(!IsDirectory(s_path))
+    {
+        QMessageBox::warning(nullptr,"Fatal Error","can't find Shader Library path.",QMessageBox::StandardButton::Abort);
+
+        return;
+    }
+
+    if(!IsDirectory(m_path))
+    {
+        QMessageBox::warning(nullptr,"Fatal Error","can't find Material Source path.",QMessageBox::StandardButton::Abort);
+
+        return;
+    }
+
+    if(!IsDirectory(o_path))
+    {
+        QMessageBox::warning(nullptr,"Fatal Error","can't find Material Output path.",QMessageBox::StandardButton::Abort);
+
+        return;
+    }
+
+    SetShaderLibraryPath(s_path);
+    SetMaterialSourcePath(m_path);
+    SetMaterialOutputPath(o_path);
+    SaveConfigData();
+
+    close();
+}
+
+void DLGPathConfig::OnCancelClicked()
+{
+    close();
 }

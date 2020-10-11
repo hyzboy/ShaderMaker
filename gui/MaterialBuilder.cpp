@@ -21,9 +21,10 @@ int main(int argc,char **argv)
         DLGPathConfig dlg;
 
         dlg.show();
+        qt_app.exec();
     }
 
-    OSString shader_lib_path=GetShaderLibPath();
+    OSString shader_lib_path=GetShaderLibraryPath();
 
     if(!shader_lib::LoadFromFolder(shader_lib_path))
     {

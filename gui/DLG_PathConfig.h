@@ -1,5 +1,6 @@
 #pragma once
 
+#include<hgl/type/String.h>
 #include<QDialog>
 #include<QGridLayout>
 #include<QLineEdit>
@@ -14,7 +15,12 @@ private:
 
     QLineEdit *path_edit[3];
 
-    void CreateGroup(QWidget *,int,const QString &);
+    void CreateGroup(QWidget *,int,const QString &,const hgl::OSString &);
+
+private:
+
+    void OnOKClicked();
+    void OnCancelClicked();
 
 public:
 
