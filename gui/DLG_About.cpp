@@ -10,6 +10,9 @@
 #include<QUrl>
 #include<QPixmap>
 #include<hgl/type/DataType.h>
+#include<hgl/type/QTString.h>
+#include<hgl/util/xml/XMLParse.h>
+#include<hgl/util/json/JsonTool.h>
 
 QWidget *DLGAbout::CreateIconAndNameLayout(QWidget *parent)
 {
@@ -33,7 +36,7 @@ QWidget *DLGAbout::CreateIconAndNameLayout(QWidget *parent)
             fnt.setBold(true);
             fnt.setFamily("Tahoma");
             name_label->setFont(fnt);
-            name_label->setText(tr("MaterialEditor"));
+            name_label->setText(tr("MaterialBuilder"));
             vlayout->addWidget(name_label);
         }
 
@@ -57,10 +60,13 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     about_text->setOpenExternalLinks(true);
     about_text->setFrameShape(QFrame::NoFrame);
     about_text->setHtml("<html><body>\n"
-                        "<p>MaterialEditor</p>\n"
-                        "<p>Copyright (C) 2018-2020 " HGL_OFFICAL_WEB "</p>"
+                        "<p>MaterialBuilder</p>\n"
+                        "<p>Copyright (C) 2018-2020 <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
+
+    const QString expat_ver=toQString(hgl::xml::GetExpatVersion());
+    const QString json_ver=toQString(hgl::GetJsoncppVersion());
 
     QTextBrowser *lib_text=new QTextBrowser();
     lib_text->setOpenExternalLinks(true);
@@ -68,7 +74,8 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     lib_text->setHtml(  "<html><body>\n"
                         "<ul>"
                             "<li> <a href=\"https://www.qt.io/\">Qt " QT_VERSION_STR "</a></li>\n"
-                            "<li> <a href=\"https://github.com/libexpat/libexpat\">libexpat</a></li>\n"
+                            "<li> <a href=\"https://github.com/libexpat/libexpat\">libexpat "+expat_ver+"</a></li>\n"
+                            "<li> <a href=\"https://github.com/open-source-parsers/jsoncpp\">jsoncpp "+json_ver+"</a></li>\n"
                             "<li> <a href=\"https://github.com/hyzboy/GLSLCompiler\">GLSLCompiler v1.02</a></li>\n"
                             "<ul>"
                                 "<li> <a href=\"https://github.com/KhronosGroup/glslang\">glslang</a></li>\n"
@@ -83,11 +90,11 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     tab->addTab(lib_text,tr("Libraries"));
 
 #if HGL_OS == HGL_OS_Windows
-    const uint major = _MSC_VER / 100;
-    const uint minor = _MSC_VER % 100;
-    const uint patch = _MSC_FULL_VER % 100000;
+    const uint msc_major = _MSC_VER / 100;
+    const uint msc_minor = _MSC_VER % 100;
+    const uint msc_patch = _MSC_FULL_VER % 100000;
 
-    const QString msvc_ver = QString::number(major) + "." +QString::number(minor) + "." + QString::number(patch);
+    const QString msvc_ver = QString::number(msc_major) + "." +QString::number(msc_minor) + "." + QString::number(msc_patch);
 #endif//
     const QString text_compiler=tr("Compiler");
     const QString text_build_time=tr("Build-Time");

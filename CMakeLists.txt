@@ -7,8 +7,7 @@ add_definitions(-DUNICODE -D_UNICODE)
 SET(SHADER_COMPILER_LIBRARY CMCore
                             CMPlatform
                             CMUtil
-                            CMSceneGraph
-                            libexpat)
+                            CMSceneGraph)
 
 macro(shader_maker_project project_name)
     target_link_libraries(${project_name} PRIVATE ${SHADER_COMPILER_LIBRARY})
