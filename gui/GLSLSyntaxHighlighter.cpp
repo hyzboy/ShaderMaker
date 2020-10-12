@@ -125,13 +125,11 @@ public:
 
         //! [3]
         singleLineCommentFormat.setForeground(Qt::gray);
-        singleLineCommentFormat.setFontItalic(true);
         rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
         multiLineCommentFormat.setForeground(Qt::gray);
-        multiLineCommentFormat.setFontItalic(true);
         //! [3]
 
         //! [4]

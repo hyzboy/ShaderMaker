@@ -11,35 +11,15 @@ class MainWindow:public QMainWindow
 {
     Q_OBJECT
 
-private:
+private:    //menu
 
-    void about();
+    void OnAbout();
 
-    void NewMaterialFile();
-    void OpenMaterialFile();
-
-    void PathConfig();
-
-private:
+    void OnNewMaterialFile();
+    void OnOpenMaterialFile();
+    void OnPathConfig();
 
     void InitMenu();
-
-private:    // shaderlib tree
-
-    typedef void (MainWindow::*ShaderLibItemClickedFunc)(QListWidgetItem *);
-
-    QTextEdit *sl_preview;
-    QSyntaxHighlighter *highlighter;
-
-    void VaryingClicked(QListWidgetItem *item);
-    void RawClicked(QListWidgetItem *item);
-    void StructClicked(QListWidgetItem *item);
-    void ModuleClicked(QListWidgetItem *item);
-
-    QListWidget *CreateListWidget(const UTF8StringList &str_list,ShaderLibItemClickedFunc);
-
-    QWidget *CreateShaderLibraryWidget();
-    QWidget *CreateMaterialLibraryWidget();
 
 public:
 

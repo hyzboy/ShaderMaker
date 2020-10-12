@@ -11,40 +11,40 @@ void MainWindow::InitMenu()
     {
         QMenu *file_menu=menu_bar->addMenu(tr("&File"));
 
-        file_menu->addAction(tr("&New"),this,&MainWindow::NewMaterialFile);
-        file_menu->addAction(tr("&Open"),this,&MainWindow::OpenMaterialFile);
+        file_menu->addAction(tr("&New"),this,&MainWindow::OnNewMaterialFile);
+        file_menu->addAction(tr("&Open"),this,&MainWindow::OnOpenMaterialFile);
     }
 
     {
         QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
-        setup_menu->addAction(tr("&Path"),this,&MainWindow::PathConfig);
+        setup_menu->addAction(tr("&Path"),this,&MainWindow::OnPathConfig);
     }
     
     {
         QMenu *about_menu=menu_bar->addMenu(tr("&About"));
 
-        about_menu->addAction(tr("&About"),this,&MainWindow::about);
+        about_menu->addAction(tr("&About"),this,&MainWindow::OnAbout);
         about_menu->addAction(tr("About &Qt"),this,&QApplication::aboutQt);
     }
 }
 
-void MainWindow::about()
+void MainWindow::OnAbout()
 {
     DLGAbout *dlg=new DLGAbout();
 
     dlg->show();        
 }
 
-void MainWindow::NewMaterialFile()
+void MainWindow::OnNewMaterialFile()
 {
 }
 
-void MainWindow::OpenMaterialFile()
+void MainWindow::OnOpenMaterialFile()
 {
 }
 
-void MainWindow::PathConfig()
+void MainWindow::OnPathConfig()
 {
     DLGPathConfig *dlg=new DLGPathConfig();
     
