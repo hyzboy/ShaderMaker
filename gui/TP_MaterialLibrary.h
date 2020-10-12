@@ -7,6 +7,7 @@
 #include<QHBoxLayout>
 #include"GLSLTextEdit.h"
 #include<hgl/type/String.h>
+#include"InfoOutput.h"
 
 #define ML_TYPE_MATERIAL   "Material"
 #define ML_TYPE_VERTEX     "Vertex"
@@ -30,6 +31,8 @@ private:
     void OnFileChanged(QTreeWidgetItem *,int);
 
     void InitEditor(QWidget *);
+
+    InfoOutput *info_output;
     
     QWidget *build_widget;
     QHBoxLayout *build_layout;

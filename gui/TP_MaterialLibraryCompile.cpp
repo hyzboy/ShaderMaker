@@ -11,7 +11,9 @@ void TPMaterialLibrary::OnConvertToGLSL()
      ||type==ML_TYPE_GEOMETRY
      ||type==ML_TYPE_FRAGMENT)
     {
-        shader_lib::Sha
+        OnSave();
+
+        shader_lib::LoadXMLShader(filename,
     }
 }
 

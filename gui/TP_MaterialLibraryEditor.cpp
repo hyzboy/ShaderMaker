@@ -7,6 +7,10 @@
 using namespace hgl;
 using namespace hgl::filesystem;
 
+class QTInfoOutput:public InfoOutput
+{
+};//
+
 void TPMaterialLibrary::InitEditor(QWidget *parent)
 {
     QSplitter *right_splitter=new QSplitter(Qt::Vertical,parent);

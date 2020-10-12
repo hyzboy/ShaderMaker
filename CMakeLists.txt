@@ -32,6 +32,8 @@ SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
+                            InfoOutput.h
+                            InfoOutput.cpp
                             XMLShader.h
                             XMLShader.cpp
                             SLP_Folder.cpp
@@ -78,7 +80,7 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/TP_Raw.cpp
                                 gui/TP_Raw.h
                                 gui/TP_Module.cpp
-                                gui/TP_Module.h                                
+                                gui/TP_Module.h
                                 gui/TP_MaterialLibraryEditor.cpp
                                 gui/TP_MaterialLibraryFileTree.cpp
                                 gui/TP_MaterialLibraryCompile.cpp

@@ -175,7 +175,7 @@ namespace shader_lib
         };//class XMLShaderRootElementCreater:public xml::ElementCreater
     }//namespace
 
-    XMLShader *LoadXMLShader(const OSString &filename)
+    XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *info_out)
     {
         if(!filesystem::FileExist(filename))
         {
@@ -193,6 +193,14 @@ namespace shader_lib
 
         if(!xml::XMLParseFile(&xml,filename))
         {
+            if(info_out)
+            {
+                int code,row,col;
+                xml.GetError(&code,&row,&col);
+
+                (*info_out)<<"[XML Error] Code: "<<code<<" Row:"<<row<<" Col:<<"<<col<<"\n";
+            }
+
             delete xml_shader;
             return(nullptr);
         }

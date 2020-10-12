@@ -3,6 +3,7 @@
 #include<hgl/type/StringList.h>
 #include<hgl/type/Map.h>
 #include"XMLShader.h"
+#include"InfoOutput.h"
 
 namespace shader_lib
 {
@@ -41,7 +42,7 @@ namespace shader_lib
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
 
-    XMLShader *LoadXMLShader(const OSString &);
+    XMLShader *LoadXMLShader(const OSString &,InfoOutput *);
 
     enum ShaderStageBits        //等同VkShaderStageFlagBits
     {
