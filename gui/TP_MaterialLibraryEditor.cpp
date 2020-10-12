@@ -21,24 +21,16 @@ void TPMaterialLibrary::InitEditor(QWidget *parent)
     }
 
     {
-        QWidget *build_widget=new QWidget(right_splitter);
-        QHBoxLayout *build_layout=new QHBoxLayout(build_widget);
+        build_widget=new QWidget(right_splitter);
+        build_layout=new QHBoxLayout(build_widget);
 
         build_layout->setContentsMargins(0,0,0,0);
 
         {
-            save_button=new QPushButton("Save",build_widget);                
-            build_layout->addWidget(save_button,0,Qt::AlignLeft);
-            connect(save_button,&QPushButton::clicked,this,&TPMaterialLibrary::OnSave);
-
-            convert_to_glsl_button=new QPushButton("Convert to GLSL",build_widget);
-            build_layout->addWidget(convert_to_glsl_button,0,Qt::AlignLeft);
-
-            convert_and_compile_button=new QPushButton("Convert&&Compile",build_widget);
-            build_layout->addWidget(convert_and_compile_button,0,Qt::AlignLeft);
-
-            build_button=new QPushButton("Build",build_widget);                
-            build_layout->addWidget(build_button,0,Qt::AlignLeft);
+            save_button                 =CreateButton("Save",               &TPMaterialLibrary::OnSave);
+            convert_to_glsl_button      =CreateButton("Convert to GLSL",    &TPMaterialLibrary::OnConvertToGLSL);
+            convert_and_compile_button  =CreateButton("Convert&&Compile",   &TPMaterialLibrary::OnConvertAndCompile);
+            build_button                =CreateButton("Build",              &TPMaterialLibrary::OnBuild);
 
             build_layout->addStretch();
 
@@ -62,6 +54,16 @@ void TPMaterialLibrary::InitEditor(QWidget *parent)
     right_splitter->setStretchFactor(0,5);
     right_splitter->setStretchFactor(1,0);
     right_splitter->setStretchFactor(2,2);
+}
+
+QPushButton *TPMaterialLibrary::CreateButton(const QString &name,void (TPMaterialLibrary::*func)())
+{
+    QPushButton *button=new QPushButton(name,build_widget);
+    build_layout->addWidget(button,0,Qt::AlignLeft);
+    connect(button,&QPushButton::clicked,this,func);
+    button->setHidden(true);
+
+    return button;
 }
 
 void TPMaterialLibrary::OnCursorPositionChanged()
@@ -92,6 +94,7 @@ void TPMaterialLibrary::OnTextChanged()
     text_changed=true;
 
     save_button->setEnabled(true);
+    save_button->setHidden(false);
 }
 
 void TPMaterialLibrary::OnSave()
@@ -106,4 +109,5 @@ void TPMaterialLibrary::OnSave()
 
     text_changed=false;
     save_button->setEnabled(false);
+    save_button->setHidden(true);
 }

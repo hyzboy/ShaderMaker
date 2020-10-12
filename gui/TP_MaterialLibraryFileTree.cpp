@@ -6,37 +6,32 @@
 using namespace hgl;
 using namespace hgl::filesystem;
 
-#define TYPE_MATERIAL   "Material"
-#define TYPE_VERTEX     "Vertex"
-#define TYPE_GEOMETRY   "Geometry"
-#define TYPE_FRAGMENT   "Fragment"
-
 QTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name,const QString &type="",const QString &fullname="")
 {
     QTreeWidgetItem *item=new QTreeWidgetItem(parent);
 
-    item->setText(COLUMN_NAME,name);
+    item->setText(ML_COLUMN_NAME,name);
 
     if(type=="folder")
     {
     }
     else
     {
-        item->setText(COLUMN_TYPE,type);
+        item->setText(ML_COLUMN_TYPE,type);
 
         QColor color;
 
-        if(type==TYPE_MATERIAL  )color=QColor( 64, 64,255);else
-        if(type==TYPE_VERTEX    )color=QColor(255, 64, 64);else
-        if(type==TYPE_GEOMETRY  )color=QColor( 64,128,128);else
-        if(type==TYPE_FRAGMENT  )color=QColor(128,128, 64);else
+        if(type==ML_TYPE_MATERIAL  )color=QColor( 64, 64,255);else
+        if(type==ML_TYPE_VERTEX    )color=QColor(255, 64, 64);else
+        if(type==ML_TYPE_GEOMETRY  )color=QColor( 64,128,128);else
+        if(type==ML_TYPE_FRAGMENT  )color=QColor(128,128, 64);else
             color=item->textColor(0);
         
-        item->setTextColor(COLUMN_NAME,color);
-        item->setTextColor(COLUMN_TYPE,color);
+        item->setTextColor(ML_COLUMN_NAME,color);
+        item->setTextColor(ML_COLUMN_TYPE,color);
     }
 
-    item->setText(COLUMN_FILENAME,fullname);
+    item->setText(ML_COLUMN_FILENAME,fullname);
 
     return item;
 }
@@ -96,10 +91,10 @@ public:
         QTreeWidgetItem *item=nullptr;
 
         #define CONFIRM_FILE_TYPE(name,short_name)  if(type_name.CaseComp(OS_TEXT(short_name))==0)  \
-                                                        item=CreateFileItem(emfc->node,ToQString(main_name),TYPE_##name,ToQString(fi.fullname)); \
+                                                        item=CreateFileItem(emfc->node,ToQString(main_name),ML_TYPE_##name,ToQString(fi.fullname)); \
                                                     else
 
-        CONFIRM_FILE_TYPE(MATERIAL, "Material")
+        CONFIRM_FILE_TYPE(MATERIAL, "material")
         CONFIRM_FILE_TYPE(VERTEX,   "vert")
         CONFIRM_FILE_TYPE(GEOMETRY, "geom")
         CONFIRM_FILE_TYPE(FRAGMENT, "frag")

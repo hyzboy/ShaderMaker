@@ -68,4 +68,7 @@ namespace shader_lib
         uint32 shader_bits=0;
         MapObject<uint32,XMLShader> shaders;
     };//struct XMLMaterial
+
+    XMLShader *LoadXMLShader(const OSString &filename);
+    bool XMLShaderMaker(const OSString &filename,XMLShader *xs);
 }//namespace shader_lib

@@ -4,12 +4,18 @@
 #include<QTreeWidget>
 #include<QPushButton>
 #include<QLabel>
+#include<QHBoxLayout>
 #include"GLSLTextEdit.h"
 #include<hgl/type/String.h>
 
-#define COLUMN_NAME     0
-#define COLUMN_TYPE     1
-#define COLUMN_FILENAME 2
+#define ML_TYPE_MATERIAL   "Material"
+#define ML_TYPE_VERTEX     "Vertex"
+#define ML_TYPE_GEOMETRY   "Geometry"
+#define ML_TYPE_FRAGMENT   "Fragment"
+
+#define ML_COLUMN_NAME     0
+#define ML_COLUMN_TYPE     1
+#define ML_COLUMN_FILENAME 2
 
 class TPMaterialLibrary:public QWidget
 {
@@ -24,6 +30,9 @@ private:
     void OnFileChanged(QTreeWidgetItem *,int);
 
     void InitEditor(QWidget *);
+    
+    QWidget *build_widget;
+    QHBoxLayout *build_layout;
 
     GLSLTextEdit *glsl_editor;
     QLabel *editor_hint;
@@ -33,6 +42,7 @@ private:
     QPushButton *convert_and_compile_button;
     QPushButton *build_button;
 
+    QPushButton *CreateButton(const QString &name,void (TPMaterialLibrary::*slot)());
     void OnCursorPositionChanged();
 
     hgl::OSString filename;
@@ -40,6 +50,9 @@ private:
     void OnTextChanged();
 
     void OnSave();
+    void OnConvertToGLSL();
+    void OnConvertAndCompile();
+    void OnBuild();
 
 public:
 

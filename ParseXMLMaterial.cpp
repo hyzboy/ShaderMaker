@@ -9,9 +9,6 @@
 namespace shader_lib
 {
     using namespace hgl;
-    
-    XMLShader *LoadXMLShader(const OSString &filename);
-    bool XMLShaderMaker(const OSString &filename,XMLShader *xs);
 
     namespace
     {
