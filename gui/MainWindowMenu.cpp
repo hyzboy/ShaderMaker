@@ -9,13 +9,6 @@ void MainWindow::InitMenu()
     QMenuBar *menu_bar=menuBar();
 
     {
-        QMenu *file_menu=menu_bar->addMenu(tr("&File"));
-
-        file_menu->addAction(tr("&New"),this,&MainWindow::OnNewMaterialFile);
-        file_menu->addAction(tr("&Open"),this,&MainWindow::OnOpenMaterialFile);
-    }
-
-    {
         QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
         setup_menu->addAction(tr("&Path"),this,&MainWindow::OnPathConfig);
@@ -34,14 +27,6 @@ void MainWindow::OnAbout()
     DLGAbout *dlg=new DLGAbout();
 
     dlg->show();        
-}
-
-void MainWindow::OnNewMaterialFile()
-{
-}
-
-void MainWindow::OnOpenMaterialFile()
-{
 }
 
 void MainWindow::OnPathConfig()

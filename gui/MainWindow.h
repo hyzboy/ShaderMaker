@@ -15,8 +15,6 @@ private:    //menu
 
     void OnAbout();
 
-    void OnNewMaterialFile();
-    void OnOpenMaterialFile();
     void OnPathConfig();
 
     void InitMenu();

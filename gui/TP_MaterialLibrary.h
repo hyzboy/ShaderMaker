@@ -7,6 +7,10 @@
 #include"GLSLTextEdit.h"
 #include<hgl/type/String.h>
 
+#define COLUMN_NAME     0
+#define COLUMN_TYPE     1
+#define COLUMN_FILENAME 2
+
 class TPMaterialLibrary:public QWidget
 {
     Q_OBJECT
@@ -18,6 +22,8 @@ private:
 
     void UpdateFileTree();
     void OnFileChanged(QTreeWidgetItem *,int);
+
+    void InitEditor(QWidget *);
 
     GLSLTextEdit *glsl_editor;
     QLabel *editor_hint;
@@ -38,5 +44,5 @@ private:
 public:
 
     TPMaterialLibrary();
-    ~TPMaterialLibrary();
+    ~TPMaterialLibrary()=default;
 };//
