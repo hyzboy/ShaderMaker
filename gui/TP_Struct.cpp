@@ -25,31 +25,14 @@ TPStruct::TPStruct()
         list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
         for(const hgl::UTF8String *str:shader_lib::GetStructList())
-            list->addItem(toQString(*str));
+            list->addItem(ToQString(*str));
 
         connect(list,&QListWidget::itemClicked,this,&TPStruct::OnStructClicked);
     }
 
     //右侧，预览区
     {
-        sl_preview=new QTextEdit(splitter);
-
-        sl_preview->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-        sl_preview->setFrameShape(QFrame::StyledPanel);
-        sl_preview->setReadOnly(true);
-        sl_preview->setLineWrapMode(QTextEdit::NoWrap);
-        sl_preview->setTabStopWidth(4);
-        {
-            QFont font=sl_preview->font();
-
-            font.setFixedPitch(true);
-            font.setStyleHint(QFont::Monospace);
-            font.setFamily("Consolas");
-
-            sl_preview->setFont(font);
-        }
-
-        highlighter=CreateGLSLSyntaxHighlighter(sl_preview->document());
+        glsl_editor=new GLSLTextEdit(splitter);
     }
 
     splitter->setStretchFactor(0,1);
@@ -64,14 +47,14 @@ TPStruct::~TPStruct()
 
 void TPStruct::OnStructClicked(QListWidgetItem *item)
 {
-    sl_preview->clear();
+    glsl_editor->clear();
 
     UTF8StringList sl;
 
-    if(!shader_lib::AddStruct(sl,U8_TEXT("struct"),toUTF8String(item->text()),U8_TEXT("")))
+    if(!shader_lib::AddStruct(sl,U8_TEXT("struct"),ToUTF8String(item->text()),U8_TEXT("")))
         return;
 
     const UTF8String str=ToString(sl,UTF8String("\n"));
 
-    sl_preview->setPlainText(toQString(str));
+    glsl_editor->setPlainText(ToQString(str));
 }

@@ -2,8 +2,7 @@
 
 #include<QWidget>
 #include<QListWidgetItem>
-#include<QTextEdit>
-#include<QSyntaxHighlighter>
+#include"GLSLTextEdit.h"
 
 class TPRawGLSL:public QWidget
 {
@@ -15,8 +14,7 @@ private:
 
 private:
 
-    QTextEdit *sl_preview;
-    QSyntaxHighlighter *highlighter;
+    GLSLTextEdit *glsl_editor;
 
 public:
 

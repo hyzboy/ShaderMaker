@@ -84,6 +84,6 @@ void SaveConfigData()
 
     if(!SaveJson(root,cfg_filename,error_info))
     {
-        QMessageBox::warning(nullptr,"Fatal Error",QString("can't save config file.\n\nfilename: ")+toQString(cfg_filename),QMessageBox::StandardButton::Abort);
+        QMessageBox::warning(nullptr,"Fatal Error",QString("can't save config file.\n\nfilename: ")+ToQString(cfg_filename),QMessageBox::StandardButton::Abort);
     }
 }

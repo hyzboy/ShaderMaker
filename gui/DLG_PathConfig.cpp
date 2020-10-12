@@ -54,7 +54,7 @@ void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name,cons
     QLineEdit *edit=new QLineEdit(parent);
     edit->setMinimumWidth(512);
     edit->setReadOnly(true);
-    edit->setText(toQString(str));
+    edit->setText(ToQString(str));
 
     BrowserButton *but=new BrowserButton(parent,edit);
 
@@ -115,9 +115,9 @@ DLGPathConfig::DLGPathConfig()
 
 void DLGPathConfig::OnOKClicked()
 {
-    OSString s_path=toOSString(path_edit[0]->text());
-    OSString m_path=toOSString(path_edit[1]->text());
-    OSString o_path=toOSString(path_edit[2]->text());
+    OSString s_path=ToOSString(path_edit[0]->text());
+    OSString m_path=ToOSString(path_edit[1]->text());
+    OSString o_path=ToOSString(path_edit[2]->text());
 
     if(!IsDirectory(s_path))
     {

@@ -65,8 +65,8 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
 
-    const QString expat_ver=toQString(hgl::xml::GetExpatVersion());
-    const QString json_ver=toQString(hgl::GetJsoncppVersion());
+    const QString expat_ver=ToQString(hgl::xml::GetExpatVersion());
+    const QString json_ver=ToQString(hgl::GetJsoncppVersion());
 
     QTextBrowser *lib_text=new QTextBrowser();
     lib_text->setOpenExternalLinks(true);

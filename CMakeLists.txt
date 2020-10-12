@@ -66,11 +66,23 @@ IF(CM_BUILD_GUI_TOOLS)
     SET(MATERIAL_BUILDER_SOURCE gui/MaterialBuilder.cpp
                                 gui/MaterialBuilder.qrc
                                 gui/GLSLSyntaxHighlighter.cpp
+                                gui/GLSLTextEdit.h
                                 gui/ConfigData.cpp
                                 gui/ConfigData.h
+                                gui/TP_ShaderLibrary.cpp
+                                gui/TP_ShaderLibrary.h
+                                gui/TP_Varying.cpp
+                                gui/TP_Varying.h
+                                gui/TP_Struct.cpp
+                                gui/TP_Struct.h
+                                gui/TP_Raw.cpp
+                                gui/TP_Raw.h
+                                gui/TP_Module.cpp
+                                gui/TP_Module.h                                
+                                gui/TP_MaterialLibrary.cpp
+                                gui/TP_MaterialLibrary.h
                                 gui/MainWindowMenu.cpp
                                 gui/MainWindow.cpp
-                                gui/MainWindowShaderLib.cpp
                                 gui/MainWindow.h
                                 gui/DLG_PathConfig.cpp
                                 gui/DLG_PathConfig.h

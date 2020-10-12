@@ -16,7 +16,7 @@ void MainWindow::Init()
 
     {
         tab->addTab(new TPShaderLibrary(),"Shader Library");
-        tab->addTab(new TPMaterialLibrary(),"Your Material Library");
+        tab->addTab(new TPMaterialLibrary(),"My Material Library");
     }
 
     this->setCentralWidget(tab);

@@ -2,8 +2,7 @@
 
 #include<QWidget>
 #include<QListWidgetItem>
-#include<QTextEdit>
-#include<QSyntaxHighlighter>
+#include"GLSLTextEdit.h"
 
 class TPModule:public QWidget
 {
@@ -19,9 +18,8 @@ private:
     QListWidget *depend_struct_list;
 
     QListWidget *CreateDependGroup(QLayout *,const QString &);
-
-    QTextEdit *sl_preview;
-    QSyntaxHighlighter *highlighter;
+    
+    GLSLTextEdit *glsl_editor;
 
 public:
 

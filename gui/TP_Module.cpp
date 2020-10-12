@@ -56,7 +56,7 @@ TPModule::TPModule()
         list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
         for(const hgl::UTF8String *str:shader_lib::GetModuleList())
-            list->addItem(toQString(*str));
+            list->addItem(ToQString(*str));
 
         connect(list,&QListWidget::itemClicked,this,&TPModule::OnModuleClicked);
     }
@@ -81,24 +81,7 @@ TPModule::TPModule()
         }
 
         {
-            sl_preview=new QTextEdit(right_splitter);
-
-            sl_preview->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-            sl_preview->setFrameShape(QFrame::StyledPanel);
-            sl_preview->setReadOnly(true);
-            sl_preview->setLineWrapMode(QTextEdit::NoWrap);
-            sl_preview->setTabStopWidth(4);
-            {
-                QFont font=sl_preview->font();
-
-                font.setFixedPitch(true);
-                font.setStyleHint(QFont::Monospace);
-                font.setFamily("Consolas");
-
-                sl_preview->setFont(font);
-            }
-
-            highlighter=CreateGLSLSyntaxHighlighter(sl_preview->document());
+            glsl_editor=new GLSLTextEdit(right_splitter);
         }
 
         right_splitter->setStretchFactor(0,1);
@@ -119,19 +102,19 @@ TPModule::~TPModule()
 
 void TPModule::OnModuleClicked(QListWidgetItem *item)
 {
-    sl_preview->clear();
+    glsl_editor->clear();
     
-    shader_lib::XMLShaderModule *sm=shader_lib::GetShaderModule(toUTF8String(item->text()));
+    shader_lib::XMLShaderModule *sm=shader_lib::GetShaderModule(ToUTF8String(item->text()));
     
     depend_raw_list->clear();
     for(const hgl::UTF8String *str:sm->depend_raw_list)
-        depend_raw_list->addItem(toQString(*str));
+        depend_raw_list->addItem(ToQString(*str));
 
     depend_struct_list->clear();
     for(const hgl::UTF8String *str:sm->struct_list)
-        depend_struct_list->addItem(toQString(*str));
+        depend_struct_list->addItem(ToQString(*str));
 
     const UTF8String str=ToString(sm->codes,UTF8String("\n"));
 
-    sl_preview->setPlainText(toQString(str));
+    glsl_editor->setPlainText(ToQString(str));
 }

@@ -1,5 +1,9 @@
+#include"GLSLTextEdit.h"
 #include<QSyntaxHighlighter>
 #include<QRegularExpression>
+#include<QTextBlock>
+#include<QPainter>
+#include<QRegExp>
 
 class GLSLHighlighter:public QSyntaxHighlighter
 {
@@ -133,9 +137,9 @@ public:
         //! [3]
 
         //! [4]
-        quotationFormat.setForeground(Qt::darkGreen);
-        rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
-        rule.format = quotationFormat;
+        stringFormat.setForeground(QColor(255,106,0));
+        rule.pattern = QRegularExpression(QStringLiteral("\"\\S*\""));
+        rule.format = stringFormat;
         highlightingRules.append(rule);
         //! [4]
 
@@ -149,11 +153,54 @@ public:
         //! [6]
         commentStartExpression = QRegularExpression(QStringLiteral("/\\*"));
         commentEndExpression = QRegularExpression(QStringLiteral("\\*/"));
+
+        // tag format
+        xml_tagFormat.setForeground(Qt::darkBlue);
+        xml_tagFormat.setFontWeight(QFont::Bold);
+        rule.pattern = QRegularExpression(QStringLiteral("(<[a-zA-Z:]+\\b|<\\?[a-zA-Z:]+\\b|\\?>|>|/>|</[a-zA-Z:]+>)"));
+        rule.format = xml_tagFormat;
+        highlightingRules.append(rule);
+
+        xml_commentFormat.setForeground(Qt::lightGray);
+        xml_commentFormat.setFontItalic(true);
+
+        xml_commentStartExpression = QRegularExpression(QStringLiteral("<!--"));
+        xml_commentEndExpression = QRegularExpression(QStringLiteral("-->"));
     }
     //! [6]
 
+    void commentBlock(const QString &text,const QRegularExpression start,QRegularExpression end,QTextCharFormat format)
+    {
+        int startIndex = 0;
+        if (previousBlockState() != 1)
+            startIndex = text.indexOf(start);
+
+        //! [9] //! [10]
+        while (startIndex >= 0) 
+        {
+            //! [10] //! [11]
+            QRegularExpressionMatch match = end.match(text, startIndex);
+            int endIndex = match.capturedStart();
+            int commentLength = 0;
+
+            if (endIndex == -1) 
+            {
+                setCurrentBlockState(1);
+                commentLength= text.length() - startIndex;
+            }
+            else
+            {
+                commentLength= endIndex - startIndex
+                             + match.capturedLength();
+            }
+
+            setFormat(startIndex, commentLength, format);
+            startIndex = text.indexOf(start, startIndex + commentLength);
+        }
+    }
+
     //! [7]
-    void highlightBlock(const QString &text)
+    void highlightBlock(const QString &text) override
     {
         for (const HighlightingRule &rule : qAsConst(highlightingRules)) 
         {
@@ -170,26 +217,8 @@ public:
         //! [8]
 
         //! [9]
-        int startIndex = 0;
-        if (previousBlockState() != 1)
-            startIndex = text.indexOf(commentStartExpression);
-
-        //! [9] //! [10]
-        while (startIndex >= 0) {
-            //! [10] //! [11]
-            QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
-            int endIndex = match.capturedStart();
-            int commentLength = 0;
-            if (endIndex == -1) {
-                setCurrentBlockState(1);
-                commentLength = text.length() - startIndex;
-            } else {
-                commentLength = endIndex - startIndex
-                    + match.capturedLength();
-            }
-            setFormat(startIndex, commentLength, multiLineCommentFormat);
-            startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
-        }
+        commentBlock(text,commentStartExpression,commentEndExpression,multiLineCommentFormat);
+        commentBlock(text,xml_commentStartExpression,xml_commentEndExpression,xml_commentFormat);
     }
 
 private:
@@ -214,11 +243,46 @@ private:
 
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
+    QTextCharFormat stringFormat;
     QTextCharFormat functionFormat;
+
+    QTextCharFormat xml_tagFormat,
+                    xml_commentFormat;
+
+    QRegularExpression  xml_commentStartExpression,
+                        xml_commentEndExpression;
 };//class GLSLHighlighter:public QSyntaxHighlighter
 
-QSyntaxHighlighter *CreateGLSLSyntaxHighlighter(QTextDocument *document)
+GLSLTextEdit::GLSLTextEdit(QWidget *parent):QTextEdit(parent)
 {
-    return(new GLSLHighlighter(document));
+    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    setFrameShape(QFrame::StyledPanel);
+    setReadOnly(true);
+    setLineWrapMode(QTextEdit::NoWrap);
+    setTabStopWidth(4);
+    {
+        QFont f=font();
+
+        f.setFixedPitch(true);
+        f.setStyleHint(QFont::Monospace);
+        f.setFamily("Consolas");
+
+        if(f.pointSize()<9)
+            f.setPointSize(9);
+
+        setFont(f);
+    }
+
+    highlighter=new GLSLHighlighter(document());
+}
+
+void GLSLTextEdit::keyPressEvent(QKeyEvent *e)
+{
+    if(e->key()==Qt::Key_Tab)
+    {
+        insertPlainText("    ");
+        return;
+    }
+    
+    QTextEdit::keyPressEvent(e);
 }
