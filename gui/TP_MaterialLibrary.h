@@ -30,32 +30,9 @@ private:
     void UpdateFileTree();
     void OnFileChanged(QTreeWidgetItem *,int);
 
-    void InitEditor(QWidget *);
+    QTabWidget *editor_tab_widget;
 
-    InfoOutput *info_output;
-    
-    QWidget *build_widget;
-    QHBoxLayout *build_layout;
-
-    GLSLTextEdit *glsl_editor;
-    QLabel *editor_hint;
-    QTextEdit *log_text;
-    QPushButton *save_button;
-    QPushButton *convert_to_glsl_button;
-    QPushButton *convert_and_compile_button;
-    QPushButton *build_button;
-
-    QPushButton *CreateButton(const QString &name,void (TPMaterialLibrary::*slot)());
-    void OnCursorPositionChanged();
-
-    hgl::OSString filename;
-    bool text_changed;
-    void OnTextChanged();
-
-    void OnSave();
-    void OnConvertToGLSL();
-    void OnConvertAndCompile();
-    void OnBuild();
+    void OnTabCloseRequested(int index);
 
 public:
 

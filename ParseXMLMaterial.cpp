@@ -17,12 +17,15 @@ namespace shader_lib
             XMLMaterial *xml_material;
             OSString pathname;
 
+            InfoOutput *info_output;
+
         public:
 
-            ShaderElementAttribute(XMLMaterial *xm,const OSString &pn):xml::ElementAttribute("shader")
+            ShaderElementAttribute(XMLMaterial *xm,const OSString &pn,InfoOutput *i_o):xml::ElementAttribute("shader")
             {
                 xml_material=xm;
                 pathname=pn;
+                info_output=i_o;
             }
 
             ~ShaderElementAttribute()=default;
@@ -40,7 +43,7 @@ namespace shader_lib
 
                 os_out<<"shader: "<<xml_fullname.c_str()<<std::endl;
 
-                XMLShader *xs=LoadXMLShader(xml_fullname);
+                XMLShader *xs=LoadXMLShader(xml_fullname,info_output);
 
                 if(xs)
                 {
@@ -81,14 +84,14 @@ namespace shader_lib
 
         public:
 
-            XMLMaterialRootElementCreater(const OSString &fn,XMLMaterial *xm):xml::ElementCreater("root")
+            XMLMaterialRootElementCreater(const OSString &fn,XMLMaterial *xm,InfoOutput *i_o):xml::ElementCreater("root")
             {
                 filename=fn;
                 xml_material=xm;
 
                 pathname=filesystem::ClipPathname(filename);
 
-                shader=new ShaderElementAttribute(xml_material,pathname);
+                shader=new ShaderElementAttribute(xml_material,pathname,i_o);
 
                 Registry(shader);
             }
@@ -148,7 +151,7 @@ namespace shader_lib
         }
     }
 
-    XMLMaterial *LoadXMLMaterial(const OSString &filename)
+    XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output)
     {
         if(!filesystem::FileExist(filename))
         {
@@ -158,7 +161,7 @@ namespace shader_lib
 
         XMLMaterial *xml_material=new XMLMaterial;
 
-        XMLMaterialRootElementCreater root_ec(filename,xml_material);
+        XMLMaterialRootElementCreater root_ec(filename,xml_material,info_output);
         xml::ElementParseCreater epc(&root_ec);
         xml::XMLParse xml(&epc);
 

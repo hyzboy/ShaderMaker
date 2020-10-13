@@ -4,6 +4,10 @@
 #include<wchar.h>
 #include<hgl/type/StrChar.h>
 
+#if HGL_OS == HGL_OS_Windows
+#include<Windows.h>
+#endif//
+
 void InfoOutput::write(const char *str)
 {
     if(!str)return;
@@ -57,7 +61,7 @@ void InfoOutput::print(const wchar_t *format,...)
     if(len>0)
         write(buffer,len);
 }
-    
+
 InfoOutput &InfoOutput::operator<<(int num)             {os_char buf[64];write(hgl::itos(buf,64,num));return *this;}
 InfoOutput &InfoOutput::operator<<(unsigned int num)    {os_char buf[64];write(hgl::utos(buf,64,num));return *this;}
 InfoOutput &InfoOutput::operator<<(__int64 num)         {os_char buf[64];write(hgl::itos(buf,64,num));return *this;}
@@ -67,20 +71,40 @@ InfoOutput &InfoOutput::operator<<(double num)          {os_char buf[64];write(h
 
 class StdInfoOutput:public InfoOutput
 {
+    #if HGL_OS == HGL_OS_Windows
+    void *console_handle;
+    DWORD result;
+    #endif//
+                
 public:
+
+    StdInfoOutput()
+    {
+    #if HGL_OS == HGL_OS_Windows
+        console_handle=GetStdHandle(STD_OUTPUT_HANDLE);
+    #endif//
+    }
 
     void write(const char *str,int len) override
     {
         if(!str||!*str)return;
 
+        #if HGL_OS == HGL_OS_Windows
+            WriteConsoleA(console_handle,str,len,&result,nullptr);
+        #else
         std::cout<<str;
+        #endif//
     }
 
-    void write(const wchar_t *str) override
+    void write(const wchar_t *str,int len) override
     {
         if(!str||!*str)return;
 
+        #if HGL_OS == HGL_OS_Windows
+            WriteConsoleW(console_handle,str,len,&result,nullptr);
+        #else
         std::wcout<<str;
+        #endif//
     }
 };//class StdInfoOutput
 

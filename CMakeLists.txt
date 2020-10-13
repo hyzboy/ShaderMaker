@@ -81,11 +81,14 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/TP_Raw.h
                                 gui/TP_Module.cpp
                                 gui/TP_Module.h
-                                gui/TP_MaterialLibraryEditor.cpp
                                 gui/TP_MaterialLibraryFileTree.cpp
-                                gui/TP_MaterialLibraryCompile.cpp
                                 gui/TP_MaterialLibrary.cpp
                                 gui/TP_MaterialLibrary.h
+                                gui/W_EditorWidget.h
+                                gui/W_MaterialEditor.cpp
+                                gui/W_MaterialEditor.h
+                                gui/W_XMLShaderEditor.cpp
+                                gui/W_XMLShaderEditor.h
                                 gui/MainWindowMenu.cpp
                                 gui/MainWindow.cpp
                                 gui/MainWindow.h
