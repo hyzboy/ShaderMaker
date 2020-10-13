@@ -7,7 +7,7 @@
 namespace shader_lib
 {
     using namespace hgl;
-
+    
     bool LoadFromFolder(const OSString &path)
     {
         const OSString filename=filesystem::MergeFilename(path,OSString(shader_libs_filename));

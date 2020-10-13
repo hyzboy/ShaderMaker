@@ -10,7 +10,7 @@ namespace shader_lib
     using namespace hgl;
 
     constexpr os_char shader_libs_filename[]=OS_TEXT("shader_libs.xml");
-
+    
     bool LoadFromFolder(const OSString &);
     void Clear();
 
@@ -42,8 +42,6 @@ namespace shader_lib
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
 
-    XMLShader *LoadXMLShader(const OSString &,InfoOutput *);
-
     enum ShaderStageBits        //等同VkShaderStageFlagBits
     {
         ssbVertex       = 0x00000001,
@@ -51,17 +49,17 @@ namespace shader_lib
         ssbTesv         = 0x00000004,
         ssbGeometry     = 0x00000008,
         ssbFragment     = 0x00000010,
-        ssbCompute      = 0x00000020,
         ssbGraphics     = 0x0000001F,
-        ssbAll          = 0x7FFFFFFF,
+        ssbCompute      = 0x00000020,
+        ssbTask         = 0x00000040,
+        ssbMesh         = 0x00000080,
         ssbRaygen       = 0x00000100,
         ssbAnyHit       = 0x00000200,
         ssbClosestHit   = 0x00000400,
         ssbMiss         = 0x00000800,
         ssbIntersection = 0x00001000,
         ssbCallable     = 0x00002000,
-        ssbTask         = 0x00000040,
-        ssbMesh         = 0x00000080
+        ssbAll          = 0x7FFFFFFF
     };
 
     struct XMLMaterial
@@ -70,6 +68,8 @@ namespace shader_lib
         MapObject<uint32,XMLShader> shaders;
     };//struct XMLMaterial
 
-    XMLShader *LoadXMLShader(const OSString &filename);
+    XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *);
     bool XMLShaderMaker(const OSString &filename,XMLShader *xs);
+
+    XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output);
 }//namespace shader_lib

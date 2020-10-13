@@ -4,6 +4,7 @@
 #include<hgl/type/QTString.h>
 #include<hgl/type/StringList.h>
 #include"W_XMLShaderEditor.h"
+#include"W_MaterialEditor.h"
 
 using namespace hgl;
 
@@ -60,7 +61,12 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
 
     if(type==ML_TYPE_MATERIAL)
     {
+        MaterialEditorWidget *mat_editor=new MaterialEditorWidget(item,filename);
 
+        const int index=editor_tab_widget->addTab(mat_editor,item->text(ML_COLUMN_TYPE)+":"
+                                                            +item->text(ML_COLUMN_NAME));
+
+        editor_tab_widget->setCurrentIndex(index);
     }
     else
     {
