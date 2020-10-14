@@ -1,123 +1,160 @@
 #include"W_MaterialEditor.h"
 #include<QVBoxLayout>
-#include<QGridLayout>
+#include<QSplitter>
+#include<QMessageBox>
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
 
 using namespace shader_lib;
 
-const char *shader_type_name[]=
+QWidget *MaterialEditorWidget::InitEditor(QWidget *parent)
 {
-    "Vertex",
-    "Tessellation Control",
-    "Tessellation Evaluation",
-    "Geometry",
-    "Fragment"
-};
+    QWidget *widget=new QWidget(parent);
+    
+    QVBoxLayout *layout=new QVBoxLayout(widget);
+    layout->setContentsMargins(0,0,0,0);
 
-const ShaderStageBits shader_bits_list[]=
-{
-    ssbVertex,
-    ssbTesc,
-    ssbTesv,
-    ssbGeometry,
-    ssbFragment
-};
+    {
+        QWidget *toolbar=new QWidget(widget);
+        QHBoxLayout *toolbar_layout=new QHBoxLayout(toolbar);
+
+        toolbar_layout->setContentsMargins(0,0,0,0);
+
+        save_button=new QPushButton(toolbar);
+        save_button->setText("Save");
+        connect(save_button,&QPushButton::clicked,this,&MaterialEditorWidget::OnSave);
+        toolbar_layout->addWidget(save_button,0,Qt::AlignLeft);
+
+        compile_button=new QPushButton(toolbar);
+        compile_button->setText("Compile");
+        toolbar_layout->addWidget(compile_button,0,Qt::AlignLeft);
+
+        toolbar_layout->addStretch();
+
+        editor_hint=new QLabel(toolbar);
+        toolbar_layout->addWidget(editor_hint,0,Qt::AlignRight);
+
+        toolbar->setFixedHeight(toolbar->sizeHint().height());
+
+        layout->addWidget(toolbar);
+    }
+
+    {
+        glsl_editor=new GLSLTextEdit(widget);
+
+        UTF8StringList sl;
+
+        if(LoadStringListFromTextFile(sl,GetFilename())>0)
+        {
+            const UTF8String str=ToString(sl,UTF8String("\n"));
+
+            glsl_editor->setText(ToQString(str));
+        }
+
+        connect(glsl_editor,&QTextEdit::cursorPositionChanged,this,&MaterialEditorWidget::OnEditorCursorPositionChanged);
+        connect(glsl_editor,&QTextEdit::textChanged,this,&MaterialEditorWidget::OnTextChanged);
+
+        glsl_editor->setReadOnly(false);
+        save_button->setEnabled(false);
+    }
+
+    layout->addWidget(glsl_editor);
+
+    return widget;
+}
 
 MaterialEditorWidget::MaterialEditorWidget(QTreeWidgetItem *i,const OSString &fn):EditorWidget(i,fn)
 {
-    QVBoxLayout *v_layout=new QVBoxLayout(this);
+    QVBoxLayout *layout=new QVBoxLayout(this);
+    QSplitter *splitter=new QSplitter(Qt::Vertical,this);
 
-    //shadert选择区
     {
-        QWidget *shader_widget=new QWidget(this);
-        {
-            QGridLayout *grid_layout=new QGridLayout(shader_widget);
+        QWidget *up_widget=new QWidget(splitter);
+        QHBoxLayout *up_layout=new QHBoxLayout(up_widget);
 
-            tess_check=new QCheckBox(shader_widget);
-            geom_check=new QCheckBox(shader_widget);
+        up_layout->setContentsMargins(0,0,0,0);
 
-            grid_layout->addWidget(tess_check,1,0);
-            grid_layout->addWidget(geom_check,3,0);
-
-            for(int i=0;i<5;i++)
-            {
-                sea[i].name_label=new QLabel(shader_widget);
-                sea[i].name_label->setText(shader_type_name[i]);
-
-                sea[i].fn_edit=new QLineEdit(shader_widget);
-
-                sea[i].file_browser=new QPushButton(shader_widget);
-                sea[i].file_browser->setText("Browser");
-                sea[i].open_file=new QPushButton(shader_widget);
-                sea[i].open_file->setText("Open");
-
-                grid_layout->addWidget(sea[i].name_label,   i,1);
-                grid_layout->addWidget(sea[i].fn_edit,      i,2);
-                grid_layout->addWidget(sea[i].file_browser, i,3);
-                grid_layout->addWidget(sea[i].open_file,    i,4);
-            }
-        }
-
-        v_layout->addWidget(shader_widget);
+        up_layout->addWidget(InitEditor(up_widget));
     }
 
-    //按钮区
     {
-        QWidget *button_area=new QWidget(this);
+        log_widget=new QPlainTextEdit(splitter);
 
-        {
-            QHBoxLayout *h_layout=new QHBoxLayout(button_area);
-
-            build=new QPushButton(button_area);
-            build->setText("Build");
-            h_layout->addWidget(build);
-
-            preview=new QPushButton(button_area);
-            preview->setText("Preview");
-            h_layout->addWidget(preview);
-
-            h_layout->addStretch(0);
-        }
-
-        v_layout->addWidget(button_area);
-    }
-
-    //log区
-    {
-        log_widget=new QPlainTextEdit(this);
+        log_widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+        log_widget->setFrameShape(QFrame::StyledPanel);
         log_widget->setReadOnly(true);
-
-        log_widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-        v_layout->addWidget(log_widget);
+        log_widget->setLineWrapMode(QPlainTextEdit::NoWrap);
+        log_widget->setTabStopWidth(4);
     }
 
-    //load shader
-    {
-        InfoOutput *info_out=GetDefaultInfoOutput();
+    splitter->setStretchFactor(0,2);
+    splitter->setStretchFactor(1,5);
+    layout->addWidget(splitter);
+}
 
-        XMLMaterial *xm=LoadXMLMaterial(GetFilename(),info_out);
+void MaterialEditorWidget::OnEditorCursorPositionChanged()
+{
+    const QTextCursor cursor=glsl_editor->textCursor();
 
-        if(!xm)
-            return;
+    QList<QTextEdit::ExtraSelection> extraSelections;
 
-        for(int i=0;i<5;i++)
-        {
-            ShaderStageBits ssb=shader_bits_list[i];
+    QTextEdit::ExtraSelection selection;
 
-            if(xm->shaders.KeyExist(ssb))
-            {
-                sea[i].Enable();
-//                sea[i].fn_edit->setText(ToQString(xm->shaders[ssb]->short_name));
-            }
-            else
-                sea[i].Disable();
-        }
-    }
+    QColor lineColor = QColor(Qt::yellow).lighter(160);
+
+    selection.format.setBackground(lineColor);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = cursor;
+    selection.cursor.clearSelection();
+    extraSelections.append(selection);
+
+    glsl_editor->setExtraSelections(extraSelections);
+
+    editor_hint->setText("Ln: "+QString::number(cursor.blockNumber()+1)
+                    +"    Ch: "+QString::number(cursor.columnNumber()+1)
+                    +"    ");
+}
+
+void MaterialEditorWidget::OnTextChanged()
+{
+    save_button->setEnabled(true);
+}
+
+void MaterialEditorWidget::OnSave()
+{
+    if(!save_button->isEnabled())return;
+
+    const QString text=glsl_editor->toPlainText();
+
+    const UTF8String u8text=ToUTF8String(text);
+
+    filesystem::SaveMemoryToFile(GetFilename(),u8text.c_str(),u8text.Length());
+
+    save_button->setEnabled(false);
 }
 
 bool MaterialEditorWidget::OnCloseRequested()
 {
-    return(true);
+    if(!save_button->isEnabled())return(true);
+
+    QMessageBox msgBox;
+    
+    msgBox.setText("The document has been modified.");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    if(ret==QMessageBox::Save)
+    {
+        OnSave();
+        return(true);
+    }
+    else
+    if(ret==QMessageBox::Discard)
+    {
+        return(true);
+    }
+    else
+        return(false);
 }

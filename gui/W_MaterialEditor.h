@@ -2,12 +2,11 @@
 
 #include"W_EditorWidget.h"
 #include<QLabel>
-#include<QPushButton>
-#include<QCheckBox>
-#include<QLineEdit>
-#include<QPlainTextEdit>
 #include<hgl/type/String.h>
 #include"ShaderLib.h"
+#include"GLSLTextEdit.h"
+#include<QPushButton>
+#include<QPlainTextEdit>
 
 using namespace hgl;
 
@@ -17,41 +16,21 @@ class MaterialEditorWidget:public EditorWidget
 
 private:
 
-    QCheckBox *tess_check;
-    QCheckBox *geom_check;
+    GLSLTextEdit *glsl_editor;
+    QLabel *editor_hint;
 
-    struct ShaderEditArea
-    {
-        QLabel *name_label;
-        QLineEdit *fn_edit;
-        QPushButton *file_browser;
-        QPushButton *open_file;
+    QPushButton *save_button,
+                *compile_button;
 
-    public:
+    void OnEditorCursorPositionChanged();
+    void OnTextChanged();
 
-        void SetEnable(bool open)
-        {
-            name_label->setEnabled(open);
-            fn_edit->setEnabled(open);
-            file_browser->setEnabled(open);
-            open_file->setEnabled(open);
-        }
+    void OnSave();
+    void OnCompile();
 
-        void Enable()
-        {
-            SetEnable(true);
-        }
-
-        void Disable()
-        {
-            SetEnable(false);
-        }
-    };
-
-    ShaderEditArea sea[5];
-
-    QPushButton *build;
-    QPushButton *preview;
+    QWidget *InitEditor(QWidget *);
+    
+private:    //日志区
 
     QPlainTextEdit *log_widget;
 

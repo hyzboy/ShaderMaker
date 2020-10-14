@@ -58,22 +58,17 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
     const OSString &filename=ToOSString(item->text(ML_COLUMN_FILENAME));
 
     const QString type=item->text(ML_COLUMN_TYPE);
+    const QString name=item->text(ML_COLUMN_NAME);
+
+    QWidget *widget=nullptr;
 
     if(type==ML_TYPE_MATERIAL)
-    {
-        MaterialEditorWidget *mat_editor=new MaterialEditorWidget(item,filename);
-
-        const int index=editor_tab_widget->addTab(mat_editor,item->text(ML_COLUMN_TYPE)+":"
-                                                            +item->text(ML_COLUMN_NAME));
-
-        editor_tab_widget->setCurrentIndex(index);
-    }
+        widget=new MaterialEditorWidget(item,filename);
     else
-    {
-        XMLShaderEditorWidget *xs_editor=new XMLShaderEditorWidget(item,filename);
+        widget=new XMLShaderEditorWidget(item,filename);
 
-        const int index=editor_tab_widget->addTab(xs_editor,item->text(ML_COLUMN_TYPE)+":"+
-                                                            item->text(ML_COLUMN_NAME));
+    {
+        const int index=editor_tab_widget->addTab(widget,type+": "+name);
 
         editor_tab_widget->setCurrentIndex(index);
     }
