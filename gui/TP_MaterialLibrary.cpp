@@ -5,6 +5,7 @@
 #include<hgl/type/StringList.h>
 #include"W_XMLShaderEditor.h"
 #include"W_MaterialEditor.h"
+#include"TypeDefine.h"
 
 using namespace hgl;
 

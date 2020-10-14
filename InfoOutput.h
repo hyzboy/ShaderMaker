@@ -17,6 +17,16 @@ public:
             void print(const char *,...);
             void print(const wchar_t *,...);
 
+    virtual void colorWrite(const char *,const char *str)
+    {
+        return write(str);
+    }
+
+    virtual void colorWriteln(const char *,const char *str)
+    {
+        return writeln(str);
+    }
+
     InfoOutput &operator<<(int);
     InfoOutput &operator<<(unsigned int);
     InfoOutput &operator<<(__int64);

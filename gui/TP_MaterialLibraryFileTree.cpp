@@ -2,6 +2,7 @@
 #include"ConfigData.h"
 #include<hgl/filesystem/EnumFile.h>
 #include<hgl/type/QTString.h>
+#include"TypeDefine.h"
 
 using namespace hgl;
 using namespace hgl::filesystem;

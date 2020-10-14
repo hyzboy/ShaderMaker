@@ -2,6 +2,7 @@
 #include<hgl/type/Map.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
+#include"InfoOutput.h"
 
 namespace shader_lib
 {
@@ -23,23 +24,19 @@ namespace shader_lib
         return raw_shader_list.KeyExist(name);
     }
     
-    bool CheckRawModule(const Sets<UTF8String> &raw_list)
+    bool CheckRawModule(const UTF8StringList &raw_list,InfoOutput *info_output)
     {        
         const int count=raw_list.GetCount();
 
         if(count<=0)return(true);
 
-        UTF8String *name=raw_list.GetData();
-
-        for(int i=0;i<count;i++)
+        for(const UTF8String *name:raw_list)
         {
             if(!CheckRawModule(*name))
             {
-                std::cerr<<u8"can't find RAW Module: "<<name->c_str()<<std::endl;
+                info_output->colorWriteln("red",u8"can't find RAW Module: "+(*name));
                 return(false);
             }
-
-            ++name;
         }
 
         return(true);

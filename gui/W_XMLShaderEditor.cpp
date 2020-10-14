@@ -6,6 +6,11 @@
 #include<hgl/type/StringList.h>
 #include<hgl/type/QTString.h>
 #include<hgl/filesystem/FileSystem.h>
+#include<hgl/io/MemoryInputStream.h>
+#include"QStringInfoOutput.h"
+#include"ShaderLib.h"
+#include"TypeDefine.h"
+#include"GLSLCompiler.h"
 
 QWidget *XMLShaderEditorWidget::InitEditor(QWidget *parent)
 {
@@ -25,12 +30,9 @@ QWidget *XMLShaderEditorWidget::InitEditor(QWidget *parent)
         connect(save_button,&QPushButton::clicked,this,&XMLShaderEditorWidget::OnSave);
         toolbar_layout->addWidget(save_button,0,Qt::AlignLeft);
 
-        convert_button=new QPushButton(toolbar);
-        convert_button->setText("Convert to GLSL");
-        toolbar_layout->addWidget(convert_button,0,Qt::AlignLeft);
-
         compile_button=new QPushButton(toolbar);
         compile_button->setText("Compile");
+        connect(compile_button,&QPushButton::clicked,this,&XMLShaderEditorWidget::OnCompile);
         toolbar_layout->addWidget(compile_button,0,Qt::AlignLeft);
 
         toolbar_layout->addStretch();
@@ -209,4 +211,71 @@ bool XMLShaderEditorWidget::OnCloseRequested()
     }
     else
         return(false);
+}
+
+void AppendToLog(QPlainTextEdit *widget,const QString &name,const UTF8StringList &sl)
+{
+    widget->appendHtml("<p><b>"+name+"</b><ul>");
+
+    for(const UTF8String *str:sl)
+        widget->appendHtml("<li>"+ToQString(*str)+"</li>");
+    
+    widget->appendHtml("</ul></p>");
+}
+
+void XMLShaderEditorWidget::OnCompile()
+{
+    glsl_preview->clear();
+    log_widget->clear();
+    
+    const QString text=glsl_editor->toPlainText();
+
+    const UTF8String u8text=ToUTF8String(text);
+
+    io::MemoryInputStream mis;
+
+    mis.Link(u8text.c_str(),u8text.Length());
+
+    QString log;
+    AutoDelete<InfoOutput> info_output=CreateQStringInfoOutput(&log);
+    shader_lib::XMLShader *xs=shader_lib::LoadXMLShader(&mis,info_output);
+
+    if(!xs)
+    {
+        log_widget->appendHtml("<p><font color=\"red\">Load XML Shader failed.</font></p>");
+
+        log_widget->appendPlainText(log);
+        return;
+    }
+
+    log_widget->appendHtml("<p><font color=\"darkGreen\">Load XML Shader OK.</font></p>");
+
+    if(xs->in           .GetCount()>0)AppendToLog(log_widget,"Input Stages" ,xs->in);
+    if(xs->out          .GetCount()>0)AppendToLog(log_widget,"Output Stages",xs->out);
+    if(xs->struct_block .GetCount()>0)AppendToLog(log_widget,"Struct"       ,xs->struct_block);
+    if(xs->raw          .GetCount()>0)AppendToLog(log_widget,"Raw"          ,xs->raw);
+    if(xs->modules      .GetCount()>0)AppendToLog(log_widget,"Module"       ,xs->modules);
+
+    if(xs->geom.max_vertices>0)
+    {
+        log_widget->appendHtml("<p><b>Geometry attributes</b><ul>");
+        log_widget->appendHtml("<li><font color=\"blue\">in: </font>"+ToQString(xs->geom.in));
+        log_widget->appendHtml("</li><li><font color=\"blue\">out: </font>"+ToQString(xs->geom.out));
+        log_widget->appendHtml("</li><li><font color=\"blue\">max vertices: </font>"+QString::number(xs->geom.max_vertices));
+        log_widget->appendHtml("</li></p>");
+    }
+    
+    log.clear();
+    
+    xs->ext_name=ToUTF8String(GetItem()->text(ML_COLUMN_TYPE));
+
+    if(shader_lib::XMLShaderMaker(xs,info_output))
+    {
+        info_output->colorWrite("green","SPV lenght: "+UTF8String::valueOf(xs->spv_data->spv_length)+" bytes.");
+    }
+    
+    glsl_preview->setText(ToQString(xs->shader_source));
+    log_widget->appendHtml(log);
+
+    delete xs;
 }

@@ -28,13 +28,13 @@ namespace shader_lib
     const UTF8StringList &GetStructList();
     const UTF8StringList &GetModuleList();
 
-    bool CheckVarying(const UTF8StringList &vary_list);
-    bool CheckRawModule(const Sets<UTF8String> &raw_list);
+    bool CheckVarying(const UTF8StringList &vary_list,InfoOutput *);
+    bool CheckRawModule(const UTF8StringList &raw_list,InfoOutput *);
     bool CheckStruct(const UTF8String &struct_name);
-    bool CheckStruct(const UTF8StringList &struct_list);
+    bool CheckStruct(const UTF8StringList &struct_list,InfoOutput *);
 
     bool CheckModule(const UTF8String &module_name);
-    bool CheckModules(const UTF8StringList &module_list);
+    bool CheckModules(const UTF8StringList &module_list,InfoOutput *);
 
     XMLShaderModule *GetShaderModule(const UTF8String &module_name);
     
@@ -67,9 +67,11 @@ namespace shader_lib
         uint32 shader_bits=0;
         MapObject<uint32,XMLShader> shaders;
     };//struct XMLMaterial
-
+    
+    XMLShader *LoadXMLShader(io::InputStream *is,InfoOutput *);
     XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *);
-    bool XMLShaderMaker(const OSString &filename,XMLShader *xs);
+
+    bool XMLShaderMaker(XMLShader *xs,InfoOutput *);
 
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output);
 }//namespace shader_lib

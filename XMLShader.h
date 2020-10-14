@@ -2,6 +2,7 @@
 
 #include<hgl/type/StringList.h>
 #include<hgl/type/Sets.h>
+#include"InfoOutput.h"
 
 namespace glsl_compiler
 {
@@ -36,9 +37,13 @@ namespace shader_lib
 
     struct XMLShader
     {
+        OSString origin_filename;
+        UTF8String short_name;
+        UTF8String ext_name;
+
         UTF8StringList in;
         UTF8StringList out;
-        Sets<UTF8String> raw;
+        UTF8StringList raw;
         UTF8StringList struct_block;
         UTF8StringList modules;
         ObjectList<Uniform> uniforms;
@@ -63,7 +68,9 @@ namespace shader_lib
 
         ~XMLShader();
 
-        bool SetShaderSource(const UTF8StringList &);
+        void SetFilename(const OSString &);
+
+        bool SetShaderSource(const UTF8StringList &,InfoOutput *);
         
         bool SaveToGLSL(const OSString &filename);
         bool SaveToSPV(const OSString &filename);

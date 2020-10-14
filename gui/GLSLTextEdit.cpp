@@ -218,7 +218,7 @@ public:
 
         //! [9]
         commentBlock(text,commentStartExpression,commentEndExpression,multiLineCommentFormat);
-        commentBlock(text,xml_commentStartExpression,xml_commentEndExpression,xml_commentFormat);
+//        commentBlock(text,xml_commentStartExpression,xml_commentEndExpression,xml_commentFormat);
     }
 
 private:

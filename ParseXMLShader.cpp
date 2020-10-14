@@ -1,6 +1,7 @@
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
+#include<hgl/io/FileInputStream.h>
 #include<hgl/type/StringList.h>
 #include"ShaderLib.h"
 
@@ -35,11 +36,11 @@ namespace shader_lib
 
         class SetsElementCreater:public xml::ElementCreater
         {
-            Sets<UTF8String> *codes;
+            UTF8StringList *codes;
 
         public:
 
-            SetsElementCreater(const u8char *str,Sets<UTF8String> *c):xml::ElementCreater(str)
+            SetsElementCreater(const u8char *str,UTF8StringList *c):xml::ElementCreater(str)
             {
                 codes=c;
             }
@@ -52,7 +53,12 @@ namespace shader_lib
                 const u8char *trim_str=trim(str,len);
 
                 if(trim_str)
-                    codes->Add(UTF8String(trim_str,len));
+                {
+                    UTF8String ss=UTF8String(trim_str,len);
+
+                    if(codes->Find(ss)==-1)
+                        codes->Add(ss);
+                }
             }
         };//class SetsElementCreater:public xml::ElementCreater
         
@@ -111,6 +117,8 @@ namespace shader_lib
             GeomElementAttrib(GeometryAttribute *ga):xml::ElementAttribute("geom")
             {
                 geom=ga;
+
+                geom->max_vertices=0;
             }
             
             bool Start() override
@@ -125,8 +133,6 @@ namespace shader_lib
 
         class XMLShaderRootElementCreater:public xml::ElementCreater
         {
-            OSString filename;
-
             XMLShader *xml_shader;
 
             GeomElementAttrib *geom;
@@ -136,9 +142,8 @@ namespace shader_lib
 
         public:
 
-            XMLShaderRootElementCreater(const OSString &fn,XMLShader *xs):xml::ElementCreater("root")
+            XMLShaderRootElementCreater(XMLShader *xs):xml::ElementCreater("root")
             {
-                filename=fn;
                 xml_shader=xs;
 
                 in=new CodesElementCreater(u8"in",&(xml_shader->in));
@@ -175,30 +180,26 @@ namespace shader_lib
         };//class XMLShaderRootElementCreater:public xml::ElementCreater
     }//namespace
 
-    XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *info_out)
+    XMLShader *LoadXMLShader(io::InputStream *is,InfoOutput *info_output)
     {
-        if(!filesystem::FileExist(filename))
-        {
-            os_out<<OS_TEXT("filename <")<<filename.c_str()<<OS_TEXT("> don't exist!")<<std::endl;
-            return(nullptr);
-        }
+        if(!is)return(nullptr);
 
         XMLShader *xml_shader=new XMLShader;
 
-        XMLShaderRootElementCreater root_ec(filename,xml_shader);
+        XMLShaderRootElementCreater root_ec(xml_shader);
         xml::ElementParseCreater epc(&root_ec);
         xml::XMLParse xml(&epc);
 
         xml.Start();
 
-        if(!xml::XMLParseFile(&xml,filename))
+        if(!xml.Parse(is))
         {
-            if(info_out)
+            if(info_output)
             {
                 int code,row,col;
                 xml.GetError(&code,&row,&col);
 
-                (*info_out)<<"[XML Error] Code: "<<code<<" Row:"<<row<<" Col:<<"<<col<<"\n";
+                (*info_output)<<"[XML Error] "<<xml::GetExpatError(code)<<" in Row:"<<row<<" Col:"<<col<<"\n";
             }
 
             delete xml_shader;
@@ -206,5 +207,30 @@ namespace shader_lib
         }
 
         return xml_shader;
+    }
+
+    XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *info_output)
+    {
+        if(!filesystem::FileExist(filename))
+        {
+            (*info_output)<<OS_TEXT("filename <")<<filename.c_str()<<OS_TEXT("> don't exist!\n");
+            return(nullptr);
+        }
+
+        io::FileInputStream fis;
+        
+        if(!fis.Open(filename))
+        {
+            (*info_output)<<OS_TEXT(" Can't open file <")<<filename.c_str()<<OS_TEXT(">!\n");
+            return(nullptr);
+        }
+
+        XMLShader *xs=LoadXMLShader(&fis,info_output);
+
+        if(!xs)return(nullptr);
+        
+        xs->SetFilename(filename);
+
+        return xs;
     }
 }//namespace shader_lib

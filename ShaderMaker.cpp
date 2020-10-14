@@ -17,6 +17,8 @@ namespace shader_lib
 
     class ShaderMaker
     {
+        InfoOutput *info_output;
+
         shader_lib::XMLShader *xs;
         UTF8StringList shader_text;
 
@@ -24,24 +26,35 @@ namespace shader_lib
 
     private:
 
+        void OutError(const UTF8String &str)
+        {
+            info_output->colorWrite("red",str);
+        }
+
+    private:
+
         bool ExpendDepend(const UTF8String &module_name)
         {
             XMLShaderModule *xsm=GetShaderModule(module_name);
 
-            for(int i=0;i<xsm->depend_raw_list.GetCount();i++)
-                xs->raw.Add(xsm->depend_raw_list.GetString(i));
+            if(!xsm)
+            {
+                OutError("Can't find module: "+module_name);
+                return(false);
+            }
+
+            for(const UTF8String *name:xsm->depend_raw_list)
+                xs->raw.Add(*name);
 
             return(true);
         }
 
         bool ExpendDepend()
         {
-            if(!shader_lib::CheckModules(xs->modules))return(false);
+            info_output->colorWriteln("blue","Expend depends...");
 
-            const uint count=xs->modules.GetCount();
-
-            for(uint i=0;i<count;i++)
-                if(!ExpendDepend(xs->modules.GetString(i)))
+            for(const UTF8String *module_name:xs->modules)
+                if(!ExpendDepend(*module_name))
                     return(false);
 
             return(true);
@@ -49,9 +62,9 @@ namespace shader_lib
 
         bool CheckShader()
         {
-            if(!shader_lib::CheckVarying(xs->in))return(false);
-            if(!shader_lib::CheckVarying(xs->out))return(false);
-            if(!shader_lib::CheckRawModule(xs->raw))return(false);
+            if(!shader_lib::CheckVarying(xs->in,info_output))return(false);
+            if(!shader_lib::CheckVarying(xs->out,info_output))return(false);
+            if(!shader_lib::CheckRawModule(xs->raw,info_output))return(false);
     //        if(!shader_lib::CheckStruct(xs->struct_block))return(false);
 
             return(true);
@@ -148,10 +161,9 @@ namespace shader_lib
 
             if(count<=0)return;
 
-            UTF8String *rn=xs->raw.GetData();
             UTF8StringList *rm;
 
-            for(int i=0;i<count;i++)
+            for(const UTF8String *rn:xs->raw)
             {
                 rm=shader_lib::GetRawModule(*rn);
             
@@ -208,25 +220,26 @@ namespace shader_lib
 
     public:
 
-        ShaderMaker(shader_lib::XMLShader *_xs)
+        ShaderMaker(shader_lib::XMLShader *_xs,InfoOutput *i_o)
         {
+            info_output=i_o;
             xs=_xs;
             ubo_binding=0;
         }
 
         ~ShaderMaker()=default;
 
-        bool Make(const UTF8String &ext_name)
+        bool Make()
         {
             ExpendDepend();
 
             if(!CheckShader())return(false);
             
-            xs->shader_type=glsl_compiler::GetType(ext_name.c_str());
+            xs->shader_type=glsl_compiler::GetType(xs->ext_name.c_str());
 
             const char *ShaderFileTypeName[]={"vert","tesc","tese","geom","frag","comp","mesh","task","rgen","rint","rahit","rchit","rmiss","rcall"};
 
-            ubo_binding=string_serial_from_list(ShaderFileTypeName,ext_name.c_str())*16;
+            ubo_binding=string_serial_from_list(ShaderFileTypeName,xs->ext_name.c_str())*16;
         
             CreateHeader();
 
@@ -240,15 +253,15 @@ namespace shader_lib
 
             MakeMainFunc();
 
-            return xs->SetShaderSource(shader_text);
+            return xs->SetShaderSource(shader_text,info_output);
         }
     };//class ShaderMaker
 
-    bool XMLShaderMaker(const OSString &filename,shader_lib::XMLShader *xs)
+    bool XMLShaderMaker(shader_lib::XMLShader *xs,InfoOutput *info_output)
     {
         if(!xs)return(false);
 
-        ShaderMaker sm(xs);
+        ShaderMaker sm(xs,info_output);
 
         /*  example
 
@@ -260,13 +273,11 @@ namespace shader_lib
                 shader:     1.vert.shader
         */
 
-        const OSString short_name=filesystem::TrimFileExtName(filename,true);
-        const UTF8String ext_name=to_u8(filesystem::ClipFileExtName(short_name,false));
+        info_output->colorWriteln("blue","<p>------ Generate "+xs->ext_name+" shader ------</p>");
 
-        std::cout<<"------ Generate "<<ext_name.c_str()<<" shader ------"<<std::endl;
-
-        const bool result=sm.Make(ext_name);
-
+        return sm.Make();
+        
+        /*
         {
             const OSString glsl_filename=short_name+OS_TEXT(".glsl");
 
@@ -278,11 +289,11 @@ namespace shader_lib
 
                 return(false);
             }
-        }
+        }*/
         
         //xs->SaveToSPV(short_name+OS_TEXT(".spv"));
         //xs->SaveToShader(short_name+OS_TEXT(".shader"));
 
-        return(true);
+        //return(true);
     }
 }//namespace shader_lib

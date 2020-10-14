@@ -9,15 +9,6 @@
 #include<hgl/type/String.h>
 #include"InfoOutput.h"
 
-#define ML_TYPE_MATERIAL   "Material"
-#define ML_TYPE_VERTEX     "Vertex"
-#define ML_TYPE_GEOMETRY   "Geometry"
-#define ML_TYPE_FRAGMENT   "Fragment"
-
-#define ML_COLUMN_NAME     0
-#define ML_COLUMN_TYPE     1
-#define ML_COLUMN_FILENAME 2
-
 class TPMaterialLibrary:public QWidget
 {
     Q_OBJECT

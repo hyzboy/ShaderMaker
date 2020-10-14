@@ -3,6 +3,7 @@
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/filesystem/FileSystem.h>
 #include"XMLShader.h"
+#include"InfoOutput.h"
 
 namespace shader_lib
 {
@@ -172,14 +173,20 @@ namespace shader_lib
         return struct_list.KeyExist(name);
     }
 
-    bool CheckStruct(const UTF8StringList &module_list)
+    bool CheckStruct(const UTF8StringList &module_list,InfoOutput *info_output)
     {
         const int count=module_list.GetCount();
 
         if(count<=0)return(true);
 
-        for(int i=0;i<count;i++)
-            if(!CheckStruct(module_list.GetString(i)))return(false);
+        for(const UTF8String *module_name:module_list)
+            if(!CheckStruct(*module_name))
+            {                
+                if(info_output)
+                    info_output->colorWriteln("red","can't find Module: "+(*module_name));
+
+                return(false);
+            }
 
         return(true);
     }
@@ -248,14 +255,20 @@ namespace shader_lib
         return xml_module_list.KeyExist(module_name);
     }
 
-    bool CheckModules(const UTF8StringList &module_list)
+    bool CheckModules(const UTF8StringList &module_list,InfoOutput *info_output)
     {
         const int count=module_list.GetCount();
 
         if(count<=0)return(true);
 
-        for(int i=0;i<count;i++)
-            if(!CheckModule(module_list.GetString(i)))return(false);
+        for(const UTF8String *module_name:module_list)
+            if(!CheckModule(*module_name))
+            {
+                if(info_output)
+                    info_output->colorWriteln("red","can't find Module: "+(*module_name));
+
+                return(false);
+            }
 
         return(true);        
     }

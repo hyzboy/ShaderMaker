@@ -52,7 +52,7 @@ namespace shader_lib
                     xml_material->shaders.Add(shader_type,xs);
                     xml_material->shader_bits|=shader_type;
 
-                    if(XMLShaderMaker(xml_fullname,xs))
+                    if(XMLShaderMaker(xs,info_output))
                     {
                         os_out<<OS_TEXT("Make Shader from <")<<xml_fullname.c_str()<<OS_TEXT("> ok!")<<std::endl;
 

@@ -19,14 +19,12 @@ private:    //XMLShader编辑区
     QLabel *editor_hint;
 
     QPushButton *save_button,
-                *convert_button,
                 *compile_button;
 
     void OnEditorCursorPositionChanged();
     void OnTextChanged();
 
     void OnSave();
-    void OnCovert();
     void OnCompile();
 
     QWidget *InitEditor(QWidget *);

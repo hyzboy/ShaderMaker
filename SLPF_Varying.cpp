@@ -81,7 +81,7 @@ namespace shader_lib
         return varying_config_list.KeyExist(name);
     }
         
-    bool CheckVarying(const UTF8StringList &vary_list)
+    bool CheckVarying(const UTF8StringList &vary_list,InfoOutput *info_output)
     {
         const int count=vary_list.GetCount();
 
@@ -93,7 +93,9 @@ namespace shader_lib
 
             if(!CheckVarying(vary))
             {
-                std::cerr<<"can't find Varing: "<<vary.c_str()<<std::endl;
+                if(info_output)
+                    info_output->colorWriteln("red","can't find Varing: "+vary);
+
                 return(false);
             }
         }

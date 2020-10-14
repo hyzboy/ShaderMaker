@@ -2,10 +2,12 @@
 #include<QFont>
 #include<QStyle>
 #include<QDesktopWidget>
+#include<QMessageBox>
 #include"MainWindow.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
 #include"ShaderLib.h"
+#include"GLSLCompiler.h"
 #include<hgl/type/QTString.h>
 #include"ConfigData.h"
 #include"DLG_PathConfig.h"
@@ -15,6 +17,12 @@ using namespace hgl;
 int main(int argc,char **argv)
 {
     QApplication qt_app(argc, argv);
+    
+    if(!glsl_compiler::Init())
+    {        
+        QMessageBox::warning(nullptr,"Fatal Error","Init GLSLCompiler failed!",QMessageBox::StandardButton::Abort);
+        return -1;
+    }
 
     if(!LoadConfig())
     {
@@ -57,5 +65,6 @@ int main(int argc,char **argv)
     win.show();
 
     qt_app.exec();
+    glsl_compiler::Close();
     return 0;
 }
