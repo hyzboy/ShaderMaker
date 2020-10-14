@@ -99,6 +99,8 @@ QWidget *XMLShaderEditorWidget::InitPreview(QWidget *parent)
     {
         glsl_preview=new GLSLTextEdit(widget);
 
+        glsl_preview->setReadOnly(false);
+
         connect(glsl_preview,&QTextEdit::cursorPositionChanged,this,&XMLShaderEditorWidget::OnPreviewCursorPositionChanged);
     }
 
@@ -162,7 +164,7 @@ void XMLShaderEditorWidget::OnEditorCursorPositionChanged()
 
 void XMLShaderEditorWidget::OnPreviewCursorPositionChanged()
 {
-    const QTextCursor cursor=glsl_editor->textCursor();
+    const QTextCursor cursor=glsl_preview->textCursor();
 
     preview_hint->setText("Ln: "+QString::number(cursor.blockNumber()+1)
                      +"    Ch: "+QString::number(cursor.columnNumber()+1)
@@ -269,10 +271,7 @@ void XMLShaderEditorWidget::OnCompile()
     
     xs->ext_name=ToUTF8String(GetItem()->text(ML_COLUMN_TYPE));
 
-    if(shader_lib::XMLShaderMaker(xs,info_output))
-    {
-        info_output->colorWrite("green","SPV lenght: "+UTF8String::valueOf(xs->spv_data->spv_length)+" bytes.");
-    }
+    shader_lib::XMLShaderMaker(xs,info_output);
     
     glsl_preview->setText(ToQString(xs->shader_source));
     log_widget->appendHtml(log);

@@ -23,26 +23,31 @@ namespace shader_lib
     {
         shader_source=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
 
-        spv_data=glsl_compiler::CompileShaderToSPV((uint8 *)shader_source.c_str(),shader_type);
+        glsl_compiler::SPVData *spv=glsl_compiler::Compile(shader_type,shader_source.c_str());
 
-        if(!spv_data
-         ||!spv_data->result)
+        if(!spv)return(false);
+
+        const bool result=spv->result;
+
+        if(!result)
         {
-            info_output->colorWrite("red","<p>GLSL Compiler Error:");
-
-            if(spv_data)
+            if(info_output)
             {
-                info_output->colorWriteln("red","          log: "+UTF8String(spv_data->log));
-                info_output->colorWriteln("red","    debug log: "+UTF8String(spv_data->debug_log));
-                info_output->write("</p>");
+                info_output->colorWrite("red",  "<b>glsl compile failed.</b><ul>"
+                                                "<li><b>info: </b>"+UTF8String(spv->log)+
+                                                "</li><li><b>debug info: </b>"+UTF8String(spv->debug_log)+
+                                                "</li></ul>");
             }
 
-            return(false);
+            glsl_compiler::Free(spv);
+            return(nullptr);
         }
 
-        info_output->colorWriteln("green","<p>GLSL Compiler OK.</p>");
-
-        return(true);
+        if(info_output)
+        info_output->colorWrite("green","<p><b>Compile successed! spv length "+UTF8String::valueOf(spv->spv_length)+" bytes.</b></p>");
+        
+        glsl_compiler::Free(spv);
+        return true;
     }
 
     bool XMLShader::SaveToGLSL(const OSString &filename)

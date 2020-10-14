@@ -20,13 +20,15 @@ private:
     QLabel *editor_hint;
 
     QPushButton *save_button,
-                *compile_button;
+                *compile_button,
+                *preview_button;
 
     void OnEditorCursorPositionChanged();
     void OnTextChanged();
 
     void OnSave();
     void OnCompile();
+    void OnPreview();
 
     QWidget *InitEditor(QWidget *);
     

@@ -29,6 +29,10 @@ QWidget *MaterialEditorWidget::InitEditor(QWidget *parent)
         compile_button->setText("Compile");
         toolbar_layout->addWidget(compile_button,0,Qt::AlignLeft);
 
+        preview_button=new QPushButton(toolbar);
+        preview_button->setText("Preview");
+        toolbar_layout->addWidget(preview_button,0,Qt::AlignLeft);
+
         toolbar_layout->addStretch();
 
         editor_hint=new QLabel(toolbar);

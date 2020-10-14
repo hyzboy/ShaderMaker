@@ -51,7 +51,7 @@ namespace shader_lib
 
         bool ExpendDepend()
         {
-            info_output->colorWriteln("blue","Expend depends...");
+            info_output->colorWriteln("blue","<p>Expend depends...</p>");
 
             for(const UTF8String *module_name:xs->modules)
                 if(!ExpendDepend(*module_name))
