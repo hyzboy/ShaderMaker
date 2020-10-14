@@ -51,7 +51,7 @@ namespace shader_lib
 
         bool ExpendDepend()
         {
-            info_output->colorWriteln("blue","<p>Expend depends...</p>");
+            info_output->colorWriteln("blue","Expend depends...");
 
             for(const UTF8String *module_name:xs->modules)
                 if(!ExpendDepend(*module_name))
@@ -273,7 +273,7 @@ namespace shader_lib
                 shader:     1.vert.shader
         */
 
-        info_output->colorWriteln("blue","<p>------ Generate "+xs->ext_name+" shader ------</p>");
+        info_output->colorWriteln("blue","------ Generate "+xs->ext_name+" shader ------");
 
         return sm.Make();
         

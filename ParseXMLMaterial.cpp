@@ -41,32 +41,32 @@ namespace shader_lib
 
                 const OSString xml_fullname=filesystem::MergeFilename(pathname,ToOSString(xml_fn));
 
-                os_out<<"shader: "<<xml_fullname.c_str()<<std::endl;
+                info_output->colorWrite("blue",OS_TEXT("<p>shader: ")+xml_fullname+OS_TEXT("</p>"));
 
                 XMLShader *xs=LoadXMLShader(xml_fullname,info_output);
 
                 if(xs)
                 {
-                    os_out<<OS_TEXT("Load XML Shader file<")<<xml_fullname.c_str()<<OS_TEXT("> ok!")<<std::endl;
+                    info_output->colorWrite("green",OS_TEXT("<p>Load XML Shader file \"")+xml_fullname+OS_TEXT("\" OK!</p>"));
 
                     xml_material->shaders.Add(shader_type,xs);
                     xml_material->shader_bits|=shader_type;
 
                     if(XMLShaderMaker(xs,info_output))
                     {
-                        os_out<<OS_TEXT("Make Shader from <")<<xml_fullname.c_str()<<OS_TEXT("> ok!")<<std::endl;
+                        info_output->colorWrite("green",OS_TEXT("<p>Make shader from \"")+xml_fullname+OS_TEXT("\" OK!</p>"));
 
                         return(true);
                     }
                     else
                     {
-                        os_out<<OS_TEXT("Make Shader from <")<<xml_fullname.c_str()<<OS_TEXT("> failed!")<<std::endl;
+                        info_output->colorWrite("red",OS_TEXT("<p>Make shader from \"")+xml_fullname+OS_TEXT("\" failed!</p>"));
                         return(false);
                     }
                 }
                 else
                 {
-                    os_out<<OS_TEXT("Load XML Shader file<")<<xml_fullname.c_str()<<OS_TEXT("> error!")<<std::endl;
+                    info_output->colorWrite("red",OS_TEXT("<p>Load XML Shader file \"")+xml_fullname+OS_TEXT("\" failed!</p>"));
                 
                     return(false);
                 }
@@ -113,7 +113,7 @@ namespace shader_lib
         global_dos->Write(mos.GetData(),mos.Tell());
     }
 
-    bool SaveMaterial(const OSString &filename,XMLMaterial *xm)
+    bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output)
     {
         if(!xm)return(false);
 
@@ -141,12 +141,12 @@ namespace shader_lib
 
         if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
         {
-            os_out<<OS_TEXT("Save Material file<")<<filename.c_str()<<OS_TEXT("> ok!")<<std::endl;
+            info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
             return(true);
         }
         else
         {
-            os_out<<OS_TEXT("Convert Material file failed!")<<std::endl;
+            info_output->colorWriteln("red",OS_TEXT("Save material file \"")+filename+OS_TEXT("\" failed!"));
             return(false);
         }
     }
@@ -155,7 +155,13 @@ namespace shader_lib
     {
         if(!filesystem::FileExist(filename))
         {
-            os_out<<OS_TEXT("filename <")<<filename.c_str()<<OS_TEXT("> don't exist!")<<std::endl;
+            if(info_output)
+            {
+                OSString info=OS_TEXT("<p>Can't find \"")+filename+OS_TEXT("\"</p>");
+
+                info_output->colorWrite("red",info.c_str());
+            }
+
             return(nullptr);
         }
 
@@ -173,11 +179,11 @@ namespace shader_lib
             return(nullptr);
         }
         
-        os_out<<OS_TEXT("Load XML Material file<")<<filename.c_str()<<OS_TEXT("> ok!")<<std::endl;
-
-        const OSString mat_filename=filesystem::TrimFileExtName(filename,true);
-
-        SaveMaterial(mat_filename,xml_material);
+        if(info_output)
+        {
+            OSString info=OS_TEXT("<p>Load Material file \"")+filename+OS_TEXT("\" OK!</p>");
+            info_output->colorWrite("green",info.c_str());
+        }
 
         return xml_material;
     }

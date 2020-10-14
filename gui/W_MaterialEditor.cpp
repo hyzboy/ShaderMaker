@@ -4,6 +4,8 @@
 #include<QMessageBox>
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
+#include"QStringInfoOutput.h"
+#include"ConfigData.h"
 
 using namespace shader_lib;
 
@@ -27,10 +29,12 @@ QWidget *MaterialEditorWidget::InitEditor(QWidget *parent)
 
         compile_button=new QPushButton(toolbar);
         compile_button->setText("Compile");
+        connect(compile_button,&QPushButton::clicked,this,&MaterialEditorWidget::OnCompile);
         toolbar_layout->addWidget(compile_button,0,Qt::AlignLeft);
 
         preview_button=new QPushButton(toolbar);
         preview_button->setText("Preview");
+        preview_button->setDisabled(true);
         toolbar_layout->addWidget(preview_button,0,Qt::AlignLeft);
 
         toolbar_layout->addStretch();
@@ -161,4 +165,51 @@ bool MaterialEditorWidget::OnCloseRequested()
     }
     else
         return(false);
+}
+
+void MaterialEditorWidget::OnCompile()
+{
+    log_widget->clear();
+    
+    if(save_button->isEnabled())
+    {
+        QMessageBox msgBox;
+    
+        msgBox.setText("The document has been modified. You need to save before compile.");
+        msgBox.setInformativeText("Do you want to save your changes and compile material ?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+        
+        if(msgBox.exec()!=QMessageBox::Save)
+            return;
+    }
+
+    OnSave();
+    
+    QString log;
+    AutoDelete<InfoOutput> info_output=CreateQStringInfoOutput(&log);
+
+    shader_lib::XMLMaterial *mat=shader_lib::LoadXMLMaterial(GetFilename(),info_output);
+
+    log_widget->appendHtml(log);
+    log.clear();
+
+    if(mat)
+    {
+        info_output->colorWrite("green","<p>Make material data OK!</p>");
+
+        const OSString output_path=GetMaterialOutputPath();
+        
+        const OSString short_filename=filesystem::ClipFilename(GetFilename());
+
+        const OSString mat_filename=filesystem::TrimFileExtName(short_filename,true);
+
+        const OSString output_filename=filesystem::MergeFilename(output_path,mat_filename);
+
+        shader_lib::SaveMaterial(output_filename,mat,info_output);
+
+        delete mat;
+    }
+    
+    log_widget->appendHtml(log);
 }

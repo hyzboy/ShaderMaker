@@ -35,6 +35,16 @@ public:
         qstr->append(QString("<font color=\"")+QString(color)+QString("\">")+QString::fromUtf8(str)+QString("</font>"));
     }
 
+    void colorWrite(const char *color,const wchar_t *str) override
+    {
+        if(!str)return;
+
+        if(!color)
+            return InfoOutput::write(str);
+
+        qstr->append(QString("<font color=\"")+QString(color)+QString("\">")+QString::fromWCharArray(str)+QString("</font>"));
+    }
+
     void colorWriteln(const char *color,const char *str) override
     {
         if(!str)return;
@@ -42,7 +52,17 @@ public:
         if(!color)
             return InfoOutput::write(str);
 
-        qstr->append(QString("<font color=\"")+QString(color)+QString("\">")+QString::fromUtf8(str)+QString("</font>\n"));
+        qstr->append(QString("<p><font color=\"")+QString(color)+QString("\">")+QString::fromUtf8(str)+QString("</font></p>"));
+    }
+
+    void colorWriteln(const char *color,const wchar_t *str) override
+    {
+        if(!str)return;
+
+        if(!color)
+            return InfoOutput::write(str);
+
+        qstr->append(QString("<p><font color=\"")+QString(color)+QString("\">")+QString::fromWCharArray(str)+QString("</font></p>"));
     }
 };//class QStringInfoOutput
 

@@ -45,8 +45,8 @@ namespace shader_lib
 
         if(info_output)
         info_output->colorWrite("green","<p><b>Compile successed! spv length "+UTF8String::valueOf(spv->spv_length)+" bytes.</b></p>");
-        
-        glsl_compiler::Free(spv);
+
+        spv_data=spv;        
         return true;
     }
 

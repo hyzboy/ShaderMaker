@@ -6,6 +6,7 @@ using namespace hgl;
 
 namespace shader_lib
 {
+    bool SaveMaterial(const OSString &filename,XMLMaterial *);
     XMLMaterial *LoadXMLMaterial(const OSString &filename);
 }//namespace shader_lib
 
@@ -31,9 +32,18 @@ int os_main(int argc,os_char **argv)
 
     if(argc<=2)return(0);
 
+    const OSString filename=argv[2];
+
     os_out<<"material filename: "<<argv[2]<<std::endl;
 
-    shader_lib::LoadXMLMaterial(argv[2]);
+    shader_lib::XMLMaterial *mat=shader_lib::LoadXMLMaterial(filename);
+    
+    if(mat)
+    {
+        const OSString mat_filename=filesystem::TrimFileExtName(filename,true);
+
+        shader_lib::SaveMaterial(mat_filename,mat);
+    }
 
     glsl_compiler::Close();
 

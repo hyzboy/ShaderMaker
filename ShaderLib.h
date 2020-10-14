@@ -74,4 +74,5 @@ namespace shader_lib
     bool XMLShaderMaker(XMLShader *xs,InfoOutput *);
 
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output);
+    bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output);
 }//namespace shader_lib

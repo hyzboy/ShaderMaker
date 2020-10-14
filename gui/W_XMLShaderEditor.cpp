@@ -84,6 +84,7 @@ QWidget *XMLShaderEditorWidget::InitPreview(QWidget *parent)
 
         save_glsl_button=new QPushButton(toolbar);
         save_glsl_button->setText("Save To ...");
+        save_glsl_button->setDisabled(true);
         toolbar_layout->addWidget(save_glsl_button,0,Qt::AlignLeft);
 
         toolbar_layout->addStretch();

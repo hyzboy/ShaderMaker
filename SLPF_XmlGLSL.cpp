@@ -183,7 +183,7 @@ namespace shader_lib
             if(!CheckStruct(*module_name))
             {                
                 if(info_output)
-                    info_output->colorWriteln("red","can't find Module: "+(*module_name));
+                    info_output->colorWrite("red","can't find Module: "+(*module_name));
 
                 return(false);
             }
