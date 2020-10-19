@@ -3,12 +3,12 @@
         position3f
         color4f
     </in>
-    <out>color3f</out>
+    <out>color4f</out>
     <uniform>WorldMatrix world;</uniform>
     <raw>PushConstant3D</raw>
 
     <main>
-        out_Color=Color.rgb;
+        out_Color=Color;
         gl_Position=world.mvp*pc.local_to_world*vec4(Position,1.0);
     </main>
 </root>
