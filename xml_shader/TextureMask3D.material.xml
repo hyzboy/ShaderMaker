@@ -1,4 +1,0 @@
-<root>
-    <shader type="vert" filename="Texture3D"/>
-    <shader type="frag" filename="TextureMask"/>
-</root>

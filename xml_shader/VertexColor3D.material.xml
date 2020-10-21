@@ -1,4 +1,0 @@
-<root>
-    <shader type="vert" filename="VertexColor3D"/>
-    <shader type="frag" filename="VertexColor"/>
-</root>

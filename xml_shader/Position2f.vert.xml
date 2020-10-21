@@ -1,6 +1,0 @@
-<root>
-    <in>position2f</in>
-    <main>
-        gl_Position=vec4(Position,0.0,1.0);
-    </main>
-</root>

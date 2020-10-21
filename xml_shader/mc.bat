@@ -1,1 +1,0 @@
-MaterialCompiler.exe h:\cm\ShaderMaker\shader_libs %1

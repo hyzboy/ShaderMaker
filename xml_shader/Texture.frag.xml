@@ -1,8 +1,0 @@
-<root>
-    <in>texcoord2f</in>
-    <out>FragColor</out>
-    <uniform>sampler2D tex;</uniform>
-    <main>
-    FragColor=texture(tex,TexCoord);
-    </main>
-</root>

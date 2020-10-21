@@ -1,5 +1,0 @@
-<root>
-    <shader type="vert" filename="TextureRect2D"/>
-    <shader type="geom" filename="TextureRect2D"/>
-    <shader type="frag" filename="LumTextureColor"/>
-</root>

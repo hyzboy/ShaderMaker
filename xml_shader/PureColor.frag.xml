@@ -1,5 +1,0 @@
-<root>
-    <out>FragColor</out>
-    <uniform>ColorMaterial color_material;</uniform>
-    <main>FragColor=color_material.color;</main>
-</root>
