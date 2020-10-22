@@ -61,6 +61,17 @@ namespace shader_lib
                 }
             }
         };//class SetsElementCreater:public xml::ElementCreater
+
+        const bool notvaluechar(const u8char ch)
+        {
+            if(iscodechar(ch))
+                return(false);
+
+            if(ch=='[')return(false);
+            if(ch==']')return(false);
+
+            return(true);
+        }
         
         class UniformElementCreater:public xml::ElementCreater
         {
@@ -83,14 +94,14 @@ namespace shader_lib
             {
                 int len=str_length;
 
-                const u8char *trim_str=trim(str,len,notcodechar);
+                const u8char *trim_str=trim(str,len,notvaluechar);
 
                 if(len<=0)return;
 
                 int ll=len;
                 int rl=len;
-                const u8char *left_str=clipleft(trim_str,ll,notcodechar);
-                const u8char *right_str=clipright(trim_str,rl,notcodechar);
+                const u8char *left_str=clipleft(trim_str,ll,notvaluechar);
+                const u8char *right_str=clipright(trim_str,rl,notvaluechar);
 
                 if(left_str&&right_str)
                 {
