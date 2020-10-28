@@ -241,8 +241,9 @@ namespace glsl_compiler
     bool CompileShader(const OSString &filename)
     {
         int64 size;
+        uint8 *data=(uint8 *)filesystem::LoadFileToMemory(filename,size,true);
 
-        AutoDeleteArray<uint8> source=(uint8 *)filesystem::LoadFileToMemory(filename,size,true);
+        AutoDeleteArray<uint8> source(data,size+1);
 
         if(!source)
         {
