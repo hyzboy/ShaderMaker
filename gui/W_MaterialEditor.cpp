@@ -4,6 +4,7 @@
 #include<QMessageBox>
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
+#include<hgl/filesystem/FileSystem.h>
 #include"QStringInfoOutput.h"
 #include"ConfigData.h"
 
