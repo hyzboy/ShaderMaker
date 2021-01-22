@@ -59,9 +59,10 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     QTextBrowser *about_text=new QTextBrowser();
     about_text->setOpenExternalLinks(true);
     about_text->setFrameShape(QFrame::NoFrame);
-    about_text->setHtml("<html><body>\n"
-                        "<p>MaterialBuilder</p>\n"
-                        "<p>Copyright (C) 2018-2020 <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
+    about_text->setHtml("<html><body>"
+                        "<p>MaterialBuilder</p>"
+                        "<p>Copyright (C) 2018-2021</p>"
+                        "<p>Offical web: <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
 
@@ -141,7 +142,7 @@ DLGAbout::DLGAbout()
 
     QPushButton* close_button = new QPushButton(this);
 
-    close_button->setText(tr("Close"));
+    close_button->setText(tr("OK"));
     connect(close_button,&QPushButton::clicked,this,&DLGAbout::OnClose);
 
     aboutLayout->addWidget(close_button, 0, Qt::AlignRight);
