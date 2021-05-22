@@ -171,7 +171,7 @@ namespace glsl_compiler
 
         glsl_compiler::SPVData *spv=glsl_compiler::Compile(flag,(char *)source);
 
-        if(!spv)return(false);
+        if(!spv)return(nullptr);
 
         const bool result=spv->result;
 
