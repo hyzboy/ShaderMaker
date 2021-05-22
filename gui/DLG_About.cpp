@@ -36,7 +36,7 @@ QWidget *DLGAbout::CreateIconAndNameLayout(QWidget *parent)
             fnt.setBold(true);
             fnt.setFamily("Tahoma");
             name_label->setFont(fnt);
-            name_label->setText(tr("MaterialBuilder"));
+            name_label->setText(tr("MaterialWriter"));
             vlayout->addWidget(name_label);
         }
 
@@ -60,7 +60,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     about_text->setOpenExternalLinks(true);
     about_text->setFrameShape(QFrame::NoFrame);
     about_text->setHtml("<html><body>"
-                        "<p>MaterialBuilder</p>"
+                        "<p>MaterialWriter</p>"
                         "<p>Copyright (C) 2018-2021</p>"
                         "<p>Offical web: <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
                         "</body></html>");

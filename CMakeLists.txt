@@ -64,9 +64,9 @@ shader_maker_project(PipelineCompiler)
 shader_maker_project(MaterialCompiler)
 
 IF(CM_BUILD_GUI_TOOLS)
-    set(IDENTIFIER "com.hyzgame.materialbuilder")
-    SET(MATERIAL_BUILDER_SOURCE gui/MaterialBuilder.cpp
-                                gui/MaterialBuilder.qrc
+    set(IDENTIFIER "com.hyzgame.materialwriter")
+    SET(MATERIAL_WRITER_SOURCE  gui/MaterialWriter.cpp
+                                gui/MaterialWriter.qrc
                                 gui/TypeDefine.h
                                 gui/GLSLTextEdit.cpp
                                 gui/GLSLTextEdit.h
@@ -102,15 +102,15 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/ShaderLibTree.cpp
                                 gui/ShaderLibTree.h)
 
-    source_group("GUI" FILES ${MATERIAL_BUILDER_SOURCE})
+    source_group("GUI" FILES ${MATERIAL_WRITER_SOURCE})
 
-    add_executable(MaterialBuilder  ${MATERIAL_BUILDER_SOURCE}
+    add_executable(MaterialWriter  ${MATERIAL_WRITER_SOURCE}
                                     ${MATERIAL_COMPILER_SOURCE}
                                     ${GLSL_COMPILER_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE})
 
-    target_link_libraries(MaterialBuilder PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
-    set_target_properties(MaterialBuilder PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+    target_link_libraries(MaterialWriter PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+    set_target_properties(MaterialWriter PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
 
-    shader_maker_project(MaterialBuilder)
+    shader_maker_project(MaterialWriter)
 ENDIF()
