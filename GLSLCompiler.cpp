@@ -164,10 +164,16 @@ namespace glsl_compiler
 
     SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag)
     {
-        if(source[0]==0xEF
-         &&source[1]==0xBB
-         &&source[2]==0xBF)
-           source+=3;
+        ByteOrderMask bom=CheckBOM(source);
+
+        if(bom==ByteOrderMask::UTF8)
+            source+=3;
+        else
+        if(bom!=ByteOrderMask::NONE)
+        {
+            std::cerr<<"GLSLCompiler does not support BOMHeader outside of UTF8"<<std::endl;
+            return(nullptr);
+        }
 
         glsl_compiler::SPVData *spv=glsl_compiler::Compile(flag,(char *)source);
 
