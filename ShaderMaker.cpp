@@ -206,6 +206,9 @@ namespace shader_lib
 
                 ++ubo_binding;
                 ++ubo;
+
+                if(i<count-1)
+                    OutEnter();
             }
             OutComment(U8_TEXT("End uniforms"));
             OutEnter();

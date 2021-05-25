@@ -272,4 +272,4 @@ namespace glsl_compiler
 
         return SaveSPV2Shader(filename+OS_TEXT(".shader"),spv,flag);
     }
-}//}//namespace glsl_compiler
+}//namespace glsl_compiler
