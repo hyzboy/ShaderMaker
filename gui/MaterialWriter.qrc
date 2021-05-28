@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>res/logo256.png</file>
         <file>res/logo64.png</file>
+        <file>res/MaterialWriter.ico</file>
     </qresource>
 </RCC>
