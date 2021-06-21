@@ -9,6 +9,8 @@ using namespace hgl;
 
 namespace shader_lib
 {
+//    constexpr char *ShaderFileTypeName[]={"vert","tesc","tese","geom","frag","comp","mesh","task","rgen","rint","rahit","rchit","rmiss","rcall"};
+
     enum class VaryingType
     {
         Input,
@@ -17,12 +19,12 @@ namespace shader_lib
 
     class ShaderMaker
     {
+        ShaderStat *stat;
+
         InfoOutput *info_output;
 
         shader_lib::XMLShader *xs;
         UTF8StringList shader_text;
-
-        int ubo_binding;
 
     private:
 
@@ -85,7 +87,7 @@ namespace shader_lib
         }
 
         void OutComment(const UTF8String &str)
-        {   
+        {
             u8char comment[81]=U8_TEXT("//-- ---------------------------------------------------------------------------");
 
             memcpy(comment+5,str.c_str(),str.Length());
@@ -190,21 +192,23 @@ namespace shader_lib
 
             for(int i=0;i<count;i++)
             {
-                if((*ubo)->binding>ubo_binding)
-                    ubo_binding=(*ubo)->binding;
+                front=U8_TEXT("layout(set=")+UTF8String::valueOf(stat->set[(size_t)(*ubo)->set_type])
+                     +U8_TEXT(",binding=")  +UTF8String::valueOf(stat->binding_count);
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))
                 {
-                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(",row_major) uniform");
+                    front+=U8_TEXT(",row_major) uniform");
                     shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
                 }
                 else
                 {
-                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(ubo_binding)+U8_TEXT(") uniform");                    
+                    front+=U8_TEXT(") uniform");
                     shader_text.Add(front+u8" "+(*ubo)->type_name+u8" "+(*ubo)->value_name+u8";");
                 }
 
-                ++ubo_binding;
+                info_output->colorWriteln("purple",xs->ext_name+UTF8String(": ")+front+UTF8String(" ")+(*ubo)->type_name+U8_TEXT(" ")+(*ubo)->value_name);
+
+                ++stat->binding_count;
                 ++ubo;
 
                 if(i<count-1)
@@ -223,11 +227,11 @@ namespace shader_lib
 
     public:
 
-        ShaderMaker(shader_lib::XMLShader *_xs,InfoOutput *i_o)
+        ShaderMaker(shader_lib::XMLShader *_xs,ShaderStat *ss,InfoOutput *i_o)
         {
+            stat=ss;
             info_output=i_o;
             xs=_xs;
-            ubo_binding=0;
         }
 
         ~ShaderMaker()=default;
@@ -239,10 +243,6 @@ namespace shader_lib
             if(!CheckShader())return(false);
             
             xs->shader_type=glsl_compiler::GetType(xs->ext_name.c_str());
-
-            const char *ShaderFileTypeName[]={"vert","tesc","tese","geom","frag","comp","mesh","task","rgen","rint","rahit","rchit","rmiss","rcall"};
-
-            ubo_binding=string_serial_from_list(ShaderFileTypeName,xs->ext_name.c_str())*16;
         
             CreateHeader();
 
@@ -260,11 +260,11 @@ namespace shader_lib
         }
     };//class ShaderMaker
 
-    bool XMLShaderMaker(shader_lib::XMLShader *xs,InfoOutput *info_output)
+    bool XMLShaderMaker(shader_lib::XMLShader *xs,ShaderStat *stat,InfoOutput *info_output)
     {
         if(!xs)return(false);
 
-        ShaderMaker sm(xs,info_output);
+        ShaderMaker sm(xs,stat,info_output);
 
         /*  example
 

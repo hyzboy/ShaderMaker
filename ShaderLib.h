@@ -61,17 +61,50 @@ namespace shader_lib
         ssbCallable     = 0x00002000,
         ssbAll          = 0x7FFFFFFF
     };
+        
+    enum class DescriptorSetsType
+    {
+        //设计使其对应shader中的sets
+    
+        Global=0,   ///<全局参数(如太阳光等)
+        Material,   ///<材质中永远不变的参数
+    //    Texture,    ///<材质中的纹理参数
+        Value,      ///<材质中的变量参数
+        Renderable, ///<渲染实例参数(如Local2World matrix)
+
+        ENUM_CLASS_RANGE(Global,Renderable)
+    };//
+
+    /**
+     * shader统计信息.
+     */
+    struct ShaderStat
+    {
+        int set[(size_t)DescriptorSetsType::RANGE_SIZE];
+        int binding_count;
+
+        ShaderStat()
+        {
+            hgl_zero(set);
+            hgl_zero(binding_count);
+        }
+    };
+
+    using XMLShaderMap=MapObject<uint32,XMLShader>;
 
     struct XMLMaterial
     {
         uint32 shader_bits=0;
-        MapObject<uint32,XMLShader> shaders;
+
+        ShaderStat shader_stat;
+
+        XMLShaderMap shaders;
     };//struct XMLMaterial
     
     XMLShader *LoadXMLShader(io::InputStream *is,InfoOutput *);
     XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *);
 
-    bool XMLShaderMaker(XMLShader *xs,InfoOutput *);
+    bool XMLShaderMaker(XMLShader *xs,ShaderStat *,InfoOutput *);
 
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output);
     bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output);

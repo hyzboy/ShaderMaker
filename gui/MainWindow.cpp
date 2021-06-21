@@ -5,7 +5,7 @@
 
 void MainWindow::Init()
 {
-    this->setWindowTitle("MaterialWriter v1.0 (Developing)");
+    this->setWindowTitle("MaterialWriter v1.01 (Developing)");
     this->setWindowIcon(QIcon(":/res/logo256.png"));
 
     this->resize(QSize(960,540));

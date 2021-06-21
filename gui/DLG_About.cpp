@@ -42,7 +42,7 @@ QWidget *DLGAbout::CreateIconAndNameLayout(QWidget *parent)
 
         {
             QLabel *ver_label = new QLabel(name_and_ver);
-            ver_label->setText(tr("Version: 1.0"));
+            ver_label->setText(tr("Version: 1.01"));
             vlayout->addWidget(ver_label);
         }
 

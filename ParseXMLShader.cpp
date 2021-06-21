@@ -71,12 +71,13 @@ namespace shader_lib
             if(ch==']')return(false);
 
             return(true);
-        }
-        
+        }        
+
         class UniformElementCreater:public xml::ElementCreater
         {
             XMLShader *xml_shader;
 
+            uint set;
             uint binding;
 
         public:
@@ -110,6 +111,11 @@ namespace shader_lib
                     ubo->type_name=UTF8String(left_str,ll);
                     ubo->value_name=UTF8String(right_str,rl);
                     ubo->binding=binding;
+
+                    if(right_str[0]=='m'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Material;else
+                    if(right_str[0]=='g'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Global;else
+                    if(right_str[0]=='r'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Renderable;else
+                                                            ubo->set_type=(uint)DescriptorSetsType::Value;
 
                     if(xml_shader->struct_block.Find(ubo->type_name)==-1)
                         xml_shader->struct_block.Add(ubo->type_name);

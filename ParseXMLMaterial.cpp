@@ -48,21 +48,11 @@ namespace shader_lib
                 if(xs)
                 {
                     info_output->colorWrite("green",OS_TEXT("<p>Load XML Shader file \"")+xml_fullname+OS_TEXT("\" OK!</p>"));
-
+                    
                     xml_material->shaders.Add(shader_type,xs);
                     xml_material->shader_bits|=shader_type;
 
-                    if(XMLShaderMaker(xs,info_output))
-                    {
-                        info_output->colorWrite("green",OS_TEXT("<p>Make shader from \"")+xml_fullname+OS_TEXT("\" OK!</p>"));
-
-                        return(true);
-                    }
-                    else
-                    {
-                        info_output->colorWrite("red",OS_TEXT("<p>Make shader from \"")+xml_fullname+OS_TEXT("\" failed!</p>"));
-                        return(false);
-                    }
+                    return(true);
                 }
                 else
                 {
@@ -177,6 +167,59 @@ namespace shader_lib
         {
             delete xml_material;
             return(nullptr);
+        }
+
+        {
+            {
+                bool set_has[(size_t)DescriptorSetsType::RANGE_SIZE];
+
+                hgl_zero(set_has);
+
+                for(int i=0;i<xml_material->shaders.GetCount();i++)
+                {
+                    XMLShader *xs;
+
+                    xml_material->shaders.GetValue(i,xs);
+
+                    for(auto it:xs->uniforms)
+                        set_has[(size_t)it->set_type]=true;
+                }
+
+                {
+                    uint32_t index=0;
+
+                    ENUM_CLASS_FOR(DescriptorSetsType,int,i)
+                    {
+                        if(set_has[i])
+                        {
+                            xml_material->shader_stat.set[i]=index;
+                            ++index;
+                        }
+                        else
+                        {
+                            xml_material->shader_stat.set[i]=-1;
+                        }
+                    }
+                }
+            }
+
+            for(int i=0;i<xml_material->shaders.GetCount();i++)
+            {
+                XMLShader *xs;
+
+                xml_material->shaders.GetValue(i,xs);
+
+                if(XMLShaderMaker(xs,&(xml_material->shader_stat),info_output))
+                {
+                    info_output->colorWrite("green",OS_TEXT("<p>Make shader from \"")+xs->origin_filename+OS_TEXT("\" OK!</p>"));
+                }
+                else
+                {
+                    info_output->colorWrite("red",OS_TEXT("<p>Make shader from \"")+xs->origin_filename+OS_TEXT("\" failed!</p>"));
+                    delete xml_material;
+                    return(nullptr);
+                }
+            }
         }
         
         if(info_output)

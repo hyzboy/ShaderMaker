@@ -272,7 +272,11 @@ void XMLShaderEditorWidget::OnCompile()
     
     xs->ext_name=ToUTF8String(GetItem()->text(ML_COLUMN_TYPE));
 
-    shader_lib::XMLShaderMaker(xs,info_output);
+    {
+        shader_lib::ShaderStat ss;
+
+        shader_lib::XMLShaderMaker(xs,&ss,info_output);
+    }
     
     glsl_preview->setText(ToQString(xs->shader_source));
     log_widget->appendHtml(log);

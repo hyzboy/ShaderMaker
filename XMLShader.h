@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 #include<hgl/type/Sets.h>
@@ -18,6 +18,7 @@ namespace shader_lib
         UTF8String type_name;
         UTF8String value_name;
 
+        uint set_type;              //这个值对应DescriptorSetsType
         uint binding;
     };
 
@@ -27,7 +28,7 @@ namespace shader_lib
         UTF8String out;
         uint max_vertices;
     };
-    
+
     struct XMLShaderModule
     {
         UTF8StringList depend_raw_list;
@@ -54,7 +55,7 @@ namespace shader_lib
 
     public:
 
-        uint32_t shader_type;        
+        uint32_t shader_type;
         UTF8String shader_source;
         glsl_compiler::SPVData *spv_data;
 
@@ -71,7 +72,7 @@ namespace shader_lib
         void SetFilename(const OSString &);
 
         bool SetShaderSource(const UTF8StringList &,InfoOutput *);
-        
+
         bool SaveToGLSL(const OSString &filename);
         bool SaveToSPV(const OSString &filename);
         bool SaveToShader(const OSString &filename);
