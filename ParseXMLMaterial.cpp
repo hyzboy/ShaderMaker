@@ -107,13 +107,13 @@ namespace shader_lib
     {
         if(!xm)return(false);
 
-        constexpr char MaterialFileHeader[]=u8"Material\x1A";
-        constexpr uint MaterialFileHeaderLength=sizeof(MaterialFileHeader)-1;
+        constexpr char MATERIAL_FILE_HEADER[]=u8"Material\x1A";
+        constexpr uint MATERIAL_FILE_HEADER_LENGTH=sizeof(MATERIAL_FILE_HEADER)-1;
 
         io::MemoryOutputStream mos;
         io::LEDataOutputStream dos(&mos);
 
-        dos.Write(MaterialFileHeader,MaterialFileHeaderLength);
+        dos.Write(MATERIAL_FILE_HEADER,MATERIAL_FILE_HEADER_LENGTH);
         dos.WriteUint8(1);                                                      //version
 
         dos.WriteUint32(xm->shader_bits);
