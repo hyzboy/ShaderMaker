@@ -49,8 +49,8 @@ namespace shader_lib
                 {
                     info_output->colorWrite("green",OS_TEXT("<p>Load XML Shader file \"")+xml_fullname+OS_TEXT("\" OK!</p>"));
                     
-                    xml_material->shaders.Add(shader_type,xs);
-                    xml_material->shader_bits|=shader_type;
+                    xml_material->shader_map.Add(shader_type,xs);
+                    xml_material->shader_stage_bits|=shader_type;
 
                     return(true);
                 }
@@ -116,10 +116,10 @@ namespace shader_lib
         dos.Write(MATERIAL_FILE_HEADER,MATERIAL_FILE_HEADER_LENGTH);
         dos.WriteUint8(1);                                                      //version
 
-        dos.WriteUint32(xm->shader_bits);
+        dos.WriteUint32(xm->shader_stage_bits);
 
-        const uint count=xm->shaders.GetCount();
-        auto **sp=xm->shaders.GetDataList();
+        const uint count=xm->shader_map.GetCount();
+        auto **sp=xm->shader_map.GetDataList();
         for(uint i=0;i<count;i++)
         {
             SaveSPV(&dos,
@@ -175,11 +175,11 @@ namespace shader_lib
 
                 hgl_zero(set_has);
 
-                for(int i=0;i<xml_material->shaders.GetCount();i++)
+                for(int i=0;i<xml_material->shader_map.GetCount();i++)
                 {
                     XMLShader *xs;
 
-                    xml_material->shaders.GetValue(i,xs);
+                    xml_material->shader_map.GetValue(i,xs);
 
                     for(auto it:xs->uniforms)
                         set_has[(size_t)it->set_type]=true;
@@ -203,11 +203,11 @@ namespace shader_lib
                 }
             }
 
-            for(int i=0;i<xml_material->shaders.GetCount();i++)
+            for(int i=0;i<xml_material->shader_map.GetCount();i++)
             {
                 XMLShader *xs;
 
-                xml_material->shaders.GetValue(i,xs);
+                xml_material->shader_map.GetValue(i,xs);
 
                 if(XMLShaderMaker(xs,&(xml_material->shader_stat),info_output))
                 {

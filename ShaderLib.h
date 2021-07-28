@@ -92,13 +92,19 @@ namespace shader_lib
 
     using XMLShaderMap=MapObject<uint32,XMLShader>;
 
+    struct MaterialAttrib
+    {
+        bool is_2d:1;                   ///<是否是2D的
+        bool acquire_sun:1;             ///<是否需要太阳光数据
+    };//
+
     struct XMLMaterial
     {
-        uint32 shader_bits=0;
+        uint32 shader_stage_bits=0;
 
         ShaderStat shader_stat;
 
-        XMLShaderMap shaders;
+        XMLShaderMap shader_map;
     };//struct XMLMaterial
     
     XMLShader *LoadXMLShader(io::InputStream *is,InfoOutput *);
