@@ -192,10 +192,8 @@ namespace shader_lib
 
             for(int i=0;i<count;i++)
             {
-                const size_t set_type=(size_t)(*ubo)->type;
-
-                front=U8_TEXT("layout(set=")+UTF8String::valueOf(mtl_stat->set[set_type])
-                     +U8_TEXT(",binding=")  +UTF8String::valueOf(mtl_stat->binding_count[set_type]);
+                front=U8_TEXT("layout(set=")+UTF8String::valueOf((int)(*ubo)->set_number)
+                     +U8_TEXT(",binding=")  +UTF8String::valueOf((int)(*ubo)->binding);
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))
                 {
@@ -210,7 +208,6 @@ namespace shader_lib
 
                 info_output->colorWriteln("purple",xs->ext_name+UTF8String(": ")+front+UTF8String(" ")+(*ubo)->type_name+U8_TEXT(" ")+(*ubo)->value_name);
 
-                ++mtl_stat->binding_count[set_type];
                 ++ubo;
 
                 if(i<count-1)

@@ -41,17 +41,11 @@ namespace shader_lib
         UTF8String type_name;
         UTF8String value_name;
 
-        DescriptorSetsType type;
+        DescriptorSetsType type=DescriptorSetsType::Value;
 
-        int binding;
-
-    public:
-
-        Uniform()
-        {
-            type=DescriptorSetsType::Value;
-            binding=-1;
-        }
+        //以下变量由material统计生成
+        int set_number=-1;
+        int binding=-1;
     };
 
     struct GeometryAttribute

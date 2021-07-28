@@ -62,19 +62,19 @@ namespace shader_lib
         ssbAll          = 0x7FFFFFFF
     };
 
+    struct DescSetUniformList
+    {
+        int set_number=-1;
+
+        List<Uniform *> uniform_list;
+    };
+
     /**
      * 材质信息统计
      */
     struct MaterialStat
     {
-        int set[(size_t)DescriptorSetsType::RANGE_SIZE];
-        int binding_count[(size_t)DescriptorSetsType::RANGE_SIZE];
-
-        MaterialStat()
-        {
-            hgl_set(set,-1,(size_t)DescriptorSetsType::RANGE_SIZE);
-            hgl_zero(binding_count);
-        }
+        DescSetUniformList ds_uniform[(size_t)DescriptorSetsType::RANGE_SIZE];
     };
 
     using XMLShaderMap=MapObject<uint32,XMLShader>;

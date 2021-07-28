@@ -1,4 +1,4 @@
-#include<hgl/filesystem/FileSystem.h>
+﻿#include<hgl/filesystem/FileSystem.h>
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/type/StringList.h>
@@ -141,6 +141,24 @@ namespace shader_lib
         }
     }
 
+    void RefreshDescSetBinding(DescSetUniformList &dsul,const int set_number)
+    {
+        dsul.set_number=set_number;
+
+        Sets<UTF8String> binding_set;
+
+        //合并相同名字的uniform
+        for(Uniform *u:dsul.uniform_list)
+        {
+            u->set_number=set_number;
+            binding_set.Add(u->value_name);
+        }
+
+        //给所有的uniform赋binding
+        for(Uniform *u:dsul.uniform_list)
+            u->binding=binding_set.Find(u->value_name);
+    }
+
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output)
     {
         if(!filesystem::FileExist(filename))
@@ -182,7 +200,11 @@ namespace shader_lib
                     xml_material->shader_map.GetValue(i,xs);
 
                     for(auto it:xs->uniforms)
+                    {
                         set_has[(size_t)it->type]=true;
+
+                        xml_material->mtl_stat.ds_uniform[(size_t)it->type].uniform_list.Add(it);
+                    }
                 }
 
                 {
@@ -192,12 +214,8 @@ namespace shader_lib
                     {
                         if(set_has[i])
                         {
-                            xml_material->mtl_stat.set[i]=index;
+                            RefreshDescSetBinding(xml_material->mtl_stat.ds_uniform[i],index);
                             ++index;
-                        }
-                        else
-                        {
-                            xml_material->mtl_stat.set[i]=-1;
                         }
                     }
                 }
