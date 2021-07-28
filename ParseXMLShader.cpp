@@ -112,10 +112,7 @@ namespace shader_lib
                     ubo->value_name=UTF8String(right_str,rl);
                     ubo->binding=binding;
 
-                    if(right_str[0]=='m'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Material;else
-                    if(right_str[0]=='g'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Global;else
-                    if(right_str[0]=='r'&&right_str[1]=='_')ubo->set_type=(uint)DescriptorSetsType::Renderable;else
-                                                            ubo->set_type=(uint)DescriptorSetsType::Value;
+                    ubo->set_type=(uint)DescriptorSetsTypeFromName(right_str);
 
                     if(xml_shader->struct_block.Find(ubo->type_name)==-1)
                         xml_shader->struct_block.Add(ubo->type_name);

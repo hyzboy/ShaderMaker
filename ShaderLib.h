@@ -75,6 +75,16 @@ namespace shader_lib
         ENUM_CLASS_RANGE(Global,Renderable)
     };//
 
+    inline const DescriptorSetsType DescriptorSetsTypeFromName(const char *name)
+    {
+        if(!name||!*name||name[1]!='_')return DescriptorSetsType::Value;
+
+        if(*name=='m')return DescriptorSetsType::Material;
+        if(*name=='g')return DescriptorSetsType::Global;
+        if(*name=='r')return DescriptorSetsType::Renderable;
+                      return DescriptorSetsType::Value;
+    }
+
     /**
      * shader统计信息.
      */
