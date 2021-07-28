@@ -273,7 +273,7 @@ void XMLShaderEditorWidget::OnCompile()
     xs->ext_name=ToUTF8String(GetItem()->text(ML_COLUMN_TYPE));
 
     {
-        shader_lib::ShaderStat ss;
+        shader_lib::MaterialStat ss;
 
         shader_lib::XMLShaderMaker(xs,&ss,info_output);
     }

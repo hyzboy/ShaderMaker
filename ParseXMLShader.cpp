@@ -112,7 +112,7 @@ namespace shader_lib
                     ubo->value_name=UTF8String(right_str,rl);
                     ubo->binding=binding;
 
-                    ubo->set_type=(uint)DescriptorSetsTypeFromName(right_str);
+                    ubo->type=DescriptorSetsTypeFromName(right_str);
 
                     if(xml_shader->struct_block.Find(ubo->type_name)==-1)
                         xml_shader->struct_block.Add(ubo->type_name);

@@ -19,7 +19,7 @@ namespace shader_lib
 
     class ShaderMaker
     {
-        ShaderStat *stat;
+        MaterialStat *mtl_stat;
 
         InfoOutput *info_output;
 
@@ -192,8 +192,10 @@ namespace shader_lib
 
             for(int i=0;i<count;i++)
             {
-                front=U8_TEXT("layout(set=")+UTF8String::valueOf(stat->set[(size_t)(*ubo)->set_type])
-                     +U8_TEXT(",binding=")  +UTF8String::valueOf(stat->binding_count);
+                const size_t set_type=(size_t)(*ubo)->type;
+
+                front=U8_TEXT("layout(set=")+UTF8String::valueOf(mtl_stat->set[set_type])
+                     +U8_TEXT(",binding=")  +UTF8String::valueOf(mtl_stat->binding_count[set_type]);
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))
                 {
@@ -208,7 +210,7 @@ namespace shader_lib
 
                 info_output->colorWriteln("purple",xs->ext_name+UTF8String(": ")+front+UTF8String(" ")+(*ubo)->type_name+U8_TEXT(" ")+(*ubo)->value_name);
 
-                ++stat->binding_count;
+                ++mtl_stat->binding_count[set_type];
                 ++ubo;
 
                 if(i<count-1)
@@ -227,9 +229,9 @@ namespace shader_lib
 
     public:
 
-        ShaderMaker(shader_lib::XMLShader *_xs,ShaderStat *ss,InfoOutput *i_o)
+        ShaderMaker(shader_lib::XMLShader *_xs,MaterialStat *ss,InfoOutput *i_o)
         {
-            stat=ss;
+            mtl_stat=ss;
             info_output=i_o;
             xs=_xs;
         }
@@ -260,7 +262,7 @@ namespace shader_lib
         }
     };//class ShaderMaker
 
-    bool XMLShaderMaker(shader_lib::XMLShader *xs,ShaderStat *stat,InfoOutput *info_output)
+    bool XMLShaderMaker(shader_lib::XMLShader *xs,MaterialStat *stat,InfoOutput *info_output)
     {
         if(!xs)return(false);
 

@@ -61,41 +61,18 @@ namespace shader_lib
         ssbCallable     = 0x00002000,
         ssbAll          = 0x7FFFFFFF
     };
-        
-    enum class DescriptorSetsType
-    {
-        //设计使其对应shader中的sets
-    
-        Global=0,   ///<全局参数(如太阳光等)
-        Material,   ///<材质中永远不变的参数
-    //    Texture,    ///<材质中的纹理参数
-        Value,      ///<材质中的变量参数
-        Renderable, ///<渲染实例参数(如Local2World matrix)
-
-        ENUM_CLASS_RANGE(Global,Renderable)
-    };//
-
-    inline const DescriptorSetsType DescriptorSetsTypeFromName(const char *name)
-    {
-        if(!name||!*name||name[1]!='_')return DescriptorSetsType::Value;
-
-        if(*name=='m')return DescriptorSetsType::Material;
-        if(*name=='g')return DescriptorSetsType::Global;
-        if(*name=='r')return DescriptorSetsType::Renderable;
-                      return DescriptorSetsType::Value;
-    }
 
     /**
-     * shader统计信息.
+     * 材质信息统计
      */
-    struct ShaderStat
+    struct MaterialStat
     {
         int set[(size_t)DescriptorSetsType::RANGE_SIZE];
-        int binding_count;
+        int binding_count[(size_t)DescriptorSetsType::RANGE_SIZE];
 
-        ShaderStat()
+        MaterialStat()
         {
-            hgl_zero(set);
+            hgl_set(set,-1,(size_t)DescriptorSetsType::RANGE_SIZE);
             hgl_zero(binding_count);
         }
     };
@@ -112,7 +89,7 @@ namespace shader_lib
     {
         uint32 shader_stage_bits=0;
 
-        ShaderStat shader_stat;
+        MaterialStat mtl_stat;
 
         XMLShaderMap shader_map;
     };//struct XMLMaterial
@@ -120,7 +97,7 @@ namespace shader_lib
     XMLShader *LoadXMLShader(io::InputStream *is,InfoOutput *);
     XMLShader *LoadXMLShader(const OSString &filename,InfoOutput *);
 
-    bool XMLShaderMaker(XMLShader *xs,ShaderStat *,InfoOutput *);
+    bool XMLShaderMaker(XMLShader *xs,MaterialStat *,InfoOutput *);
 
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output);
     bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output);

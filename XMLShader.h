@@ -11,15 +11,47 @@ namespace glsl_compiler
 
 namespace shader_lib
 {
-    using namespace hgl;
+    using namespace hgl;    
+        
+    enum class DescriptorSetsType
+    {
+        //设计使其对应shader中的sets
+    
+        Global=0,   ///<全局参数(如太阳光等)
+        Material,   ///<材质中永远不变的参数
+    //    Texture,    ///<材质中的纹理参数
+        Value,      ///<材质中的变量参数
+        Renderable, ///<渲染实例参数(如Local2World matrix)
+
+        ENUM_CLASS_RANGE(Global,Renderable)
+    };//
+
+    inline const DescriptorSetsType DescriptorSetsTypeFromName(const char *name)
+    {
+        if(!name||!*name||name[1]!='_')return DescriptorSetsType::Value;
+
+        if(*name=='m')return DescriptorSetsType::Material;
+        if(*name=='g')return DescriptorSetsType::Global;
+        if(*name=='r')return DescriptorSetsType::Renderable;
+                      return DescriptorSetsType::Value;
+    }
 
     struct Uniform
     {
         UTF8String type_name;
         UTF8String value_name;
 
-        uint set_type;              //这个值对应DescriptorSetsType
-        uint binding;
+        DescriptorSetsType type;
+
+        int binding;
+
+    public:
+
+        Uniform()
+        {
+            type=DescriptorSetsType::Value;
+            binding=-1;
+        }
     };
 
     struct GeometryAttribute

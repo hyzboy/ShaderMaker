@@ -182,7 +182,7 @@ namespace shader_lib
                     xml_material->shader_map.GetValue(i,xs);
 
                     for(auto it:xs->uniforms)
-                        set_has[(size_t)it->set_type]=true;
+                        set_has[(size_t)it->type]=true;
                 }
 
                 {
@@ -192,12 +192,12 @@ namespace shader_lib
                     {
                         if(set_has[i])
                         {
-                            xml_material->shader_stat.set[i]=index;
+                            xml_material->mtl_stat.set[i]=index;
                             ++index;
                         }
                         else
                         {
-                            xml_material->shader_stat.set[i]=-1;
+                            xml_material->mtl_stat.set[i]=-1;
                         }
                     }
                 }
@@ -209,7 +209,7 @@ namespace shader_lib
 
                 xml_material->shader_map.GetValue(i,xs);
 
-                if(XMLShaderMaker(xs,&(xml_material->shader_stat),info_output))
+                if(XMLShaderMaker(xs,&(xml_material->mtl_stat),info_output))
                 {
                     info_output->colorWrite("green",OS_TEXT("<p>Make shader from \"")+xs->origin_filename+OS_TEXT("\" OK!</p>"));
                 }
