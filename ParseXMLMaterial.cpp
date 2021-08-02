@@ -98,7 +98,7 @@ namespace shader_lib
         
         if(mu_list.Get(u->value_name,mu))
         {
-            mu->stageFlags|=shader_type;
+            mu->shader_stage_flag|=shader_type;
         }
         else
         {

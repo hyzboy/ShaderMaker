@@ -44,13 +44,13 @@ namespace shader_lib
 
     struct MaterialUniform:public Uniform
     {
-        uint32 stageFlags;
+        uint32 shader_stage_flag;
 
     public:
 
         MaterialUniform(const uint32 st,Uniform *u):Uniform(u)
         {
-            stageFlags=st;
+            shader_stage_flag=st;
         }
     };
 
@@ -76,8 +76,6 @@ namespace shader_lib
     {
         DescSetUniformList ds_uniform[(size_t)DescriptorSetsType::RANGE_SIZE];
     };
-
-    using ShaderType=uint32_t;      //same define in GLSLCompiler.h
 
     using XMLShaderMap=MapObject<ShaderType,XMLShader>;
 

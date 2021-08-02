@@ -33,6 +33,8 @@ namespace shader_lib
         ssbAll          = 0x7FFFFFFF
     };
 
+    using ShaderType=uint32_t;      //same define in GLSLCompiler.h
+
     enum class DescriptorSetsType
     {
         //设计使其对应shader中的sets

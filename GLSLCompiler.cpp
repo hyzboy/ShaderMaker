@@ -164,7 +164,34 @@ namespace glsl_compiler
 
     void OutputShaderResource(MSRList &msr_list,const ShaderType flag,const ShaderResourceData *srd_arrays,const DescriptorType type,const char *hint)
     {
-        
+        const ShaderResourceData *srd=srd_arrays+(size_t)type;
+
+        if(srd->count<=0)return;
+
+        std::cout<<srd->count<<" "<<hint<<std::endl;
+
+        const ShaderResource *sr=srd->items;
+
+        MaterialShaderResource *msr;
+
+        for(size_t i=0;i<srd->count;i++)
+        {
+            if(msr_list.Get(sr->name,msr))
+            {
+                msr->shader_stage_flag|=flag;
+            }
+            else
+            {
+                msr=new MaterialShaderResource(flag,sr);
+
+                msr_list.Add(msr->name,msr);
+
+                std::cout<<"    layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
+            }
+
+            ++sr;
+        }
+
     }
 
     SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag)

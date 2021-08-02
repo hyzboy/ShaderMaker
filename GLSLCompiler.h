@@ -35,9 +35,11 @@ namespace glsl_compiler
         ENUM_CLASS_RANGE(SAMPLER,INPUT_ATTACHMENT)
     };
 
+    constexpr size_t SHADER_STAGE_NAME_MAX_LENGTH=128;
+
     struct ShaderStage
     {
-        char name[128];
+        char name[SHADER_STAGE_NAME_MAX_LENGTH];
         uint8_t location;
         uint32_t basetype;      //现在改对应hgl/graph/VertexAttrib中的enum class VertexAttribBaseType
         uint32_t vec_size;
@@ -51,12 +53,19 @@ namespace glsl_compiler
 
     struct ShaderResource
     {
-        char name[128];
+        char name[SHADER_STAGE_NAME_MAX_LENGTH];
 
         uint8_t set;
         uint8_t binding;
 
     public:
+
+        ShaderResource(ShaderResource *sr)
+        {
+            memcpy(name,sr->name,SHADER_STAGE_NAME_MAX_LENGTH);
+            set=sr->set;
+            binding=sr->binding;
+        }
 
         const int Comp(const ShaderResource &sr)const
         {
@@ -75,9 +84,9 @@ namespace glsl_compiler
 
     public:
 
-        MaterialShaderResource()
+        MaterialShaderResource(const ShaderType flag,ShaderResource *sr):ShaderResource(sr)
         {
-            hgl_zero(*this);
+            shader_stage_flag=flag;
         }
 
         const int Comp(const MaterialShaderResource &msr)const
@@ -92,7 +101,7 @@ namespace glsl_compiler
         CompOperator(const MaterialShaderResource &,Comp);
     };//struct MaterialShaderResource:public ShaderResource
 
-    using MSRList=List<MaterialShaderResource>;
+    using MSRList=MapObject<AnsiString,MaterialShaderResource>;
 
     struct ShaderResourceData
     {
