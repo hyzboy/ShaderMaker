@@ -48,7 +48,8 @@ SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 
 SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
                                 ParseXMLShader.cpp
-                                ParseXMLMaterial.cpp)
+                                ParseXMLMaterial.cpp
+                                SaveMaterial.cpp)
 
 add_executable(MaterialCompiler MaterialCompiler.cpp
                                 ${MATERIAL_COMPILER_SOURCE}

@@ -2,7 +2,6 @@
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/type/StringList.h>
-#include<hgl/io/MemoryOutputStream.h>
 #include"ShaderLib.h"
 #include"GLSLCompiler.h"
 
@@ -92,71 +91,34 @@ namespace shader_lib
             }
         };//class XMLMaterialRootElementCreater:public xml::ElementCreater
     }//namespace
-
-    void SaveSPV(io::DataOutputStream *global_dos,const uint32_t flag,glsl_compiler::SPVData *spv)
+    
+    void DescSetUniformList::Add(const uint32 shader_type,Uniform *u)
     {
-        io::MemoryOutputStream mos;
-
-        glsl_compiler::SaveSPV2Shader(&mos,spv,flag,false);
-
-        global_dos->WriteUint32(mos.Tell());
-        global_dos->Write(mos.GetData(),mos.Tell());
-    }
-
-    bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output)
-    {
-        if(!xm)return(false);
-
-        constexpr char MATERIAL_FILE_HEADER[]=u8"Material\x1A";
-        constexpr uint MATERIAL_FILE_HEADER_LENGTH=sizeof(MATERIAL_FILE_HEADER)-1;
-
-        io::MemoryOutputStream mos;
-        io::LEDataOutputStream dos(&mos);
-
-        dos.Write(MATERIAL_FILE_HEADER,MATERIAL_FILE_HEADER_LENGTH);
-        dos.WriteUint8(1);                                                      //version
-
-        dos.WriteUint32(xm->shader_stage_bits);
-
-        const uint count=xm->shader_map.GetCount();
-        auto **sp=xm->shader_map.GetDataList();
-        for(uint i=0;i<count;i++)
+        MaterialUniform *mu;
+        
+        if(mu_list.Get(u->value_name,mu))
         {
-            SaveSPV(&dos,
-                    (*sp)->left,
-                    (*sp)->right->spv_data);
-
-            ++sp;
-        }
-
-        if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
-        {
-            info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
-            return(true);
+            mu->stageFlags|=shader_type;
         }
         else
         {
-            info_output->colorWriteln("red",OS_TEXT("Save material file \"")+filename+OS_TEXT("\" failed!"));
-            return(false);
+            mu=new MaterialUniform(shader_type,u);
+
+            mu_list.Add(u->value_name,mu);
         }
+
+        uniform_list.Add(u);
     }
 
-    void RefreshDescSetBinding(DescSetUniformList &dsul,const int set_number)
+    void DescSetUniformList::RefreshDescSetBinding(const int sn)
     {
-        dsul.set_number=set_number;
+        set_number=sn;
 
-        Sets<UTF8String> binding_set;
-
-        //合并相同名字的uniform
-        for(Uniform *u:dsul.uniform_list)
+        for(Uniform *u:uniform_list)
         {
-            u->set_number=set_number;
-            binding_set.Add(u->value_name);
+            u->set_number=sn;
+            u->binding=mu_list.Find(u->value_name);
         }
-
-        //给所有的uniform赋binding
-        for(Uniform *u:dsul.uniform_list)
-            u->binding=binding_set.Find(u->value_name);
     }
 
     XMLMaterial *LoadXMLMaterial(const OSString &filename,InfoOutput *info_output)
@@ -203,7 +165,7 @@ namespace shader_lib
                     {
                         set_has[(size_t)it->type]=true;
 
-                        xml_material->mtl_stat.ds_uniform[(size_t)it->type].uniform_list.Add(it);
+                        xml_material->mtl_stat.ds_uniform[(size_t)it->type].Add(xs->shader_type,it);
                     }
                 }
 
@@ -214,7 +176,7 @@ namespace shader_lib
                     {
                         if(set_has[i])
                         {
-                            RefreshDescSetBinding(xml_material->mtl_stat.ds_uniform[i],index);
+                            xml_material->mtl_stat.ds_uniform[i].RefreshDescSetBinding(index);
                             ++index;
                         }
                     }

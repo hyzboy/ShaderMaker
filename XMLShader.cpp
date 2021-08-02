@@ -53,7 +53,7 @@ namespace shader_lib
     bool XMLShader::SaveToGLSL(const OSString &filename)
     {
         return filesystem::SaveMemoryToFile(filename,shader_source.c_str(),shader_source.Length());
-    } 
+    }
 
     bool XMLShader::SaveToSPV(const OSString &filename)
     {
@@ -63,7 +63,7 @@ namespace shader_lib
     }
 
     bool XMLShader::SaveToShader(const OSString &filename)
-    {    
+    {
         if(!spv_data)return(false);
 
         return glsl_compiler::SaveSPV2Shader(filename,spv_data,shader_type);

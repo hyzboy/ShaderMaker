@@ -18,7 +18,7 @@ namespace glsl_compiler
         bool        (*Init)();
         void        (*Close)();
 
-        uint32_t    (*GetType)(const char *ext_name);
+        ShaderType  (*GetType)(const char *ext_name);
         SPVData *   (*Compile)(const uint32_t type,const char *source);
 
         void        (*Free)(SPVData *);
@@ -74,7 +74,7 @@ namespace glsl_compiler
         }
     }
 
-    uint32_t    GetType (const char *ext_name)
+    ShaderType GetType (const char *ext_name)
     {
         if(gsi)
             return gsi->GetType(ext_name);
@@ -131,9 +131,9 @@ namespace glsl_compiler
         dos->Write(mos.GetData(),mos.Tell());
     }
 
-    void OutputShaderResource(const ShaderResourceData *srd_arrays,const uint32_t type,DataOutputStream *dos,const char *hint)
+    void OutputShaderResource(const ShaderResourceData *srd_arrays,const DescriptorType type,DataOutputStream *dos,const char *hint)
     {
-        const ShaderResourceData *srd=srd_arrays+type;
+        const ShaderResourceData *srd=srd_arrays+(size_t)type;
 
         if(srd->count<=0)return;
 
@@ -150,7 +150,7 @@ namespace glsl_compiler
 
         for(size_t i=0;i<srd->count;i++)
         {
-            mdos->WriteUint8(sr->set);          //append in version 1
+            mdos->WriteUint8(sr->set);
             mdos->WriteUint8(sr->binding);
             mdos->WriteAnsiTinyString(sr->name);
 
@@ -160,6 +160,11 @@ namespace glsl_compiler
 
         dos->WriteUint32(mos.Tell());
         dos->Write(mos.GetData(),mos.Tell());
+    }
+
+    void OutputShaderResource(MSRList &msr_list,const ShaderType flag,const ShaderResourceData *srd_arrays,const DescriptorType type,const char *hint)
+    {
+        
     }
 
     SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag)
@@ -196,10 +201,28 @@ namespace glsl_compiler
         return spv;
     }
 
+    void SaveSPV(DataOutputStream *dos,const SPVData *spv,const ShaderType flag)
+    {
+        dos->WriteUint8(1);     //version
+        dos->WriteUint32(flag);
+        dos->WriteUint32(spv->spv_length);
+        dos->Write(spv->spv_data,spv->spv_length);
+
+        OutputShaderStage(spv->input,dos,"in");
+        OutputShaderStage(spv->output,dos,"out");
+    }
+
+    void OutputShaderResource(MSRList &msr_list,const SPVData *spv,const ShaderType flag)
+    {
+        OutputShaderResource(msr_list,flag,spv->resource,DescriptorType::COMBINED_IMAGE_SAMPLER,"combined_image_sampler");
+        OutputShaderResource(msr_list,flag,spv->resource,DescriptorType::UNIFORM_BUFFER,"uniform_buffer");
+        OutputShaderResource(msr_list,flag,spv->resource,DescriptorType::STORAGE_BUFFER,"storage_buffer");
+    }
+
     constexpr char SHADER_FILE_HEADER[]="Shader\x1A";
     constexpr uint SHADER_FILE_HEADER_BYTES=sizeof(SHADER_FILE_HEADER)-1;
 
-    bool SaveSPV2Shader(MemoryOutputStream *mos,const SPVData *spv,const uint32_t flag,const bool include_file_header)
+    bool SaveSPV2Shader(MemoryOutputStream *mos,const SPVData *spv,const ShaderType flag,const bool include_file_header)
     {
         if(!mos)return(false);
         if(!spv)return(false);
@@ -217,14 +240,14 @@ namespace glsl_compiler
         OutputShaderStage(spv->input,dos,"in");
         OutputShaderStage(spv->output,dos,"out");
         
-        OutputShaderResource(spv->resource,(uint32_t)Descriptor::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
-        OutputShaderResource(spv->resource,(uint32_t)Descriptor::UNIFORM_BUFFER,dos,"uniform_buffer");
-        OutputShaderResource(spv->resource,(uint32_t)Descriptor::STORAGE_BUFFER,dos,"storage_buffer");
+        OutputShaderResource(spv->resource,DescriptorType::COMBINED_IMAGE_SAMPLER,dos,"combined_image_sampler");
+        OutputShaderResource(spv->resource,DescriptorType::UNIFORM_BUFFER,dos,"uniform_buffer");
+        OutputShaderResource(spv->resource,DescriptorType::STORAGE_BUFFER,dos,"storage_buffer");
 
         return(true);
     }
 
-    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag)
+    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const ShaderType flag)
     {
         if(!spv)return(false);
 

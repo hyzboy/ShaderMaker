@@ -42,24 +42,16 @@ namespace shader_lib
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
 
-    enum ShaderStageBits        //等同VkShaderStageFlagBits
+    struct MaterialUniform:public Uniform
     {
-        ssbVertex       = 0x00000001,
-        ssbTesc         = 0x00000002,
-        ssbTesv         = 0x00000004,
-        ssbGeometry     = 0x00000008,
-        ssbFragment     = 0x00000010,
-        ssbGraphics     = 0x0000001F,
-        ssbCompute      = 0x00000020,
-        ssbTask         = 0x00000040,
-        ssbMesh         = 0x00000080,
-        ssbRaygen       = 0x00000100,
-        ssbAnyHit       = 0x00000200,
-        ssbClosestHit   = 0x00000400,
-        ssbMiss         = 0x00000800,
-        ssbIntersection = 0x00001000,
-        ssbCallable     = 0x00002000,
-        ssbAll          = 0x7FFFFFFF
+        uint32 stageFlags;
+
+    public:
+
+        MaterialUniform(const uint32 st,Uniform *u):Uniform(u)
+        {
+            stageFlags=st;
+        }
     };
 
     struct DescSetUniformList
@@ -67,6 +59,14 @@ namespace shader_lib
         int set_number=-1;
 
         List<Uniform *> uniform_list;
+
+        MapObject<UTF8String,MaterialUniform> mu_list;
+
+    public:
+
+        void Add(const uint32,Uniform *);
+
+        void RefreshDescSetBinding(const int);
     };
 
     /**
@@ -77,7 +77,9 @@ namespace shader_lib
         DescSetUniformList ds_uniform[(size_t)DescriptorSetsType::RANGE_SIZE];
     };
 
-    using XMLShaderMap=MapObject<uint32,XMLShader>;
+    using ShaderType=uint32_t;      //same define in GLSLCompiler.h
+
+    using XMLShaderMap=MapObject<ShaderType,XMLShader>;
 
     struct MaterialAttrib
     {

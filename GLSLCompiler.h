@@ -16,7 +16,9 @@ namespace glsl_compiler
 {
     using namespace hgl;
 
-    enum class Descriptor         //等同VkDescriptorType
+    using ShaderType=uint32_t;
+
+    enum class DescriptorType         //等同VkDescriptorType
     {
         SAMPLER = 0,
         COMBINED_IMAGE_SAMPLER,
@@ -53,7 +55,44 @@ namespace glsl_compiler
 
         uint8_t set;
         uint8_t binding;
-    };
+
+    public:
+
+        const int Comp(const ShaderResource &sr)const
+        {
+            if(set!=sr.set)return sr.set-set;
+            if(binding!=sr.binding)return sr.binding-binding;
+
+            return strcmp(name,sr.name);
+        }
+
+        CompOperator(const ShaderResource &,Comp);
+    };//struct ShaderResource
+
+    struct MaterialShaderResource:public ShaderResource
+    {
+        uint32_t shader_stage_flag;
+
+    public:
+
+        MaterialShaderResource()
+        {
+            hgl_zero(*this);
+        }
+
+        const int Comp(const MaterialShaderResource &msr)const
+        {
+            int result=ShaderResource::Comp(msr);
+
+            if(result)return result;
+
+            return shader_stage_flag-msr.shader_stage_flag;
+        }
+
+        CompOperator(const MaterialShaderResource &,Comp);
+    };//struct MaterialShaderResource:public ShaderResource
+
+    using MSRList=List<MaterialShaderResource>;
 
     struct ShaderResourceData
     {
@@ -71,20 +110,20 @@ namespace glsl_compiler
         uint32_t spv_length;
 
         ShaderStageData input,output;
-        ShaderResourceData resource[size_t(Descriptor::RANGE_SIZE)];
+        ShaderResourceData resource[size_t(DescriptorType::RANGE_SIZE)];
     };
 
     bool Init();
     void Close();
 
-    uint32_t GetType(const char *ext_name);
+    ShaderType  GetType (const char *ext_name);
     
     SPVData *   Compile (const uint32_t type,const char *source);
     void        Free    (SPVData *spv_data);
 
     SPVData *CompileShaderToSPV(const uint8 *source,const uint32_t flag);    
-    bool SaveSPV2Shader(hgl::io::MemoryOutputStream *mos,const SPVData *spv,const uint32_t flag,const bool include_file_header);
-    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const uint32_t flag);
+    bool SaveSPV2Shader(hgl::io::MemoryOutputStream *mos,const SPVData *spv,const ShaderType flag,const bool include_file_header);
+    bool SaveSPV2Shader(const OSString &filename,const SPVData *spv,const ShaderType flag);
 
     void Free(SPVData *spv_data);
 

@@ -11,8 +11,28 @@ namespace glsl_compiler
 
 namespace shader_lib
 {
-    using namespace hgl;    
-        
+    using namespace hgl;
+
+    enum ShaderStageBits        //等同VkShaderStageFlagBits
+    {
+        ssbVertex       = 0x00000001,
+        ssbTesc         = 0x00000002,
+        ssbTesv         = 0x00000004,
+        ssbGeometry     = 0x00000008,
+        ssbFragment     = 0x00000010,
+        ssbGraphics     = 0x0000001F,
+        ssbCompute      = 0x00000020,
+        ssbTask         = 0x00000040,
+        ssbMesh         = 0x00000080,
+        ssbRaygen       = 0x00000100,
+        ssbAnyHit       = 0x00000200,
+        ssbClosestHit   = 0x00000400,
+        ssbMiss         = 0x00000800,
+        ssbIntersection = 0x00001000,
+        ssbCallable     = 0x00002000,
+        ssbAll          = 0x7FFFFFFF
+    };
+
     enum class DescriptorSetsType
     {
         //设计使其对应shader中的sets
@@ -41,11 +61,26 @@ namespace shader_lib
         UTF8String type_name;
         UTF8String value_name;
 
-        DescriptorSetsType type=DescriptorSetsType::Value;
+        DescriptorSetsType type;
 
         //以下变量由material统计生成
-        int set_number=-1;
-        int binding=-1;
+        int set_number;
+        int binding;
+
+    public:
+
+        Uniform()
+        {
+            type=DescriptorSetsType::Value;
+        }
+
+        Uniform(Uniform *u)
+        {
+            type=u->type;
+            value_name=u->value_name;
+
+            type=u->type;
+        }
     };
 
     struct GeometryAttribute
