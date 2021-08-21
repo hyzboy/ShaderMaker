@@ -75,7 +75,7 @@ class StdInfoOutput:public InfoOutput
     void *console_handle;
     DWORD result;
     #endif//
-                
+
 public:
 
     StdInfoOutput()
@@ -92,7 +92,7 @@ public:
         #if HGL_OS == HGL_OS_Windows
             WriteConsoleA(console_handle,str,len,&result,nullptr);
         #else
-        std::cout<<str;
+            std::cout<<str;
         #endif//
     }
 
@@ -103,7 +103,7 @@ public:
         #if HGL_OS == HGL_OS_Windows
             WriteConsoleW(console_handle,str,len,&result,nullptr);
         #else
-        std::wcout<<str;
+            std::wcout<<str;
         #endif//
     }
 };//class StdInfoOutput

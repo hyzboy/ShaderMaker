@@ -41,6 +41,31 @@ namespace shader_lib
     VaryingConfig *GetVarying(const UTF8String &name);    
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
+    
+    struct MaterialShaderResource:public ShaderResource
+    {
+        uint32_t shader_stage_flag;
+
+    public:
+
+        MaterialShaderResource(const ShaderType flag,const ShaderResource *sr):ShaderResource(sr)
+        {
+            shader_stage_flag=flag;
+        }
+
+        const int Comp(const MaterialShaderResource &msr)const
+        {
+            int result=ShaderResource::Comp(msr);
+
+            if(result)return result;
+
+            return shader_stage_flag-msr.shader_stage_flag;
+        }
+
+        CompOperator(const MaterialShaderResource &,Comp);
+    };//struct MaterialShaderResource:public ShaderResource
+
+    using MSRList=MapObject<AnsiString,MaterialShaderResource>;
 
     struct MaterialUniform:public Uniform
     {

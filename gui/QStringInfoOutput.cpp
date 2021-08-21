@@ -29,50 +29,52 @@ public:
     void write(const hgl::UTF8StringList &sl)
     {
         for(const hgl::UTF8String *str:sl)
-            qstr->append(QString("<p>")+QString::fromUtf8(str->c_str())+QString("</p>"));
+        {
+            qstr->append(QString("<p>"));
+            qstr->append(QString::fromUtf8(str->c_str()));
+            qstr->append(QString("</p>"));
+        }
     }
 
     void write(const hgl::WideStringList &sl)
     {
         for(const hgl::WideString *str:sl)
-            qstr->append(QString("<p>")+QString::fromWCharArray(str->c_str())+QString("</p>"));
-    }
-
-    void colorWrite(const char *color,const char *str) override
-    {
-        if(!str)return;
-
-        hgl::UTF8StringList sl;
-
-        int count=hgl::SplitToStringListByEnter(sl,hgl::UTF8String(str));
-
-        if(!color)
         {
-            if(count==1)
-                return InfoOutput::write(str);
-            else
-                return write(sl);
+            qstr->append(QString("<p>"));
+            qstr->append(QString::fromWCharArray(str->c_str()));
+            qstr->append(QString("</p>"));
         }
-
-        qstr->append(QString("<font color=\"")+QString(color)+QString("\">"));
-        write(sl);
-        qstr->append(QString("</font>"));
     }
 
-    void colorWrite(const char *color,const wchar_t *str) override
+    template<typename T>
+    void format_string(bool append_enter,const char *color,const T *format,...)
     {
-        if(!str)return;
+        if(!format)return;
         
-        hgl::WideStringList sl;
+        va_list args;
+        va_start(args,format);
 
-        int count=hgl::SplitToStringListByEnter(sl,hgl::WideString(str));
+        T buffer[4096];
+
+        int len=hgl::vsprintf<T>(buffer,4096,format,args);
+
+        hgl::StringList<hgl::String<T>> sl;
+
+        int count=hgl::SplitToStringListByEnter(sl,buffer,len);
 
         if(!color)
         {
             if(count==1)
-                return InfoOutput::write(str);
+            {
+                InfoOutput::write(buffer,len);
+
+                if(append_enter)
+                    InfoOutput::writeEnter<T>();
+            }
             else
+            {
                 return write(sl);
+            }
         }
 
         qstr->append(QString("<font color=\"")+QString(color)+QString("\">"));
@@ -80,46 +82,24 @@ public:
         qstr->append(QString("</font>"));
     }
 
-    void colorWriteln(const char *color,const char *str) override
+    void colorWrite(const char *color,const char *format,...) override
     {
-        if(!str)return;        
-
-        hgl::UTF8StringList sl;
-
-        int count=hgl::SplitToStringListByEnter(sl,hgl::UTF8String(str));
-
-        if(!color)
-        {
-            if(count==1)
-                return InfoOutput::writeln(str);
-            else
-                return write(sl);
-        }
-
-        qstr->append(QString("<font color=\"")+QString(color)+QString("\">"));
-        write(sl);
-        qstr->append(QString("</font>"));
+        format_string<char>(false,color,format);
     }
 
-    void colorWriteln(const char *color,const wchar_t *str) override
+    void colorWrite(const char *color,const wchar_t *format,...) override
     {
-        if(!str)return;
-        
-        hgl::WideStringList sl;
+        format_string<wchar_t>(false,color,format);
+    }
 
-        int count=hgl::SplitToStringListByEnter(sl,hgl::WideString(str));
+    void colorWriteln(const char *color,const char *format,...) override
+    {
+        format_string<char>(true,color,format);
+    }
 
-        if(!color)
-        {
-            if(count==1)
-                return InfoOutput::writeln(str);
-            else
-                return write(sl);
-        }
-
-        qstr->append(QString("<font color=\"")+QString(color)+QString("\">"));
-        write(sl);
-        qstr->append(QString("</font>"));
+    void colorWriteln(const char *color,const wchar_t *format,...) override
+    {
+        format_string<wchar_t>(true,color,format);
     }
 };//class QStringInfoOutput
 
