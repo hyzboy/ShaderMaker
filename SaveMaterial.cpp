@@ -20,23 +20,7 @@ namespace shader_lib
 
         MSRList msr_list;
 
-    public:
-
-        MaterialOutput(XMLMaterial *xm,InfoOutput *ifo)
-        {
-            xml=xm;
-            info_output=ifo;
-
-            dos=new LEDataOutputStream(&mos);
-
-            info_output->colorWriteln("red","Start of Output material.");
-        }
-
-        ~MaterialOutput()
-        {
-            info_output->colorWriteln("red","Finished of Output material.");
-            delete dos;
-        }
+    private:
 
         void WriteFileHeader()
         {
@@ -71,7 +55,7 @@ namespace shader_lib
 
                     msr_list.Add(msr->name,msr);
 
-                    info_output->colorWriteln("black","    layout(set=%d,binding=%d) uniform %s",sr->set,sr->binding,sr->name);
+                    info_output->colorWriteln("gray","    layout(set=%d,binding=%d) uniform %s",sr->set,sr->binding,sr->name);
                 }
 
                 ++sr;
@@ -97,6 +81,7 @@ namespace shader_lib
             const glsl_compiler::ShaderStage *ss=ssd.items;
             VertexAttribType vat;
             const char *type_string;
+            int location;
 
             info_output->colorWriteln("blue",UTF8String::valueOf(ssd.count)+U8_TEXT(" Stage ")+UTF8String(hint));
 
@@ -112,7 +97,9 @@ namespace shader_lib
 
                 type_string=GetVertexAttribName(&vat);
 
-                info_output->colorWriteln("black","    layout(location=%d) %s %s %s",ss->location,hint,type_string,ss->name);
+                location=ss->location;
+
+                info_output->colorWriteln("black","    layout(location=%d) %s %s %s",location,hint,type_string,ss->name);
                 ++ss;
             }
 
@@ -129,7 +116,7 @@ namespace shader_lib
             OutputShaderStage(spv->input,"in");
             OutputShaderStage(spv->output,"out");
 
-            StatShaderResource(flag,spv->resource);
+            StatShaderResource(flag,spv->resource);     //注意：因为各种资源可能会有VS/GS/FS共用的情况，所以这里只有统计，并不输出
         }
 
         void WriteSPV()
@@ -146,9 +133,69 @@ namespace shader_lib
             }
         }
 
+        void OutputShaderStageName(AnsiString &str,const uint32_t &type)
+        {
+            uint32_t index=0;
+            uint32_t bit=1;
+
+            str.Clear();
+            bool first=true;
+
+            while(bit<=ssbCallable)
+            {
+                if(type&bit)
+                {
+                    if(!first)
+                    {
+                        str.Strcat(",");
+                    }
+                    else
+                    {
+                        first=false;
+                    }
+
+                    str.Strcat(shader_stage_name_list[index]);
+                }
+
+                bit<<=1;
+                ++index;
+            }
+        }
+
         void WriteDescriptorSet()
         {
+            const uint count=msr_list.GetCount();
+            auto **it=msr_list.GetDataList();
+            AnsiString flags;
             
+            for(uint i=0;i<count;i++)
+            {
+                MaterialShaderResource *msr=(*it)->right;
+
+                OutputShaderStageName(flags,msr->shader_stage_flag);
+
+                info_output->colorWriteln("black","    layout(set=%d,binding=%d) uniform %s; //%s",msr->set,msr->binding,msr->name,flags.c_str());
+
+                ++it;
+            }
+        }
+
+    public:
+
+        MaterialOutput(XMLMaterial *xm,InfoOutput *ifo)
+        {
+            xml=xm;
+            info_output=ifo;
+
+            dos=new LEDataOutputStream(&mos);
+
+            info_output->colorWriteln("red","Start of Output material.");
+        }
+
+        ~MaterialOutput()
+        {
+            info_output->colorWriteln("red","Finished of Output material.");
+            delete dos;
         }
 
         bool OutputToFile(const OSString &filename)
@@ -158,86 +205,97 @@ namespace shader_lib
             WriteFileHeader();
             WriteSPV();
 
+            WriteDescriptorSet();
 
+            return(true);
         }
     };//class MaterialOutput    
-    
-    void OutputShaderResource(const ShaderResourceData *srd_arrays,const DescriptorType type,DataOutputStream *dos,const char *hint)
-    {
-        const ShaderResourceData *srd=srd_arrays+(size_t)type;
-
-        if(srd->count<=0)return;
-
-        dos->WriteUint32((uint32_t)type);
-
-        MemoryOutputStream mos;
-        AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
-
-        std::cout<<srd->count<<" "<<hint<<std::endl;
-
-        mdos->WriteUint8(uint8(srd->count));
-
-        const ShaderResource *sr=srd->items;
-
-        for(size_t i=0;i<srd->count;i++)
-        {
-            mdos->WriteUint8(sr->set);
-            mdos->WriteUint8(sr->binding);
-            mdos->WriteAnsiTinyString(sr->name);
-
-            std::cout<<"    layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
-            ++sr;
-        }
-
-        dos->WriteUint32(mos.Tell());
-        dos->Write(mos.GetData(),mos.Tell());
-    }
-
-    void SaveSPV(io::DataOutputStream *global_dos,const ShaderType flag,glsl_compiler::SPVData *spv)
-    {
-        io::MemoryOutputStream mos;
-
-        glsl_compiler::SaveSPV(&mos,spv,flag);
-
-        global_dos->WriteUint32(mos.Tell());
-        global_dos->Write(mos.GetData(),mos.Tell());
-    }
-
-    void SaveShaderDescriptorSet(io::DataOutputStream *dos,MaterialStat *stat,InfoOutput *info_output)
-    {
-    }
 
     bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output)
     {
         if(!xm)return(false);
 
+        MaterialOutput mo(xm,info_output);
 
-        io::MemoryOutputStream mos;
-        io::LEDataOutputStream dos(&mos);
-
-
-        SaveShaderDescriptorSet(&dos,&xm->mtl_stat,info_output);
-
-        const uint count=xm->shader_map.GetCount();
-        auto **sp=xm->shader_map.GetDataList();
-        for(uint i=0;i<count;i++)
-        {
-            SaveSPV(&dos,
-                (*sp)->left,
-                (*sp)->right->spv_data);
-
-            ++sp;
-        }
-
-        if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
-        {
-            info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
-            return(true);
-        }
-        else
-        {
-            info_output->colorWriteln("red",OS_TEXT("Save material file \"")+filename+OS_TEXT("\" failed!"));
-            return(false);
-        }
+        return mo.OutputToFile(filename);
     }
+    
+    //void OutputShaderResource(const ShaderResourceData *srd_arrays,const DescriptorType type,DataOutputStream *dos,const char *hint)
+    //{
+    //    const ShaderResourceData *srd=srd_arrays+(size_t)type;
+
+    //    if(srd->count<=0)return;
+
+    //    dos->WriteUint32((uint32_t)type);
+
+    //    MemoryOutputStream mos;
+    //    AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mos);
+
+    //    std::cout<<srd->count<<" "<<hint<<std::endl;
+
+    //    mdos->WriteUint8(uint8(srd->count));
+
+    //    const ShaderResource *sr=srd->items;
+
+    //    for(size_t i=0;i<srd->count;i++)
+    //    {
+    //        mdos->WriteUint8(sr->set);
+    //        mdos->WriteUint8(sr->binding);
+    //        mdos->WriteAnsiTinyString(sr->name);
+
+    //        std::cout<<"    layout(set="<<int(sr->set)<<",binding="<<int(sr->binding)<<") uniform "<<sr->name<<std::endl;
+    //        ++sr;
+    //    }
+
+    //    dos->WriteUint32(mos.Tell());
+    //    dos->Write(mos.GetData(),mos.Tell());
+    //}
+
+    //void SaveSPV(io::DataOutputStream *global_dos,const ShaderType flag,glsl_compiler::SPVData *spv)
+    //{
+    //    io::MemoryOutputStream mos;
+
+    //    glsl_compiler::SaveSPV(&mos,spv,flag);
+
+    //    global_dos->WriteUint32(mos.Tell());
+    //    global_dos->Write(mos.GetData(),mos.Tell());
+    //}
+
+    //void SaveShaderDescriptorSet(io::DataOutputStream *dos,MaterialStat *stat,InfoOutput *info_output)
+    //{
+    //}
+
+    //bool SaveMaterial(const OSString &filename,XMLMaterial *xm,InfoOutput *info_output)
+    //{
+    //    if(!xm)return(false);
+
+
+    //    io::MemoryOutputStream mos;
+    //    io::LEDataOutputStream dos(&mos);
+
+
+    //    SaveShaderDescriptorSet(&dos,&xm->mtl_stat,info_output);
+
+    //    const uint count=xm->shader_map.GetCount();
+    //    auto **sp=xm->shader_map.GetDataList();
+    //    for(uint i=0;i<count;i++)
+    //    {
+    //        SaveSPV(&dos,
+    //            (*sp)->left,
+    //            (*sp)->right->spv_data);
+
+    //        ++sp;
+    //    }
+
+    //    if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
+    //    {
+    //        info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
+    //        return(true);
+    //    }
+    //    else
+    //    {
+    //        info_output->colorWriteln("red",OS_TEXT("Save material file \"")+filename+OS_TEXT("\" failed!"));
+    //        return(false);
+    //    }
+    //}
 }//namespace shader_lib

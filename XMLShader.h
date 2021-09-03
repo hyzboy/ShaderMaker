@@ -116,8 +116,8 @@ namespace shader_lib
 
         bool SetShaderSource(const UTF8StringList &,InfoOutput *);
 
-        bool SaveToGLSL(const OSString &filename);
-        bool SaveToSPV(const OSString &filename);
-        bool SaveToShader(const OSString &filename);
+        //bool SaveToGLSL(const OSString &filename);
+        //bool SaveToSPV(const OSString &filename);
+        //bool SaveToShader(const OSString &filename);
     };//struct XMLShader
 }//namespace shader_lib

@@ -47,17 +47,14 @@ public:
     }
 
     template<typename T>
-    void format_string(bool append_enter,const char *color,const T *format,...)
+    void format_string(bool append_enter,const char *color,const T *format,va_list args)
     {
         if(!format)return;
         
-        va_list args;
-        va_start(args,format);
-
         T buffer[4096];
 
         int len=hgl::vsprintf<T>(buffer,4096,format,args);
-
+        
         hgl::StringList<hgl::String<T>> sl;
 
         int count=hgl::SplitToStringListByEnter(sl,buffer,len);
@@ -66,10 +63,10 @@ public:
         {
             if(count==1)
             {
-                InfoOutput::write(buffer,len);
+                write(buffer,len);
 
                 if(append_enter)
-                    InfoOutput::writeEnter<T>();
+                    writeEnter<T>();
             }
             else
             {
@@ -84,22 +81,38 @@ public:
 
     void colorWrite(const char *color,const char *format,...) override
     {
-        format_string<char>(false,color,format);
+        va_list args;
+        va_start(args,format);
+
+        format_string<char>(false,color,format,args);
+        va_end(args);
     }
 
     void colorWrite(const char *color,const wchar_t *format,...) override
     {
-        format_string<wchar_t>(false,color,format);
+        va_list args;
+        va_start(args,format);
+
+        format_string<wchar_t>(false,color,format,args);
+        va_end(args);
     }
 
     void colorWriteln(const char *color,const char *format,...) override
     {
-        format_string<char>(true,color,format);
+        va_list args;
+        va_start(args,format);
+
+        format_string<char>(true,color,format,args);
+        va_end(args);
     }
 
     void colorWriteln(const char *color,const wchar_t *format,...) override
     {
-        format_string<wchar_t>(true,color,format);
+        va_list args;
+        va_start(args,format);
+
+        format_string<wchar_t>(true,color,format,args);
+        va_end(args);
     }
 };//class QStringInfoOutput
 

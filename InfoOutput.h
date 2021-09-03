@@ -24,10 +24,10 @@ public:
             void print(const char *,...);
             void print(const wchar_t *,...);
 
-    virtual void colorWrite(const char *,const char *str,...){print(str);}
-    virtual void colorWrite(const char *,const wchar_t *str,...){print(str);}
-    virtual void colorWriteln(const char *,const char *str,...){print(str);writeEnter<char>();}
-    virtual void colorWriteln(const char *,const wchar_t *str,...){print(str);writeEnter<wchar_t>();}
+    virtual void colorWrite(const char *,const char *str,...);
+    virtual void colorWrite(const char *,const wchar_t *str,...);
+    virtual void colorWriteln(const char *,const char *str,...);
+    virtual void colorWriteln(const char *,const wchar_t *str,...);
 
     InfoOutput &operator<<(int);
     InfoOutput &operator<<(unsigned int);

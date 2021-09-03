@@ -44,6 +44,7 @@ void InfoOutput::print(const char *format,...)
     char buffer[1024];
 
     int len=vsprintf_s(buffer,format,args);
+    va_end(args);
 
     if(len>0)
         write(buffer,len);
@@ -57,9 +58,48 @@ void InfoOutput::print(const wchar_t *format,...)
     wchar_t buffer[1024];
 
     int len=vswprintf_s(buffer,format,args);
+    va_end(args);
 
     if(len>0)
         write(buffer,len);
+}
+
+void InfoOutput::colorWrite(const char *,const char *format,...)
+{
+    va_list args;
+    va_start(args,format);
+
+    print(format,args);
+    va_end(args);
+}
+
+void InfoOutput::colorWrite(const char *,const wchar_t *format,...)
+{
+    va_list args;
+    va_start(args,format);
+
+    print(format,args);
+    va_end(args);
+}
+
+void InfoOutput::colorWriteln(const char *,const char *format,...)
+{
+    va_list args;
+    va_start(args,format);
+
+    print(format,args);
+    va_end(args);
+    writeEnter<char>();
+}
+
+void InfoOutput::colorWriteln(const char *,const wchar_t *format,...)
+{
+    va_list args;
+    va_start(args,format);
+
+    print(format,args);
+    va_end(args);
+    writeEnter<wchar_t>();
 }
 
 InfoOutput &InfoOutput::operator<<(int num)             {os_char buf[64];write(hgl::itos(buf,64,num));return *this;}

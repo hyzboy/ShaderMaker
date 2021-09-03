@@ -6,13 +6,30 @@ using namespace hgl::io;
 
 namespace glsl_compiler
 {
+    enum class ShaderLanguageType
+    {
+        GLSL=0,
+        HLSL,
+
+        MAX=0xff
+    };//enum class ShaderType
+
+    struct CompileInfo
+    {
+        ShaderLanguageType shader_type = ShaderLanguageType::GLSL;
+        const char *entrypoint; 
+        uint32_t includes_count;
+        const char **includes;
+    };
+
     struct GLSLCompilerInterface
     {
         bool        (*Init)();
         void        (*Close)();
 
-        ShaderType  (*GetType)(const char *ext_name);
-        SPVData *   (*Compile)(const uint32_t type,const char *source);
+        uint32_t    (*GetType)(const char *ext_name);
+        SPVData *   (*Compile)(const uint32_t stage,const char *source, const CompileInfo *compile_info);
+        SPVData *   (*CompileFromPath)(const uint32_t stage,const char *path, const CompileInfo *compile_info);
 
         void        (*Free)(SPVData *);
     };
@@ -78,7 +95,7 @@ namespace glsl_compiler
     SPVData *   Compile (const uint32_t type,const char *source)
     {
         if(gsi)
-            return gsi->Compile(type,source);
+            return gsi->Compile(type,source,nullptr);
 
         return nullptr;
     }

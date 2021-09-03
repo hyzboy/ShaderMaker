@@ -2,6 +2,7 @@
 
 #include<stdint.h>
 #include<hgl/TypeFunc.h>
+#include<hgl/CompOperator.h>
 
 namespace vk_shader
 {
@@ -26,6 +27,26 @@ namespace vk_shader
     };
 
     using ShaderType=uint32_t;          ///<用来单独表示SHADER是那一种
+    
+    constexpr char *shader_stage_name_list[32]=
+    {
+        "Vertex"      ,
+        "Tesc"        ,
+        "Tesv"        ,
+        "Geometry"    ,
+        "Fragment"    ,
+        "Compute"     ,
+        "Task"        ,
+        "Mesh"        ,
+        "Raygen"      ,
+        "AnyHit"      ,
+        "ClosestHit"  ,
+        "Miss"        ,
+        "Intersection",
+        "Callable"
+    };//
+
+    const char *GetShaderStageName(const ShaderType &);
     
     enum class DescriptorType         //等同VkDescriptorType
     {

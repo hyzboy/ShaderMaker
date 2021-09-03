@@ -29,6 +29,11 @@ set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp Shade
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
                             GLSLCompiler.cpp)
 
+SET(VK_SHADER_COMMON_SOURCE VKShaderCommon.h
+                            VKShaderCommon.cpp)
+
+SOURCE_GROUP("Vulkan Shader Common" FILES ${VK_SHADER_COMMON_SOURCE})
+
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
@@ -54,9 +59,10 @@ SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
 add_executable(MaterialCompiler MaterialCompiler.cpp
                                 ${MATERIAL_COMPILER_SOURCE}
                                 ${GLSL_COMPILER_SOURCE}
+                                ${VK_SHADER_COMMON_SOURCE}
                                 ${SHADER_LIBRARY_SOURCE})
 
-add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE})
+add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE} ${VK_SHADER_COMMON_SOURCE})
 
 add_executable(PipelineCompiler PipelineCompiler.cpp LoadXMLPipeline.cpp)
 
@@ -105,9 +111,10 @@ IF(CM_BUILD_GUI_TOOLS)
 
     source_group("GUI" FILES ${MATERIAL_WRITER_SOURCE})
 
-    add_executable(MaterialWriter  ${MATERIAL_WRITER_SOURCE}
+    add_executable(MaterialWriter   ${MATERIAL_WRITER_SOURCE}
                                     ${MATERIAL_COMPILER_SOURCE}
                                     ${GLSL_COMPILER_SOURCE}
+                                    ${VK_SHADER_COMMON_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE})
 
     target_link_libraries(MaterialWriter PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
