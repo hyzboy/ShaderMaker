@@ -41,6 +41,7 @@ int main(int argc,char **argv)
     }
     
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
+    qt_app.setAttribute(Qt::AA_EnableHighDpiScaling);
 
     {
         QFont fnt=qt_app.font();

@@ -64,19 +64,28 @@ namespace shader_lib
 
         void StatShaderResource(const ShaderType flag,const glsl_compiler::ShaderFullResourceData &resource)
         {
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::COMBINED_IMAGE_SAMPLER]),"combined_image_sampler");
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_BUFFER]),"uniform_buffer");
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_BUFFER]),"storage_buffer");
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::SAMPLER]),"sampler");
+
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::COMBINED_IMAGE_SAMPLER]),"combined_image_sampler");  //
+            
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::SAMPLED_IMAGE]),"sampled_image");
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_IMAGE]),"storage_image");
+
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_TEXEL_BUFFER]),"uniform_texel_buffer");
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_TEXEL_BUFFER]),"storage_texel_buffer");
+
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_BUFFER]),"uniform_buffer");                  //
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_BUFFER]),"storage_buffer");                  //
+
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_BUFFER_DYNAMIC]),"uniform_buffer_dynamic");
+            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_BUFFER_DYNAMIC]),"uniform_buffer_dynamic");
         }
         
-        void OutputShaderStage(const glsl_compiler::ShaderStageData &ssd,const char *hint)
+        void OutputShaderStage(DataOutputStream *mdos,const glsl_compiler::ShaderStageData &ssd,const char *hint)
         {
             dos->WriteUint8(uint8(ssd.count));
 
             if(ssd.count<=0)return;
-
-            MemoryOutputStream mmos;
-            AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mmos);
 
             const glsl_compiler::ShaderStage *ss=ssd.items;
             VertexAttribType vat;
@@ -102,21 +111,24 @@ namespace shader_lib
                 info_output->colorWriteln("black","    layout(location=%d) %s %s %s",location,hint,type_string,ss->name);
                 ++ss;
             }
-
-            dos->WriteUint32(mmos.Tell());
-            dos->Write(mmos.GetData(),mmos.Tell());
         }
 
         void WriteSPV(const ShaderType flag,const glsl_compiler::SPVData *spv)
         {
-            dos->WriteUint32(flag);
-            dos->WriteUint32(spv->spv_length);
-            dos->Write(spv->spv_data,spv->spv_length);
+            MemoryOutputStream mmos;
+            AutoDelete<DataOutputStream> mdos=new LEDataOutputStream(&mmos);
 
-            OutputShaderStage(spv->input,"in");
-            OutputShaderStage(spv->output,"out");
+            mdos->WriteUint32(flag);
+            mdos->WriteUint32(spv->spv_length);
+            mdos->Write(spv->spv_data,spv->spv_length);
+
+            OutputShaderStage(mdos,spv->input,"in");
+            OutputShaderStage(mdos,spv->output,"out");
 
             StatShaderResource(flag,spv->resource);     //注意：因为各种资源可能会有VS/GS/FS共用的情况，所以这里只有统计，并不输出
+
+            dos->WriteUint32(mmos.Tell());
+            dos->Write(mmos.GetData(),mmos.Tell());
         }
 
         void WriteSPV()
@@ -131,6 +143,14 @@ namespace shader_lib
 
                 ++sp;
             }
+        }
+
+        void WriteMSR(MaterialShaderResource *msr)
+        {   
+            dos->WriteAnsiTinyString(msr->name);
+            dos->WriteUint8(msr->set);
+            dos->WriteUint8(msr->binding);
+            dos->WriteUint32(msr->shader_stage_flag);
         }
 
         void OutputShaderStageName(AnsiString &str,const uint32_t &type)
@@ -167,6 +187,10 @@ namespace shader_lib
             const uint count=msr_list.GetCount();
             auto **it=msr_list.GetDataList();
             AnsiString flags;
+
+            dos->WriteUint8(count);
+
+            info_output->colorWriteln("blue","%d descriptor sets",count);
             
             for(uint i=0;i<count;i++)
             {
@@ -175,6 +199,8 @@ namespace shader_lib
                 OutputShaderStageName(flags,msr->shader_stage_flag);
 
                 info_output->colorWriteln("black","    layout(set=%d,binding=%d) uniform %s; //%s",msr->set,msr->binding,msr->name,flags.c_str());
+
+                WriteMSR(msr);
 
                 ++it;
             }
@@ -207,7 +233,16 @@ namespace shader_lib
 
             WriteDescriptorSet();
 
-            return(true);
+            if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
+            {
+                info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
+                return(true);
+            }
+            else
+            {
+                info_output->colorWriteln("red",OS_TEXT("Save material file \"")+filename+OS_TEXT("\" failed!"));
+                return(false);
+            }
         }
     };//class MaterialOutput    
 

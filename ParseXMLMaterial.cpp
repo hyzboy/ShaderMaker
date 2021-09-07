@@ -38,7 +38,7 @@ namespace shader_lib
 
                 const UTF8String xml_fn=filename+u8"."+st_name+u8".xml";
 
-                const OSString xml_fullname=filesystem::MergeFilename(pathname,ToOSString(xml_fn));
+                OSString xml_fullname=filesystem::FixFilename(filesystem::MergeFilename(pathname,ToOSString(xml_fn)));                
 
                 info_output->colorWrite("blue",OS_TEXT("<p>shader: ")+xml_fullname+OS_TEXT("</p>"));
 
