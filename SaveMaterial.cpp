@@ -33,7 +33,7 @@ namespace shader_lib
             dos->WriteUint32(xml->shader_stage_bits);
         }
 
-        void StatShaderResource(const ShaderType flag,const glsl_compiler::ShaderResourceData *srd,const char *hint)
+        void StatShaderResource(const ShaderType flag,const glsl_compiler::ShaderResourceData *srd,const uint type,const char *hint)
         {
             if(srd->count<=0)return;
 
@@ -51,7 +51,7 @@ namespace shader_lib
                 }
                 else
                 {
-                    msr=new MaterialShaderResource(flag,sr);
+                    msr=new MaterialShaderResource(flag,(DescriptorType)type,sr);
 
                     msr_list.Add(msr->name,msr);
 
@@ -64,26 +64,24 @@ namespace shader_lib
 
         void StatShaderResource(const ShaderType flag,const glsl_compiler::ShaderFullResourceData &resource)
         {
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::SAMPLER]),"sampler");
+            ENUM_CLASS_FOR(DescriptorType,int,i)
+            {
+                StatShaderResource(flag,&resource[i],i,descriptor_type_name[i]);
+            }
+        }
 
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::COMBINED_IMAGE_SAMPLER]),"combined_image_sampler");  //
-            
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::SAMPLED_IMAGE]),"sampled_image");
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_IMAGE]),"storage_image");
-
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_TEXEL_BUFFER]),"uniform_texel_buffer");
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_TEXEL_BUFFER]),"storage_texel_buffer");
-
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_BUFFER]),"uniform_buffer");                  //
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_BUFFER]),"storage_buffer");                  //
-
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::UNIFORM_BUFFER_DYNAMIC]),"uniform_buffer_dynamic");
-            StatShaderResource(flag,&(resource[(size_t)DescriptorType::STORAGE_BUFFER_DYNAMIC]),"uniform_buffer_dynamic");
+        void WriteMSR(MaterialShaderResource *msr)
+        {   
+            dos->WriteUint8((uint8)(msr->desc_type));
+            dos->WriteAnsiTinyString(msr->name);
+            dos->WriteUint8(msr->set);
+            dos->WriteUint8(msr->binding);
+            dos->WriteUint32(msr->shader_stage_flag);
         }
         
         void OutputShaderStage(DataOutputStream *mdos,const glsl_compiler::ShaderStageData &ssd,const char *hint)
         {
-            dos->WriteUint8(uint8(ssd.count));
+            mdos->WriteUint8(uint8(ssd.count));
 
             if(ssd.count<=0)return;
 
@@ -143,14 +141,6 @@ namespace shader_lib
 
                 ++sp;
             }
-        }
-
-        void WriteMSR(MaterialShaderResource *msr)
-        {   
-            dos->WriteAnsiTinyString(msr->name);
-            dos->WriteUint8(msr->set);
-            dos->WriteUint8(msr->binding);
-            dos->WriteUint32(msr->shader_stage_flag);
         }
 
         void OutputShaderStageName(AnsiString &str,const uint32_t &type)

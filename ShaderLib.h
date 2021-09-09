@@ -45,12 +45,14 @@ namespace shader_lib
     struct MaterialShaderResource:public ShaderResource
     {
         uint32_t shader_stage_flag;
+        DescriptorType desc_type;
 
     public:
 
-        MaterialShaderResource(const ShaderType flag,const ShaderResource *sr):ShaderResource(sr)
+        MaterialShaderResource(const ShaderType flag,const DescriptorType type,const ShaderResource *sr):ShaderResource(sr)
         {
             shader_stage_flag=flag;
+            desc_type=type;
         }
 
         const int Comp(const MaterialShaderResource &msr)const
@@ -59,7 +61,11 @@ namespace shader_lib
 
             if(result)return result;
 
-            return shader_stage_flag-msr.shader_stage_flag;
+            result=shader_stage_flag-msr.shader_stage_flag;
+
+            if(result)return result;
+
+            return (int)desc_type-(int)msr.desc_type;
         }
 
         CompOperator(const MaterialShaderResource &,Comp);

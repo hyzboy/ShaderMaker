@@ -64,6 +64,21 @@ namespace vk_shader
 
         ENUM_CLASS_RANGE(SAMPLER,INPUT_ATTACHMENT)
     };
+
+    constexpr const char *descriptor_type_name[32]=
+    {
+        "sampler",
+        "combinded_image_sampler",
+        "sampled_image",
+        "storage_image",
+        "uniform_texel_buffer",
+        "storage_texel_buffer",
+        "uniform_buffer",
+        "storage_buffer",
+        "uniform_buffer_dynamic",
+        "storage_buffer_dynamic",
+        "input_attachment"
+    };
     
     constexpr size_t SHADER_RESOURCE_NAME_MAX_LENGTH=128;
 
