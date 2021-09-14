@@ -49,23 +49,4 @@ namespace shader_lib
         spv_data=spv;        
         return true;
     }
-
-    //bool XMLShader::SaveToGLSL(const OSString &filename)
-    //{
-    //    return filesystem::SaveMemoryToFile(filename,shader_source.c_str(),shader_source.Length());
-    //}
-
-    //bool XMLShader::SaveToSPV(const OSString &filename)
-    //{
-    //    if(!spv_data)return(false);
-
-    //    return filesystem::SaveMemoryToFile(filename,spv_data->spv_data,spv_data->spv_length);
-    //}
-
-    //bool XMLShader::SaveToShader(const OSString &filename)
-    //{
-    //    if(!spv_data)return(false);
-
-    //    return glsl_compiler::SaveSPV2Shader(filename,spv_data,shader_type);
-    //}
 }//namespace shader_lib
