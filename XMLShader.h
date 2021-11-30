@@ -46,8 +46,8 @@ namespace shader_lib
         DescriptorSetsType type;
 
         //以下变量由material统计生成
-        int set_number;
-        int binding;
+        int set_number=-1;
+        int binding=-1;
 
     public:
 

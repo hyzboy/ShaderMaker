@@ -192,13 +192,20 @@ namespace shader_lib
 
             for(int i=0;i<count;i++)
             {
-                front=U8_TEXT("layout(set=")+UTF8String::valueOf((int)(*ubo)->set_number)
-                     +U8_TEXT(",binding=")  +UTF8String::valueOf((int)(*ubo)->binding);
+                if((*ubo)->set_number==-1)
+                {
+                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(i);        //only debug
+                }
+                else
+                {
+                    front=U8_TEXT("layout(set=")+UTF8String::valueOf((int)(*ubo)->set_number)
+                         +U8_TEXT(",binding=")  +UTF8String::valueOf((int)(*ubo)->binding);
+                }
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))
                 {
-                    //front+=U8_TEXT(",row_major) uniform");
-                    front+=U8_TEXT(") uniform");
+                    //front+=U8_TEXT(",row_major) uniform");                    
+                    front+=U8_TEXT(",std140) uniform");
                     shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
                 }
                 else
