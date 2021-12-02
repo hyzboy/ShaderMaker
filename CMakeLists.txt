@@ -20,7 +20,7 @@ macro(shader_maker_project project_name)
         set_debugger_directory(${project_name}  ${CMAKE_CURRENT_SOURCE_DIR})
     ENDIF()
 
-    set_property(TARGET ${project_name} PROPERTY FOLDER "ShaderMaker")
+    set_property(TARGET ${project_name} PROPERTY FOLDER "CM/Tools/ShaderMaker")
 endmacro()
 
 set(SM_HEADER_FILES ShaderDataType.h ShaderConfig.h ShaderLib.h glsl2spv.h ShaderMaker.h)
