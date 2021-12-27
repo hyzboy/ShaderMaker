@@ -9,6 +9,13 @@ SET(SHADER_COMPILER_LIBRARY CMCore
                             CMUtil
                             CMSceneGraph)
 
+IF(WIN32)
+    find_package(expat CONFIG REQUIRED)
+    find_package(jsoncpp CONFIG REQUIRED)
+
+    SET(SHADER_COMPILER_LIBRARY ${SHADER_COMPILER_LIBRARY} expat::expat jsoncpp_lib)
+ENDIF()
+
 macro(shader_maker_project project_name)
     target_link_libraries(${project_name} PRIVATE ${SHADER_COMPILER_LIBRARY})
 
@@ -17,7 +24,7 @@ macro(shader_maker_project project_name)
     endif()
 
     IF(WIN32)
-        set_debugger_directory(${project_name}  ${CMAKE_CURRENT_SOURCE_DIR})
+        set_debugger_directory(${project_name} ${CMAKE_CURRENT_SOURCE_DIR})
     ENDIF()
 
     set_property(TARGET ${project_name} PROPERTY FOLDER "CM/Tools/ShaderMaker")
