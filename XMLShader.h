@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/StringList.h>
-#include<hgl/type/Sets.h>
+#include<hgl/type/SortedSets.h>
 #include"InfoOutput.h"
 #include"VKShaderCommon.h"
 

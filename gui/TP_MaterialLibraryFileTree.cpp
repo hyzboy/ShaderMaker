@@ -87,12 +87,13 @@ public:
 
         const OSString type_name=ClipFileExtName(s_fn,false);
 
-        const OSString main_name=ClipFileMainname(s_fn);
+        const QString main_name=ToQString(ClipFileMainname(s_fn));
+        const QString fullname=ToQString(fi.fullname);
 
         QTreeWidgetItem *item=nullptr;
 
         #define CONFIRM_FILE_TYPE(name,short_name)  if(type_name.CaseComp(OS_TEXT(short_name))==0)  \
-                                                        item=CreateFileItem(emfc->node,ToQString(main_name),ML_TYPE_##name,ToQString(fi.fullname)); \
+                                                        item=CreateFileItem(emfc->node,main_name,ML_TYPE_##name,fullname); \
                                                     else
 
         CONFIRM_FILE_TYPE(MATERIAL, "material")

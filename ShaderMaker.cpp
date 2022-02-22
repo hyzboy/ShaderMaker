@@ -75,7 +75,7 @@ namespace shader_lib
         void CreateHeader()
         {
             shader_text.Add(u8"/**\n"
-                            u8" * this Shader was created by the ShaderMaker (" HGL_OFFICAL_WEB_U8 u8")\n"
+                            u8" * the Shader created by the MaterialWriter (" HGL_OFFICAL_WEB_U8 u8")\n"
                             u8" */\n"
                             u8"#version 460 core\n");
 
@@ -178,6 +178,22 @@ namespace shader_lib
             }
         }
 
+        void MakeModuleCodes()
+        {            
+            for(const UTF8String *module_name:xs->modules)
+            {
+                XMLShaderModule *xsm=GetShaderModule(*module_name);
+
+                if(xsm)
+                {
+                    OutComment(U8_TEXT("Module codes Begin [")+(*module_name)+U8_TEXT("]"));
+                    shader_text.Add(xsm->codes);
+                    OutComment(U8_TEXT("Module codes End [")+(*module_name)+U8_TEXT("]"));
+                    OutEnter();
+                }
+            }
+        }
+
         void MakeUniforms()
         {
             const int count=xs->uniforms.GetCount();
@@ -257,6 +273,7 @@ namespace shader_lib
 
             MakeUniforms();
 
+            MakeModuleCodes();
             MakeRaw();
 
             MakeVarying(VaryingType::Output,xs->out);
