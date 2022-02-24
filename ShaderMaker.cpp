@@ -112,6 +112,8 @@ namespace shader_lib
             const int count=vc->GetCount();
             shader_lib::Varying **v=vc->GetData();
 
+            UTF8String tempstr;
+
             for(int i=0;i<count;i++)
             {
                 if(type==VaryingType::Input)
@@ -119,13 +121,18 @@ namespace shader_lib
                     if(xs->shader_type==shader_lib::ssbGeometry)
                         shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT("[];"));
                     else
+                    if(xs->shader_type==shader_lib::ssbFragment&&(*v)->interpolation.Length()>0)
+                        shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") ")+(*v)->interpolation+U8_TEXT(" in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                    else
                         shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
                 }
                 else
-                if(xs->shader_type==shader_lib::ssbFragment)                
-                    shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
-                else
-                    shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
+                {
+                    if(xs->shader_type==shader_lib::ssbFragment)
+                        shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                    else
+                        shader_text.Add(U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(") out ")+(*v)->type+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
+                }
 
                 ++v;
                 ++binding;

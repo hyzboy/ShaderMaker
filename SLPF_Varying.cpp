@@ -33,6 +33,7 @@ namespace shader_lib
 
                 vary->type=(*this)[u8"type"];
                 vary->name=(*this)[u8"name"];
+                vary->interpolation=(*this)[u8"interpolation"];
                 vary->comment=(*this)[u8"comment"];
 
                 return(true);
@@ -40,7 +41,11 @@ namespace shader_lib
 
             void End()
             {
-                std::cout<<"        "<<vary->type.c_str()<<" "<<vary->name.c_str()<<";";
+                std::cout<<"        ";
+                
+                if(!vary->interpolation.IsEmpty())std::cout<<vary->interpolation.c_str()<<" ";
+                
+                std::cout<<vary->type.c_str()<<" "<<vary->name.c_str()<<";";
             
                 if(!vary->comment.IsEmpty())std::cout<<"    //"<<vary->comment.c_str()<<std::endl;
 

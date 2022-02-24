@@ -18,6 +18,7 @@ namespace shader_lib
     {
         UTF8String type;
         UTF8String name;
+        UTF8String interpolation;
         UTF8String comment;
     };//
     
