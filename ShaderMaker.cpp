@@ -279,9 +279,9 @@ namespace shader_lib
             MakeVarying(VaryingType::Input,xs->in);
 
             MakeUniforms();
-
-            MakeModuleCodes();
+            
             MakeRaw();
+            MakeModuleCodes();
 
             MakeVarying(VaryingType::Output,xs->out);
 
