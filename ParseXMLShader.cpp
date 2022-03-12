@@ -62,7 +62,7 @@ namespace shader_lib
             }
         };//class SetsElementCreater:public xml::ElementCreater
 
-        const bool notvaluechar(const u8char ch)
+        const bool notvaluechar(const u8char &ch)
         {
             if(iscodechar(ch))
                 return(false);
