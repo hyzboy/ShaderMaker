@@ -55,7 +55,7 @@ public:
 
         int len=hgl::vsprintf<T>(buffer,4096,format,args);
         
-        hgl::StringList<hgl::String<T>> sl;
+        hgl::StringList<T> sl;
 
         int count=hgl::SplitToStringListByEnter(sl,buffer,len);
 
