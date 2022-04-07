@@ -24,7 +24,7 @@ namespace shader_lib
         MapObject<UTF8String,XMLShaderModule> xml_module_list;
 
         class StructElementCreater:public xml::ElementAttribute
-        {        
+        {
             XMLShaderModule *xsm;
             UTF8String name;
             ShaderStruct *ss;
@@ -127,7 +127,7 @@ namespace shader_lib
                 const u8char *trim_str=hgl::trim(str,len);
 
                 if(trim_str&&len>0)
-                    xsm->codes.Add(UTF8String(trim_str,len));
+                    xsm->codes.Add(UTF8String(str,str_length));
             }
         };//class CodeElementCreater:public xml::ElementCreater
 
