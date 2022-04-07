@@ -96,6 +96,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     const uint msc_patch = _MSC_FULL_VER % 100000;
 
     const QString msvc_ver = QString::number(msc_major) + "." +QString::number(msc_minor) + "." + QString::number(msc_patch);
+
 #endif//
     const QString text_compiler=tr("Compiler");
     const QString text_build_time=tr("Build-Time");
@@ -132,7 +133,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
 DLGAbout::DLGAbout()
 {
     setWindowTitle(tr("About"));
-    resize(480,300);
+    resize(640,480);
 
     QVBoxLayout* aboutLayout = new QVBoxLayout(this);
 

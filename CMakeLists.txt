@@ -41,6 +41,14 @@ SET(VK_SHADER_COMMON_SOURCE VKShaderCommon.h
 
 SOURCE_GROUP("Vulkan Shader Common" FILES ${VK_SHADER_COMMON_SOURCE})
 
+SET(GLSLParse_SOURCE    GLSLToken.h
+                        GLSLTokenizer.h
+                        GLSLTokenizer.cpp
+                        GLSLParse.cpp)
+
+add_executable(ShaderParse ShaderParseTest.cpp ${GLSLParse_SOURCE})
+shader_maker_project(ShaderParse)
+
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
@@ -57,6 +65,7 @@ SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
+SOURCE_GROUP("Shader Lib\\GLSL Parse" FILES ${GLSLParse_SOURCE})
 
 SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
                                 ParseXMLShader.cpp
@@ -120,6 +129,7 @@ IF(CM_BUILD_GUI_TOOLS)
 
     add_executable(MaterialWriter   ${MATERIAL_WRITER_SOURCE}
                                     ${MATERIAL_COMPILER_SOURCE}
+                                    ${GLSLParse_SOURCE}
                                     ${GLSL_COMPILER_SOURCE}
                                     ${VK_SHADER_COMMON_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE})
