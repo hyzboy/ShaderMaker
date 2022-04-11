@@ -241,19 +241,23 @@ namespace shader_lib
 
     bool GLSLTokenizer::IsLine()
     {
-        if(source[0]=='\r')
+        int n=0;
+
+        for(n=0;n<source_length;n++)
         {
-            token_type=GLSLToken::Return;
+            if(source[n]!='\r'
+             &&source[n]!='\n')
+                break;
+        }
+
+        if(n>0)
+        {
+            token_type=GLSLToken::NewLine;
+            token_length=n;
             return(true);
         }
 
-        if(source[0]=='\n')
-        {
-            token_type=GLSLToken::Enter;
-            return(true);
-        }
-
-        return(false);
+        return false;
     }
     
     bool GLSLTokenizer::IsComment()

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include"GLSLToken.h"
 
@@ -15,7 +15,7 @@ namespace shader_lib
 	private:
 
 		int ParseToken();
-		
+
         bool IsWhiteSpace();
         bool IsLine();
         bool IsComment();
@@ -26,6 +26,8 @@ namespace shader_lib
 	public:
 
         GLSLTokenizer(const char *,int);
+
+        const int GetLeftLength()const{return source_length;}                   ///<取得剩余代码总长度
 
 		const char *GetToken(GLSLToken *,int *);
 	};//class GLSLTokenizer

@@ -10,8 +10,7 @@ namespace shader_lib
         End,
 		
 		WhiteSpace,			// ' ','\t'
-		Return,				// '\r'
-		Enter,				// '\n'
+		NewLine,			// '\r\n'
         OnelineComment,		// // \n
         MultilineComment,   // /* */
 

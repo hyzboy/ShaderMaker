@@ -1,4 +1,4 @@
-#include<hgl/type/StringList.h>
+ï»¿#include<hgl/type/StringList.h>
 #include"GLSLTokenizer.h"
 
 using namespace hgl;
@@ -31,20 +31,25 @@ bool ParseShader(const OSString &filename)
 	if(LoadStringFromTextFile(shader_text,filename)<=0)
 		return(false);
 
+	if(shader_text.Length()<=3)
+		return(false);
+
 	GLSLTokenizer parse(shader_text.c_str(),shader_text.Length());
 	GLSLToken token;
 	int length;
 	const char *str;
 
-	bool is_struct=false;			//ÊÇ·ñÊÇ½á¹¹
-	bool is_function=false;			//ÊÇ·ñ¿ªÊ¼º¯ÊýÁË
-	bool is_function_param=false;	//ÊÇ·ñ¿ªÊ¼½âÎöº¯Êý²ÎÊýÁË
-	bool is_param=false;			//ÊÇ·ñÔÚ½âÎúÒ»¸ö²ÎÊý
+	bool is_struct=false;			//æ˜¯å¦æ˜¯ç»“æž„
+	bool is_function=false;			//æ˜¯å¦å¼€å§‹å‡½æ•°äº†
+	bool is_function_param=false;	//æ˜¯å¦å¼€å§‹è§£æžå‡½æ•°å‚æ•°äº†
+	bool is_param=false;			//æ˜¯å¦åœ¨è§£æ™°ä¸€ä¸ªå‚æ•°
 
-	int statement_block_stack=0;	//»¨À¨ºÅ²ã¼¶
+	int statement_block_stack=0;	//èŠ±æ‹¬å·å±‚çº§
 
-	GLSLToken function_return=GLSLToken::None;		//º¯Êý·µ»ØÀàÐÍ
+	GLSLToken function_return=GLSLToken::None;		//å‡½æ•°è¿”å›žç±»åž‹
 	UTF8String function_name;
+
+	UTF8String struct_name;
 
 	GLSLToken param_inout=GLSLToken::None;
 	GLSLToken param_type=GLSLToken::None;
@@ -54,8 +59,7 @@ bool ParseShader(const OSString &filename)
 	while((str=parse.GetToken(&token,&length)))
 	{
 		if(token==GLSLToken::WhiteSpace
-		 ||token==GLSLToken::Return
-		 ||token==GLSLToken::Enter)continue;
+		 ||token==GLSLToken::NewLine)continue;
 
 		if(token==GLSLToken::OnelineComment)
 			ParseOnlineComment(str,length);
@@ -73,7 +77,8 @@ bool ParseShader(const OSString &filename)
 				else
 				if(is_struct)
 				{
-					LOG_INFO(U8_TEXT("Struct Begin: ")+function_name);
+					LOG_INFO(U8_TEXT("Struct Begin: ")+struct_name);
+					is_param=true;
 				}
 			}
 
@@ -88,7 +93,7 @@ bool ParseShader(const OSString &filename)
 			{
 				if(is_struct)
 				{
-					LOG_INFO(U8_TEXT("Struct End: ")+function_name);
+					LOG_INFO(U8_TEXT("Struct End: ")+struct_name);
 
 					is_struct=false;
 				}
@@ -133,7 +138,7 @@ bool ParseShader(const OSString &filename)
 		{
 			if(is_param)
 			{
-				is_param=false;				
+				is_param=false;
 				param_type_name.Clear();
 				param_value.Clear();
 			}
@@ -152,6 +157,10 @@ bool ParseShader(const OSString &filename)
 		if(token==GLSLToken::Struct)
 		{
 			is_struct=true;
+			is_param=false;
+			struct_name.Clear();
+			param_type_name.Clear();
+			param_value.Clear();
 		}
 		else
 		if(token==GLSLToken::Const)
@@ -184,11 +193,11 @@ bool ParseShader(const OSString &filename)
 		}
 		else
 		if(token>=GLSLToken::Void
-		 &&token<=GLSLToken::mat4x4)	//Ëã×öº¯Êý·µ»ØÖµ
+		 &&token<=GLSLToken::mat4x4)	//ç®—åšå‡½æ•°è¿”å›žå€¼
 		{
-			if(statement_block_stack==0)		//Ã»ÓÐ»¨À¨ºÅ
+			if(statement_block_stack==0)		//æ²¡æœ‰èŠ±æ‹¬å·
 			{
-				if(is_function_param)			//½âÎúº¯Êý²ÎÊý
+				if(is_function_param)			//è§£æ™°å‡½æ•°å‚æ•°
 				{
 					param_type=token;
 					param_type_name.SetString(str,length);
@@ -199,6 +208,13 @@ bool ParseShader(const OSString &filename)
 					function_return=token;
 				}
 			}
+			else
+			if(is_struct)
+			{
+				param_type=token;
+				param_type_name.SetString(str,length);
+				is_param=true;
+			}
 		}
 		else
 		if(token==GLSLToken::Identifier)
@@ -207,27 +223,7 @@ bool ParseShader(const OSString &filename)
 			{
 				if(is_struct)
 				{
-					if(param_type_name.IsEmpty())
-					{
-						param_type_name.SetString(str,length);
-						is_param=true;
-					}
-					else
-					if(is_param)
-					{
-						if(param_value.IsEmpty())
-						{
-							param_value.SetString(str,length);
-
-							LOG_INFO(U8_TEXT("    struct param: ")+param_type_name+U8_TEXT(" "+param_value));
-						}
-						else
-						{
-							//why ?
-
-							LOG_ERROR(U8_TEXT("Parse error at struct param, struct:")+function_name);
-						}
-					}
+					struct_name.SetString(str,length);
 				}
 				else
 				if(is_function_param)
@@ -259,8 +255,32 @@ bool ParseShader(const OSString &filename)
 				{
 					is_function=true;
 					function_name.SetString(str,length);
-					
+
 					LOG_INFO(U8_TEXT("Function Begin: ")+function_name);
+				}
+			}
+			else if(is_struct)
+			{
+				if(param_type_name.IsEmpty())
+				{
+					param_type_name.SetString(str,length);
+					is_param=true;
+				}
+				else
+				if(is_param)
+				{
+					if(param_value.IsEmpty())
+					{
+						param_value.SetString(str,length);
+
+						LOG_INFO(U8_TEXT("    struct param: ")+param_type_name+U8_TEXT(" "+param_value));
+					}
+					else
+					{
+						//why ?
+
+						LOG_ERROR(U8_TEXT("Parse error at struct param, struct:")+function_name);
+					}
 				}
 			}
 		}
