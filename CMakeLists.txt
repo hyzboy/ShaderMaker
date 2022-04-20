@@ -49,6 +49,14 @@ SET(GLSLParse_SOURCE    GLSLToken.h
 add_executable(ShaderParse ShaderParseTest.cpp ${GLSLParse_SOURCE})
 shader_maker_project(ShaderParse)
 
+SET(SHADER_MODULE_SOURCE    ShaderSourceLocation.h
+                            ShaderStruct.h
+                            ShaderConstVarying.h
+                            ShaderFunction.h
+                            ShaderModule.h)
+
+SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_MODULE_SOURCE})
+
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
                             ShaderLibParse.h
@@ -130,6 +138,7 @@ IF(CM_BUILD_GUI_TOOLS)
     add_executable(MaterialWriter   ${MATERIAL_WRITER_SOURCE}
                                     ${MATERIAL_COMPILER_SOURCE}
                                     ${GLSLParse_SOURCE}
+                                    ${SHADER_MODULE_SOURCE}
                                     ${GLSL_COMPILER_SOURCE}
                                     ${VK_SHADER_COMMON_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE})

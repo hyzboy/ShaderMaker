@@ -11,6 +11,7 @@ void MainWindow::InitMenu()
     {
         QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
+//        setup_menu->addAction(tr("&Refresh"),this,&MainWindow::OnPathConfig);
         setup_menu->addAction(tr("&Path"),this,&MainWindow::OnPathConfig);
     }
     

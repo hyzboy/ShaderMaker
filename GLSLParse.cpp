@@ -6,6 +6,8 @@ using namespace shader_lib;
 
 namespace
 {
+    
+
 	struct ShaderFileStatus
 	{
 		OSString filename;

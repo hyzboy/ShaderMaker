@@ -39,10 +39,10 @@ namespace shader_lib
 
     XMLShaderModule *GetShaderModule(const UTF8String &module_name);
     
-    VaryingConfig *GetVarying(const UTF8String &name);    
+    VaryingConfig *GetVarying(const UTF8String &name);
     UTF8StringList *GetRawModule(const UTF8String &name);
     bool AddStruct(UTF8StringList &shader_text,const UTF8String &front,const UTF8String &name,const UTF8String &back);
-    
+
     struct MaterialShaderResource:public ShaderResource
     {
         uint32_t shader_stage_flag;
@@ -110,12 +110,6 @@ namespace shader_lib
     };
 
     using XMLShaderMap=MapObject<ShaderType,XMLShader>;
-
-    struct MaterialAttrib
-    {
-        bool is_2d:1;                   ///<是否是2D的
-        bool acquire_sun:1;             ///<是否需要太阳光数据
-    };//
 
     struct XMLMaterial
     {
