@@ -1,22 +1,20 @@
 ﻿#include<hgl/type/StringList.h>
 #include"GLSLTokenizer.h"
+#include"ShaderModule.h"
 
 using namespace hgl;
 using namespace shader_lib;
 
 namespace
 {
-    
+	ObjectList<ShaderModule> shader_module_list;
 
-	struct ShaderFileStatus
-	{
-		OSString filename;
-		uint64 last_write_time;
+	Map<UTF8String,ShaderModule *> sm_list_by_name;
+	Map<OSString,ShaderModule *> sm_list_by_filename;
+}
 
-		UTF8StringList struct_list;
-		UTF8StringList function_list;
-	};
-
+namespace
+{
 	void ParseOnlineComment(const char *comment_text,const int comment_length)
 	{
 	}

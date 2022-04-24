@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include"ShaderSourceLocation.h"
 #include<hgl/type/List.h>
@@ -6,11 +6,9 @@
 
 using namespace hgl;
 
-struct ShaderFunction
+struct ShaderFunction:public ShaderSourceLocation
 {
     UTF8String name;
 
-    UTF8StringList identify_list;           ///<ÓÃµ½µÄ±êÊ¶·ûÁÐ±í(¿ÉÄÜÊÇ±äÁ¿¡¢½á¹¹¡¢º¯Êý¡¢const±äÁ¿µÈµÈ)
-
-    ShaderSourceLocation location;
+    UTF8StringList identify_list;           ///<ç”¨åˆ°çš„æ ‡è¯†ç¬¦åˆ—è¡¨(å¯èƒ½æ˜¯å˜é‡ã€ç»“æž„ã€å‡½æ•°ã€constå˜é‡ç­‰ç­‰)
 };
