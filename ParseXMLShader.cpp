@@ -1,9 +1,17 @@
-#include<hgl/filesystem/FileSystem.h>
+﻿#include<hgl/filesystem/FileSystem.h>
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/io/FileInputStream.h>
 #include<hgl/type/StringList.h>
 #include"ShaderLib.h"
+
+/**
+ * Shader类型
+ * 
+ *  1.GBuffer描述
+ *      该shader仅用于描述GBuffer有那些格式的缓冲区构成
+ *  
+ */
 
 namespace shader_lib
 {

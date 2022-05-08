@@ -5,6 +5,23 @@
 #include"ShaderLib.h"
 #include"GLSLCompiler.h"
 
+/**
+ * 材质文件需要描述的内容
+ * 
+ * 1.这个材质的类型
+ *      1.1.前向型(用于任何直接作用于GBuffer缓冲区的渲染、包括前向渲染和透明物体渲染以及后期)
+ *      1.2.延迟几何部分(指向GBuffer提供数据的用户可自定义部分)
+ *      1.3.延迟光照合成部分(只有fragment shader)
+ *      1.4.UI材质(只输出颜色、不处理深度、法线等等）
+ * 2.GBuffer格式与光照模式
+ * 
+ * 3.使用到的GBuffer缓冲区
+ * 
+ * 4.使用那几种shader
+ * 
+ * 5.每种shader之间传递的数据(包括最前端的顶点输入流)
+ */
+
 namespace shader_lib
 {
     using namespace hgl;
