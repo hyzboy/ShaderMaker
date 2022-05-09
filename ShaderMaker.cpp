@@ -74,9 +74,8 @@ namespace shader_lib
 
         void CreateHeader()
         {
-            shader_text.Add(u8"/**\n"
-                            u8" * the Shader is created by the MaterialWriter (" HGL_OFFICAL_WEB_U8 u8")\n"
-                            u8" */\n"
+            shader_text.Add(u8"// the Shader is created by the MaterialWriter (" HGL_OFFICAL_WEB_U8 u8")\n"
+                            u8"\n"
                             u8"#version 460 core\n");
 
             if(xs->shader_type==shader_lib::ssbGeometry)
@@ -113,7 +112,7 @@ namespace shader_lib
             shader_lib::Varying **v=vc->GetData();
 
             UTF8String layout;
-            UTF8String tempstr;
+            UTF8String in_value_name;
 
             for(int i=0;i<count;i++)
             {
@@ -121,20 +120,24 @@ namespace shader_lib
 
                 if(type==VaryingType::Input)
                 {
+                    in_value_name=U8_TEXT(" in ")+(*v)->type+U8_TEXT(" ")+(*v)->name;
+
                     if(xs->shader_type==shader_lib::ssbGeometry)
-                        shader_text.Add(layout+U8_TEXT(" in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT("[];"));
+                        shader_text.Add(layout+                     in_value_name+U8_TEXT("[];"));
                     else
                     if(xs->shader_type==shader_lib::ssbFragment&&(*v)->interpolation.Length()>0)
-                        shader_text.Add(layout+(*v)->interpolation+U8_TEXT(" in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                        shader_text.Add(layout+(*v)->interpolation+ in_value_name+U8_TEXT(";"));
                     else
-                        shader_text.Add(layout+U8_TEXT(" in ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                        shader_text.Add(layout+                     in_value_name+U8_TEXT(";"));
                 }
                 else
                 {
+                    layout+=U8_TEXT(" out ")+(*v)->type;
+
                     if(xs->shader_type==shader_lib::ssbFragment)
-                        shader_text.Add(layout+U8_TEXT(" out ")+(*v)->type+U8_TEXT(" ")+(*v)->name+U8_TEXT(";"));
+                        shader_text.Add(layout+U8_TEXT(" ")+    (*v)->name+U8_TEXT(";"));
                     else
-                        shader_text.Add(layout+U8_TEXT(" out ")+(*v)->type+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
+                        shader_text.Add(layout+U8_TEXT(" out_")+(*v)->name+U8_TEXT(";"));
                 }
 
                 ++v;
