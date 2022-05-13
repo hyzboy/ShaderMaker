@@ -16,10 +16,11 @@ namespace glsl_compiler
 
     struct CompileInfo
     {
-        ShaderLanguageType shader_type = ShaderLanguageType::GLSL;
-        const char *entrypoint; 
-        uint32_t includes_count;
-        const char **includes;
+        ShaderLanguageType  shader_type     = ShaderLanguageType::GLSL;
+        const char *        entrypoint      = nullptr;                      //it only used in HLSL
+
+        uint32_t            includes_count  = 0;
+        const char **       includes        = nullptr;
     };
 
     struct GLSLCompilerInterface
@@ -28,8 +29,8 @@ namespace glsl_compiler
         void        (*Close)();
 
         uint32_t    (*GetType)(const char *ext_name);
-        SPVData *   (*Compile)(const uint32_t stage,const char *source, const CompileInfo *compile_info);
-        SPVData *   (*CompileFromPath)(const uint32_t stage,const char *path, const CompileInfo *compile_info);
+        SPVData *   (*Compile)(const uint32_t stage,const char *shader_source, const CompileInfo *compile_info);
+        SPVData *   (*CompileFromPath)(const uint32_t stage,const char *shader_filename, const CompileInfo *compile_info);
 
         void        (*Free)(SPVData *);
     };

@@ -74,7 +74,7 @@ namespace shader_lib
 
         void CreateHeader()
         {
-            shader_text.Add(u8"// the Shader is created by the MaterialWriter (" HGL_OFFICAL_WEB_U8 u8")\n"
+            shader_text.Add(u8"// the Shader was created by the MaterialWriter (" HGL_OFFICAL_WEB_U8 u8")\n"
                             u8"\n"
                             u8"#version 460 core\n");
 
