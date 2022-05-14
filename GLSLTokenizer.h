@@ -10,7 +10,7 @@ namespace shader_lib
         int source_length;
 
         GLSLToken token_type;
-        int token_length;
+        size_t token_length;
 
 	private:
 
