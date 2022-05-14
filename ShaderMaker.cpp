@@ -87,7 +87,7 @@ namespace shader_lib
 
         void OutComment(const UTF8String &str)
         {
-            u8char comment[81]=U8_TEXT("//-- ---------------------------------------------------------------------------");
+            u8char comment[]=U8_TEXT("//-- ---------------------------------------------------------------------------");
 
             memcpy(comment+5,str.c_str(),str.Length());
             comment[5+str.Length()]=' ';
