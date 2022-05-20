@@ -19,7 +19,7 @@ namespace
         return item;
     }
 
-    class EnumShaderModuleFileConfig:public EnumFileConfig
+    class EnumShaderFileConfig:public EnumFileConfig
     {
     public:
 
@@ -27,24 +27,24 @@ namespace
 
     public:
 
-        EnumShaderModuleFileConfig(QTreeWidgetItem *ri,const OSString &path):EnumFileConfig(path)
+        EnumShaderFileConfig(QTreeWidgetItem *ri,const OSString &path):EnumFileConfig(path)
         {
             node=ri;
         }
 
-        EnumShaderModuleFileConfig(QTreeWidgetItem *ri,const EnumFileConfig *efc,const OSString &sub_folder_name):EnumFileConfig(efc,sub_folder_name)
+        EnumShaderFileConfig(QTreeWidgetItem *ri,const EnumFileConfig *efc,const OSString &sub_folder_name):EnumFileConfig(efc,sub_folder_name)
         {
             node=ri;
         }
     };//
 
-    class EnumMaterialFile:public EnumFile
+    class EnumShaderFile:public EnumFile
     {
     public:
 
         EnumFileConfig *CreateSubConfig(struct EnumFileConfig *up_efc,const FileInfo &fi) override
         {
-            EnumShaderModuleFileConfig *emfc=(EnumShaderModuleFileConfig *)up_efc;
+            EnumShaderFileConfig *emfc=(EnumShaderFileConfig *)up_efc;
 
             const OSString full_sub_folder_name=MergeFilename(up_efc->folder_name,fi.name);
 
@@ -52,18 +52,18 @@ namespace
 
             emfc->node->addChild(sub_node);
 
-            return(new EnumShaderModuleFileConfig(sub_node,up_efc,full_sub_folder_name));
+            return(new EnumShaderFileConfig(sub_node,up_efc,full_sub_folder_name));
         }
     
         void ProcFile(EnumFileConfig *efc,FileInfo &fi) override
         {
-            EnumShaderModuleFileConfig *emfc=(EnumShaderModuleFileConfig *)efc;
+            EnumShaderFileConfig *emfc=(EnumShaderFileConfig *)efc;
 
             const OSString filename=OSString(fi.name);
 
             const OSString ext_name=ClipFileExtName(filename,false);
 
-            if(ext_name.CaseComp(OS_TEXT("xml"))!=0)return;
+            if(ext_name.CaseComp(OS_TEXT("glsl"))!=0)return;
 
             const OSString s_fn=ClipFileMainname(filename);
 
@@ -93,12 +93,12 @@ void TPShaderFile::UpdateFileTree()
     QTreeWidgetItem *root_item=CreateFileItem(nullptr,"root",true);
 
     {
-        EnumShaderModuleFileConfig efc(root_item,GetMaterialSourcePath());
+        EnumShaderFileConfig efc(root_item,GetMaterialSourcePath());
 
         efc.proc_file=true;
         efc.sub_folder=true;
 
-        EnumMaterialFile ef;
+        EnumShaderFile ef;
 
         ef.Enum(&efc);
     }

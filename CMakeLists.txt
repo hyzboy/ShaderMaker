@@ -55,7 +55,7 @@ SET(SHADER_FILE_SOURCE  ShaderSourceLocation.h
                         ShaderFunction.h
                         ShaderFile.h)
 
-SOURCE_GROUP("Shader Lib\\Shader Module" FILES ${SHADER_FILE_SOURCE})
+SOURCE_GROUP("Shader Lib\\Shader File" FILES ${SHADER_FILE_SOURCE})
 
 SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             ShaderLib.cpp
