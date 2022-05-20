@@ -115,6 +115,9 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/TP_Raw.h
                                 gui/TP_Module.cpp
                                 gui/TP_Module.h
+                                gui/TP_ShaderFileTree.cpp
+                                gui/TP_ShaderFile.cpp
+                                gui/TP_ShaderFile.h
                                 gui/TP_MaterialLibraryFileTree.cpp
                                 gui/TP_MaterialLibrary.cpp
                                 gui/TP_MaterialLibrary.h

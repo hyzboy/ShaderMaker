@@ -1,16 +1,16 @@
 ﻿#include<hgl/type/StringList.h>
 #include"GLSLTokenizer.h"
-#include"ShaderModule.h"
+#include"ShaderFile.h"
 
 using namespace hgl;
 using namespace shader_lib;
 
 namespace
 {
-	ObjectList<ShaderModule> shader_module_list;
+	ObjectList<ShaderFile> shader_module_list;
 
-	Map<UTF8String,ShaderModule *> sm_list_by_name;
-	Map<OSString,ShaderModule *> sm_list_by_filename;
+	Map<UTF8String,ShaderFile *> sm_list_by_name;
+	Map<OSString,ShaderFile *> sm_list_by_filename;
 }
 
 namespace

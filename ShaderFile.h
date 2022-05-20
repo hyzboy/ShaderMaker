@@ -4,7 +4,7 @@
 #include"ShaderFunction.h"
 #include<hgl/type/Map.h>
 
-struct ShaderModule
+struct ShaderFile
 {
     UTF8String name;
 
@@ -16,4 +16,4 @@ struct ShaderModule
     Map<UTF8String,ShaderConstVarying>  scv_list;
     Map<UTF8String,ShaderStruct>        struct_list;
     Map<UTF8String,ShaderFunction>      func_list;
-};//struct ShaderModule
+};//struct ShaderFile
