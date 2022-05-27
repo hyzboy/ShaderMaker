@@ -47,8 +47,8 @@ QWidget *ShaderEditorWidget::InitEditor(QWidget *parent)
             glsl_editor->setText(ToQString(str));
         }
 
-        connect(glsl_editor,&QTextEdit::cursorPositionChanged,this,&ShaderEditorWidget::OnEditorCursorPositionChanged);
-        connect(glsl_editor,&QTextEdit::textChanged,this,&ShaderEditorWidget::OnTextChanged);
+        connect(glsl_editor,&QTextEdit::cursorPositionChanged,  this,&ShaderEditorWidget::OnEditorCursorPositionChanged);
+        connect(glsl_editor,&QTextEdit::textChanged,            this,&ShaderEditorWidget::OnTextChanged);
 
         glsl_editor->setReadOnly(false);
         save_button->setEnabled(false);
