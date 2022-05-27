@@ -113,7 +113,7 @@ void TPMaterialLibrary::UpdateFileTree()
 {
     QStringList header;
 
-    header<<"name"<<"type";//<<"full filename";     //最后一列隐藏吧！
+    header<<"name"<<"type";
 
     file_tree_widget->clear();
     file_tree_widget->setHeaderLabels(header);
@@ -133,7 +133,10 @@ void TPMaterialLibrary::UpdateFileTree()
 
     file_tree_widget->addTopLevelItem(root_item);
 
-    file_tree_widget->expandItem(root_item);
+    file_tree_widget->expandItem(root_item);    
     file_tree_widget->resizeColumnToContents(0);
     file_tree_widget->resizeColumnToContents(1);
+
+    file_tree_widget->setMinimumWidth(file_tree_widget->columnWidth(0)+
+                                      file_tree_widget->columnWidth(1));
 }

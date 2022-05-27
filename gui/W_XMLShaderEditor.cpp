@@ -110,7 +110,7 @@ QWidget *XMLShaderEditorWidget::InitPreview(QWidget *parent)
     return widget;
 }
 
-XMLShaderEditorWidget::XMLShaderEditorWidget(QTreeWidgetItem *i,const OSString &fn):EditorWidget(i,fn)
+XMLShaderEditorWidget::XMLShaderEditorWidget(EditorTreeWidgetItem *i):EditorWidget(i)
 {
     QVBoxLayout *layout=new QVBoxLayout(this);
     QSplitter *splitter=new QSplitter(Qt::Vertical,this);

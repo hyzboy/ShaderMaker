@@ -6,7 +6,7 @@
 class GLSLTextEdit:public QTextEdit
 {
 protected:
-
+    
     QSyntaxHighlighter *highlighter;
 
 private:

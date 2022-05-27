@@ -61,12 +61,14 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
     const QString type=item->text(ML_COLUMN_TYPE);
     const QString name=item->text(ML_COLUMN_NAME);
 
+    EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
+
     QWidget *widget=nullptr;
 
     if(type==ML_TYPE_MATERIAL)
-        widget=new MaterialEditorWidget(item,filename);
+        widget=new MaterialEditorWidget(w);
     else
-        widget=new XMLShaderEditorWidget(item,filename);
+        widget=new XMLShaderEditorWidget(w);
 
     {
         const int index=editor_tab_widget->addTab(widget,type+": "+name);

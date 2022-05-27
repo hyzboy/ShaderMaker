@@ -106,6 +106,8 @@ IF(CM_BUILD_GUI_TOOLS)
     SET(MW_WIDGET_FILES gui/GLSLTextEdit.cpp
                         gui/GLSLTextEdit.h
                         gui/W_EditorWidget.h
+                        gui/W_ShaderEditor.h
+                        gui/W_ShaderEditor.cpp
                         gui/W_MaterialEditor.cpp
                         gui/W_MaterialEditor.h
                         gui/W_XMLShaderEditor.cpp

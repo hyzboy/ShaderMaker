@@ -5,6 +5,8 @@
 #include<QVBoxLayout>
 #include<QSplitter>
 #include<QListWidget>
+#include"W_ShaderEditor.h"
+#include"WI_EditorTreeWidgetItem.h"
 
 using namespace hgl;
 
@@ -28,22 +30,51 @@ TPShaderFile::TPShaderFile()
 
     //右侧，编辑区
     {
-        glsl_editor=new GLSLTextEdit(splitter);
-    }
+        
+        editor_tab_widget=new QTabWidget(splitter);
+        editor_tab_widget->resize(QSize(width()*0.8,height()));
+        editor_tab_widget->setTabsClosable(true);
+        editor_tab_widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-    splitter->setStretchFactor(0,1);
-    splitter->setStretchFactor(1,4);
-    
+        connect(editor_tab_widget,&QTabWidget::tabCloseRequested,this,&TPShaderFile::OnTabCloseRequested);
+    }
+   
     layout->addWidget(splitter);
 }
 
 void TPShaderFile::OnFileChanged(QTreeWidgetItem *item,int)
 {
-    glsl_editor->clear();
+    EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
 
-    const UTF8StringList *sl=shader_lib::GetRawModule(ToUTF8String(item->text((int)ShaderFileColumn::Name)));
+    if(w->isFolder())
+        return;
+    
+    for(int i=0;i<editor_tab_widget->count();i++)
+    {
+        EditorWidget *w=(EditorWidget *)editor_tab_widget->widget(i);
 
-    const UTF8String str=ToString(*sl,UTF8String("\n"));
+        if(w->GetItem()==item)
+        {
+            editor_tab_widget->setCurrentIndex(i);
+            return;
+        }
+    }
+    
+    ShaderEditorWidget *widget=new ShaderEditorWidget(w);
 
-    glsl_editor->setPlainText(ToQString(str));
+    const int index=editor_tab_widget->addTab(widget,w->GetName());
+
+    editor_tab_widget->setCurrentIndex(index);
+}
+
+void TPShaderFile::OnTabCloseRequested(int index)
+{
+    EditorWidget *w=(EditorWidget *)editor_tab_widget->widget(index);
+
+    if(!w)return;
+
+    if(w->OnCloseRequested())
+    {
+        editor_tab_widget->removeTab(index);
+    }
 }

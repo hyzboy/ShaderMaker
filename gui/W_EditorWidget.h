@@ -1,8 +1,8 @@
 #pragma once
 
 #include<QWidget>
-#include<QTreeWidgetItem>
 #include<hgl/type/String.h>
+#include"WI_EditorTreeWidgetItem.h"
 
 using namespace hgl;
 
@@ -12,21 +12,18 @@ class EditorWidget:public QWidget
 
 private:
 
-    QTreeWidgetItem *item;
-
-    OSString filename;
+    EditorTreeWidgetItem *item;
 
 public:
 
-    const QTreeWidgetItem *GetItem()const{return item;}
-    const OSString &GetFilename()const{return filename;}
+    const EditorTreeWidgetItem *GetItem()const{return item;}
+    const OSString &GetFilename()const{return item->GetFilename();}
 
 public:
 
-    EditorWidget(QTreeWidgetItem *i,const OSString &fn)
+    EditorWidget(EditorTreeWidgetItem *i)
     {
         item=i;
-        filename=fn;
     }
 
     virtual ~EditorWidget()=default;

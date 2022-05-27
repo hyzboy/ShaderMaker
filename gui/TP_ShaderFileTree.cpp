@@ -3,22 +3,13 @@
 #include<hgl/filesystem/EnumFile.h>
 #include<hgl/type/QTString.h>
 #include"TypeDefine.h"
+#include"WI_EditorTreeWidgetItem.h"
 
 using namespace hgl;
 using namespace hgl::filesystem;
 
 namespace
 {
-    QTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name,bool is_folder,const QString &fullname="")
-    {
-        QTreeWidgetItem *item=new QTreeWidgetItem(parent);
-
-        item->setText((int)ShaderFileColumn::Name,     name);
-        item->setText((int)ShaderFileColumn::Filename, fullname);
-
-        return item;
-    }
-
     class EnumShaderFileConfig:public EnumFileConfig
     {
     public:
@@ -48,7 +39,7 @@ namespace
 
             const OSString full_sub_folder_name=MergeFilename(up_efc->folder_name,fi.name);
 
-            QTreeWidgetItem *sub_node=CreateFileItem(emfc->node,ToQString(fi.name),true);
+            QTreeWidgetItem *sub_node=new EditorTreeWidgetItem(emfc->node,QStringList(ToQString(fi.name)),&fi);
 
             emfc->node->addChild(sub_node);
 
@@ -67,14 +58,7 @@ namespace
 
             const OSString s_fn=ClipFileMainname(filename);
 
-            const OSString type_name=ClipFileExtName(s_fn,false);
-
-            const QString main_name=ToQString(ClipFileMainname(s_fn));
-            const QString fullname=ToQString(fi.fullname);
-
-            QTreeWidgetItem *item=nullptr;
-            
-            item=CreateFileItem(emfc->node,main_name,false,fullname);
+            QTreeWidgetItem *item=new EditorTreeWidgetItem(emfc->node,QStringList(ToQString(s_fn)),&fi);
 
             emfc->node->addChild(item);
         }
@@ -85,15 +69,15 @@ void TPShaderFile::UpdateFileTree()
 {
     QStringList header;
 
-    header<<"name";//<<"full filename";     //最后一列隐藏
+    header<<"Shader Name";
 
     file_tree_widget->clear();
     file_tree_widget->setHeaderLabels(header);
 
-    QTreeWidgetItem *root_item=CreateFileItem(nullptr,"root",true);
+    QTreeWidgetItem *root_item=new EditorTreeWidgetItem(nullptr,QStringList("root"),nullptr);
 
     {
-        EnumShaderFileConfig efc(root_item,GetMaterialSourcePath());
+        EnumShaderFileConfig efc(root_item,GetShaderLibraryPath());
 
         efc.proc_file=true;
         efc.sub_folder=true;
@@ -108,4 +92,6 @@ void TPShaderFile::UpdateFileTree()
     file_tree_widget->expandItem(root_item);
     file_tree_widget->resizeColumnToContents(0);
     file_tree_widget->resizeColumnToContents(1);
+
+    file_tree_widget->setMinimumWidth(file_tree_widget->columnWidth(0));
 }
