@@ -96,16 +96,33 @@ shader_maker_project(MaterialCompiler)
 
 IF(CM_BUILD_GUI_TOOLS)
     set(IDENTIFIER "com.hyzgame.materialwriter")
-    SET(MATERIAL_WRITER_SOURCE  gui/MaterialWriter.cpp
-                                gui/MaterialWriter.qrc
-                                gui/TypeDefine.h
-                                gui/GLSLTextEdit.cpp
-                                gui/GLSLTextEdit.h
-                                gui/ConfigData.cpp
-                                gui/ConfigData.h
-                                gui/QStringInfoOutput.cpp
-                                gui/QStringInfoOutput.h
-                                gui/TP_ShaderLibrary.cpp
+
+    SET(MW_BASIC_FILES  gui/TypeDefine.h
+                        gui/ConfigData.cpp
+                        gui/ConfigData.h
+                        gui/QStringInfoOutput.cpp
+                        gui/QStringInfoOutput.h)
+
+    SET(MW_WIDGET_FILES gui/GLSLTextEdit.cpp
+                        gui/GLSLTextEdit.h
+                        gui/W_EditorWidget.h
+                        gui/W_MaterialEditor.cpp
+                        gui/W_MaterialEditor.h
+                        gui/W_XMLShaderEditor.cpp
+                        gui/W_XMLShaderEditor.h)
+
+    SET(MW_DIALOG_FILES gui/DLG_PathConfig.cpp
+                        gui/DLG_PathConfig.h
+                        gui/DLG_About.cpp
+                        gui/DLG_About.h)
+
+    SET(MW_MAIN_FILES   gui/MaterialWriter.cpp
+                        gui/MaterialWriter.qrc
+                        gui/MainWindowMenu.cpp
+                        gui/MainWindow.cpp
+                        gui/MainWindow.h)
+
+    SET(MATERIAL_WRITER_SOURCE  gui/TP_ShaderLibrary.cpp
                                 gui/TP_ShaderLibrary.h
                                 gui/TP_Varying.cpp
                                 gui/TP_Varying.h
@@ -121,24 +138,17 @@ IF(CM_BUILD_GUI_TOOLS)
                                 gui/TP_MaterialLibraryFileTree.cpp
                                 gui/TP_MaterialLibrary.cpp
                                 gui/TP_MaterialLibrary.h
-                                gui/W_EditorWidget.h
-                                gui/W_MaterialEditor.cpp
-                                gui/W_MaterialEditor.h
-                                gui/W_XMLShaderEditor.cpp
-                                gui/W_XMLShaderEditor.h
-                                gui/MainWindowMenu.cpp
-                                gui/MainWindow.cpp
-                                gui/MainWindow.h
-                                gui/DLG_PathConfig.cpp
-                                gui/DLG_PathConfig.h
-                                gui/DLG_About.cpp
-                                gui/DLG_About.h
                                 gui/ShaderLibTree.cpp
                                 gui/ShaderLibTree.h)
 
     source_group("GUI" FILES ${MATERIAL_WRITER_SOURCE})
+    source_group("GUI\\Basic" FILES ${MW_BASIC_FILES})
+    source_group("GUI\\Widget" FILES ${MW_WIDGET_FILES})
+    source_group("GUI\\Dialog" FILES ${MW_DIALOG_FILES})
+    source_group("GUI\\MainWindow" FILES ${MW_MAIN_FILES})
 
-    add_executable(MaterialWriter   ${MATERIAL_WRITER_SOURCE}
+    add_executable(MaterialWriter   ${MATERIAL_WRITER_SOURCE} ${MW_BASIC_FILES} ${MW_WIDGET_FILES} ${MW_DIALOG_FILES} ${MW_MAIN_FILES}
+
                                     ${MATERIAL_COMPILER_SOURCE}
                                     ${GLSLParse_SOURCE}
                                     ${SHADER_FILE_SOURCE}

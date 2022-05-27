@@ -2,6 +2,7 @@
 #include<QTabWidget>
 #include"TP_ShaderLibrary.h"
 #include"TP_MaterialLibrary.h"
+#include"TP_ShaderFile.h"
 
 void MainWindow::Init()
 {
@@ -17,6 +18,8 @@ void MainWindow::Init()
     {
         tab->addTab(new TPShaderLibrary(),"Shader Library");
         tab->addTab(new TPMaterialLibrary(),"My Material Library");
+
+        tab->addTab(new TPShaderFile(),"Shader Files");
     }
 
     this->setCentralWidget(tab);
