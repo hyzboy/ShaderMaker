@@ -2,37 +2,43 @@
 #include"ConfigData.h"
 #include<hgl/filesystem/EnumFile.h>
 #include<hgl/type/QTString.h>
-#include"TypeDefine.h"
+#include"WI_EditorTreeWidgetItem.h"
+#include<QStringList>
 
 using namespace hgl;
 using namespace hgl::filesystem;
 
-QTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name,const QString &type="",const QString &fullname="")
+constexpr float MLIColor[(size_t)MaterialFileType::RANGE_SIZE][3]=
 {
-    QTreeWidgetItem *item=new QTreeWidgetItem(parent);
+    {0,0,0},
+    
+    {64,64,255},
+    {64,128,128},
+    {255,64,64},
+    {128,128,64}
+};
 
-    item->setText(ML_COLUMN_NAME,name);
+EditorTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name,const MaterialFileType &type,const QString &type_name,const FileInfo *fi)
+{
+    QStringList header;
 
-    if(type=="folder")
+    header<<name<<type_name;
+
+    EditorTreeWidgetItem *item=new EditorTreeWidgetItem(parent,header,fi,type);
+
+    QColor color;
+
+    if(RangeCheck(type))
     {
+        color.setRgbF(MLIColor[(size_t)type][0]/255.0f,
+                      MLIColor[(size_t)type][1]/255.0f,
+                      MLIColor[(size_t)type][2]/255.0f);
     }
     else
-    {
-        item->setText(ML_COLUMN_TYPE,type);
-
-        QColor color;
-
-        if(type==ML_TYPE_MATERIAL  )color=QColor( 64, 64,255);else
-        if(type==ML_TYPE_VERTEX    )color=QColor(255, 64, 64);else
-        if(type==ML_TYPE_GEOMETRY  )color=QColor( 64,128,128);else
-        if(type==ML_TYPE_FRAGMENT  )color=QColor(128,128, 64);else
-            color=item->textColor(0);
-        
-        item->setTextColor(ML_COLUMN_NAME,color);
-        item->setTextColor(ML_COLUMN_TYPE,color);
-    }
-
-    item->setText(ML_COLUMN_FILENAME,fullname);
+        color=item->textColor(0);
+    
+    for(int i=0;i<item->columnCount();i++)
+        item->setTextColor(i,color);
 
     return item;
 }
@@ -66,7 +72,7 @@ public:
 
         const OSString full_sub_folder_name=MergeFilename(up_efc->folder_name,fi.name);
 
-        QTreeWidgetItem *sub_node=CreateFileItem(emfc->node,ToQString(fi.name),"sub_folder");
+        QTreeWidgetItem *sub_node=new EditorTreeWidgetItem(emfc->node,QStringList(ToQString(fi.name)),&fi);
 
         emfc->node->addChild(sub_node);
 
@@ -88,18 +94,17 @@ public:
         const OSString type_name=ClipFileExtName(s_fn,false);
 
         const QString main_name=ToQString(ClipFileMainname(s_fn));
-        const QString fullname=ToQString(fi.fullname);
 
         QTreeWidgetItem *item=nullptr;
 
-        #define CONFIRM_FILE_TYPE(name,short_name)  if(type_name.CaseComp(OS_TEXT(short_name))==0)  \
-                                                        item=CreateFileItem(emfc->node,main_name,ML_TYPE_##name,fullname); \
-                                                    else
+        #define CONFIRM_FILE_TYPE(name) if(type_name.CaseComp(OS_TEXT(#name))==0)  \
+                                            item=CreateFileItem(emfc->node,main_name,MaterialFileType::##name,#name,&fi); \
+                                        else
 
-        CONFIRM_FILE_TYPE(MATERIAL, "material")
-        CONFIRM_FILE_TYPE(VERTEX,   "vert")
-        CONFIRM_FILE_TYPE(GEOMETRY, "geom")
-        CONFIRM_FILE_TYPE(FRAGMENT, "frag")
+        CONFIRM_FILE_TYPE(Material)
+        CONFIRM_FILE_TYPE(Vert)
+        CONFIRM_FILE_TYPE(Geom)
+        CONFIRM_FILE_TYPE(Frag)
         {
             //...未知
         }
@@ -117,8 +122,8 @@ void TPMaterialLibrary::UpdateFileTree()
 
     file_tree_widget->clear();
     file_tree_widget->setHeaderLabels(header);
-
-    QTreeWidgetItem *root_item=CreateFileItem(nullptr,"root");
+    
+    QTreeWidgetItem *root_item=new EditorTreeWidgetItem(nullptr,QStringList("root"));
 
     {
         EnumMaterialFileConfig efc(root_item,GetMaterialSourcePath());

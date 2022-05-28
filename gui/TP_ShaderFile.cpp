@@ -44,6 +44,8 @@ TPShaderFile::TPShaderFile()
 
 void TPShaderFile::OnFileChanged(QTreeWidgetItem *item,int)
 {
+    if(current_item==item)return;
+    
     EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
 
     if(w->isFolder())

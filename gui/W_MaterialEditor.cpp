@@ -201,7 +201,7 @@ void MaterialEditorWidget::OnCompile()
 
         const OSString output_path=GetMaterialOutputPath();
         
-        const OSString short_filename=filesystem::ClipFilename(GetFilename());
+        const OSString short_filename=filesystem::ClipFilename(OSString(GetFilename()));
 
         const OSString mat_filename=filesystem::TrimFileExtName(short_filename,true);
 

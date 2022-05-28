@@ -44,6 +44,11 @@ TPMaterialLibrary::TPMaterialLibrary()
 void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
 {
     if(current_item==item)return;
+    
+    EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
+
+    if(w->isFolder())
+        return;
 
     for(int i=0;i<editor_tab_widget->count();i++)
     {
@@ -55,23 +60,16 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
             return;
         }
     }
-
-    const OSString &filename=ToOSString(item->text(ML_COLUMN_FILENAME));
-
-    const QString type=item->text(ML_COLUMN_TYPE);
-    const QString name=item->text(ML_COLUMN_NAME);
-
-    EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
-
+    
     QWidget *widget=nullptr;
 
-    if(type==ML_TYPE_MATERIAL)
+    if(w->type()==MaterialFileType::Material)
         widget=new MaterialEditorWidget(w);
     else
         widget=new XMLShaderEditorWidget(w);
 
     {
-        const int index=editor_tab_widget->addTab(widget,type+": "+name);
+        const int index=editor_tab_widget->addTab(widget,QString(w->GetTypename())+QString(": ")+w->text(0));
 
         editor_tab_widget->setCurrentIndex(index);
     }

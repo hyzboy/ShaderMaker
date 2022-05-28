@@ -1,10 +1,27 @@
 #pragma once
 
-#define ML_TYPE_MATERIAL   "Material"
-#define ML_TYPE_VERTEX     "vert"
-#define ML_TYPE_GEOMETRY   "geom"
-#define ML_TYPE_FRAGMENT   "frag"
+#include<hgl/type/EnumClass.h>
 
 #define ML_COLUMN_NAME     0
 #define ML_COLUMN_TYPE     1
-#define ML_COLUMN_FILENAME 2
+
+enum class MaterialFileType
+{ 
+    None=0,
+
+    Material,
+    Vert,
+    Geom,
+    Frag,
+
+    ENUM_CLASS_RANGE(None,Frag)
+};
+
+constexpr char *MaterialFileTypeName[]=
+{
+    "None",
+    "Material",
+    "Vert",
+    "Geom",
+    "Frag",
+};

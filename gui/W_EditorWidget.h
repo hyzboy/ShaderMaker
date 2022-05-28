@@ -16,8 +16,8 @@ private:
 
 public:
 
-    const EditorTreeWidgetItem *GetItem()const{return item;}
-    const OSString &GetFilename()const{return item->GetFilename();}
+    const EditorTreeWidgetItem *GetItem     ()const{return item;}
+    const os_char *             GetFilename ()const{return item->GetFilename();}
 
 public:
 
