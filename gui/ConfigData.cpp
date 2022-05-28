@@ -59,7 +59,7 @@ void LoadFontJson(QFont &fnt,const Json::Value &font_root)
         return;
 
     fnt.setFamily(QString::fromStdString(font_root["name"].asString()));
-    fnt.setPixelSize(font_root["size"].asUInt());
+    fnt.setPointSize(font_root["size"].asUInt());
 }
 
 bool LoadConfig()

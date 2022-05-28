@@ -3,6 +3,7 @@
 #include<QLabel>
 #include<QPushButton>
 #include<QFileDialog>
+#include<QFontDialog>
 #include<QMessageBox>
 #include<hgl/type/QTString.h>
 #include<hgl/filesystem/FileSystem.h>
@@ -14,6 +15,10 @@ using namespace hgl::filesystem;
 void SetShaderLibraryPath(const OSString &path);
 void SetMaterialSourcePath(const OSString &path);
 void SetMaterialOutputPath(const OSString &path);
+
+void SetUIFont(const QFont &fnt);
+void SetCodeFont(const QFont &fnt);
+
 void SaveConfigData();
 
 class BrowserButton:public QPushButton
@@ -65,6 +70,25 @@ void DLGConfig::CreateGroup(QWidget *parent,int row,const QString &name,const OS
     path_edit[row]=edit;
 }
 
+void DLGConfig::UpdateFontButtonText(QPushButton *button,const QString &name,const QFont &fnt)
+{
+    QString text=QString("%1 Font: %2, %3 points").arg(name).arg(fnt.family()).arg(fnt.pointSize());
+    button->setText(text);
+}
+
+QPushButton *DLGConfig::CreateFontConfig(QWidget *font_widget,QLayout *font_layout,const QString &name,const QFont &fnt,void (DLGConfig::*event_func)())
+{
+    QPushButton *button=new QPushButton(font_widget);
+    
+    connect(button,&QPushButton::clicked,this,event_func);
+
+    UpdateFontButtonText(button,name,fnt);
+
+    font_layout->addWidget(button);
+
+    return button;
+}
+
 DLGConfig::DLGConfig()
 {
     setModal(true);
@@ -89,6 +113,13 @@ DLGConfig::DLGConfig()
 
     //字体区
     {
+        QWidget *font_widget=new QWidget(widget);
+        QHBoxLayout *font_layout=new QHBoxLayout(font_widget);
+
+        ui_font_button  =CreateFontConfig(font_widget,font_layout,"UI",     GetUIFont(),    &DLGConfig::OnUIFontClicked);
+        code_font_button=CreateFontConfig(font_widget,font_layout,"Code",   GetCodeFont(),  &DLGConfig::OnCodeFontClicked);
+
+        layout->addWidget(font_widget);
     }
 
     //按钮区
@@ -155,4 +186,36 @@ void DLGConfig::OnOKClicked()
 void DLGConfig::OnCancelClicked()
 {
     close();
+}
+
+void DLGConfig::OnUIFontClicked()
+{
+    bool ok;
+
+    QFont font=GetUIFont();
+
+    font=QFontDialog::getFont(&ok,font,this,"UI Font");
+
+    if(ok)
+    {
+        SetUIFont(font);
+        SaveConfigData();
+        UpdateFontButtonText(ui_font_button,"UI",font);
+    }
+}
+
+void DLGConfig::OnCodeFontClicked()
+{
+    bool ok;
+
+    QFont font=GetCodeFont();
+
+    font=QFontDialog::getFont(&ok,font,this,"Code Font");
+
+    if(ok)
+    {
+        SetCodeFont(font);
+        SaveConfigData();        
+        UpdateFontButtonText(code_font_button,"Code",font);
+    }
 }
