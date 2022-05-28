@@ -2,6 +2,7 @@
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/StringList.h>
 #include<hgl/type/QTString.h>
+#include<hgl/type/StdString.h>
 #include<hgl/io/TextOutputStream.h>
 #include<QMessageBox>
 #include<hgl/util/json/JsonTool.h>
@@ -17,15 +18,49 @@ namespace
     OSString shader_library_path;
     OSString material_source_path;
     OSString material_output_path;
+
+    QFont ui_fnt,code_fnt;
 }//namespace
 
 const OSString &GetShaderLibraryPath(){return shader_library_path;}
 const OSString &GetMaterialSourcePath(){return material_source_path;}
 const OSString &GetMaterialOutputPath(){return material_output_path;}
 
+const QFont &GetUIFont()
+{
+    return ui_fnt;
+}
+
+const QFont &GetCodeFont()
+{
+    return code_fnt;
+}
+
 void SetShaderLibraryPath(const OSString &path){shader_library_path=path;}
 void SetMaterialSourcePath(const OSString &path){material_source_path=path;}
 void SetMaterialOutputPath(const OSString &path){material_output_path=path;}
+
+void SetUIFont(const QFont &fnt)
+{
+    ui_fnt=fnt;
+}
+
+void SetCodeFont(const QFont &fnt)
+{
+    code_fnt=fnt;
+}
+
+void LoadFontJson(QFont &fnt,const Json::Value &font_root)
+{
+    if(!font_root.isMember("name"))
+        return;
+
+    if(!font_root.isMember("size"))
+        return;
+
+    fnt.setFamily(QString::fromStdString(font_root["name"].asString()));
+    fnt.setPixelSize(font_root["size"].asUInt());
+}
 
 bool LoadConfig()
 {
@@ -38,7 +73,7 @@ bool LoadConfig()
         return(false);
     }
 
-    cfg_filename=MergeFilename(cur_path,OS_TEXT("shader_libs.config"));
+    cfg_filename=MergeFilename(cur_path,OS_TEXT("material_writer.json"));
 
     if(!FileExist(cfg_filename))
         return(false);
@@ -54,6 +89,28 @@ bool LoadConfig()
             PARSE_JSON_STR(shader_library_path  )
             PARSE_JSON_STR(material_source_path )
             PARSE_JSON_STR(material_output_path )
+            
+            //font
+            if(root.isMember("font"))
+            {
+                const Json::Value &font_root=root["font"];
+                
+                if(font_root.isMember("ui"))
+                    LoadFontJson(ui_fnt,font_root["ui"]);
+
+                if(font_root.isMember("code"))
+                    LoadFontJson(code_fnt,font_root["code"]);
+            }
+            else
+            {
+                QFont fnt;
+
+                SetUIFont(fnt);
+                SetCodeFont(fnt);
+            }
+
+            code_fnt.setFixedPitch(true);
+            code_fnt.setStyleHint(QFont::StyleHint::Monospace);
 
             #undef PARSE_JSON_STR
 
@@ -64,6 +121,16 @@ bool LoadConfig()
     }
 
     return(false);
+}
+
+Json::Value CreateFontJson(const QFont &fnt)
+{
+    Json::Value root;
+
+    root["name"]=Json::Value(fnt.family().toStdString());
+    root["size"]=Json::Value(fnt.pointSize());
+
+    return root;
 }
 
 void SaveConfigData()
@@ -77,6 +144,16 @@ void SaveConfigData()
     SET_JSON_STR(shader_library_path)
     SET_JSON_STR(material_source_path)
     SET_JSON_STR(material_output_path)
+    
+    //font
+    {
+        Json::Value font_root;
+
+        font_root["ui"]=CreateFontJson(ui_fnt);
+        font_root["code"]=CreateFontJson(code_fnt);
+
+        root["font"]=font_root;
+    }
 
     #undef SET_JSON_STR
     

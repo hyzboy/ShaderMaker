@@ -42,15 +42,7 @@ int main(int argc,char **argv)
     
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
     qt_app.setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    {
-        QFont fnt=qt_app.font();
-        const int fs=fnt.pointSize();
-        if(fs<9)
-            fnt.setPointSize(9);
-
-        qt_app.setFont(fnt);
-    }
+    qt_app.setFont(GetUIFont());
 
     MainWindow win;
 

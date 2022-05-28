@@ -1,4 +1,5 @@
 #include"GLSLTextEdit.h"
+#include"ConfigData.h"
 #include<QSyntaxHighlighter>
 #include<QRegularExpression>
 #include<QTextBlock>
@@ -260,18 +261,7 @@ GLSLTextEdit::GLSLTextEdit(QWidget *parent):QTextEdit(parent)
     setReadOnly(true);
     setLineWrapMode(QTextEdit::NoWrap);
     setTabStopWidth(4);
-    {
-        QFont f=font();
-
-        f.setFixedPitch(true);
-        f.setStyleHint(QFont::Monospace);
-        f.setFamily("Consolas");
-
-        if(f.pointSize()<9)
-            f.setPointSize(9);
-
-        setFont(f);
-    }
+    setFont(GetCodeFont());
 
     highlighter=new GLSLHighlighter(document());
 }

@@ -120,6 +120,8 @@ void TPMaterialLibrary::UpdateFileTree()
 
     header<<"name"<<"type";
 
+    file_tree_widget->setFont(GetUIFont());
+
     file_tree_widget->clear();
     file_tree_widget->setHeaderLabels(header);
     
