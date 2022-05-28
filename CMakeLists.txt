@@ -113,8 +113,8 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/W_XMLShaderEditor.cpp
                         gui/W_XMLShaderEditor.h)
 
-    SET(MW_DIALOG_FILES gui/DLG_PathConfig.cpp
-                        gui/DLG_PathConfig.h
+    SET(MW_DIALOG_FILES gui/DLG_Config.cpp
+                        gui/DLG_Config.h
                         gui/DLG_About.cpp
                         gui/DLG_About.h)
 

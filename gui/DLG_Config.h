@@ -5,7 +5,7 @@
 #include<QGridLayout>
 #include<QLineEdit>
 
-class DLGPathConfig:public QDialog
+class DLGConfig:public QDialog
 {
     Q_OBJECT
 
@@ -24,6 +24,6 @@ private:
 
 public:
 
-    DLGPathConfig();
-    ~DLGPathConfig()=default;
+    DLGConfig();
+    ~DLGConfig()=default;
 };//

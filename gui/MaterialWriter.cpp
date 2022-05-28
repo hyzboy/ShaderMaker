@@ -10,7 +10,7 @@
 #include"GLSLCompiler.h"
 #include<hgl/type/QTString.h>
 #include"ConfigData.h"
-#include"DLG_PathConfig.h"
+#include"DLG_Config.h"
 
 using namespace hgl;
 
@@ -26,7 +26,7 @@ int main(int argc,char **argv)
 
     if(!LoadConfig())
     {
-        DLGPathConfig dlg;
+        DLGConfig dlg;
 
         dlg.show();
         qt_app.exec();

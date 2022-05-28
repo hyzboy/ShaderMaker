@@ -1,6 +1,6 @@
 #include"MainWindow.h"
 #include"DLG_About.h"
-#include"DLG_PathConfig.h"
+#include"DLG_Config.h"
 #include<QMenuBar>
 #include<QApplication>
 
@@ -9,10 +9,9 @@ void MainWindow::InitMenu()
     QMenuBar *menu_bar=menuBar();
 
     {
-        QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
+        //QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
-//        setup_menu->addAction(tr("&Refresh"),this,&MainWindow::OnPathConfig);
-        setup_menu->addAction(tr("&Path"),this,&MainWindow::OnPathConfig);
+        menu_bar->addAction(tr("&Config"),this,&MainWindow::OnConfig);
     }
     
     {
@@ -30,9 +29,9 @@ void MainWindow::OnAbout()
     dlg->show();        
 }
 
-void MainWindow::OnPathConfig()
+void MainWindow::OnConfig()
 {
-    DLGPathConfig *dlg=new DLGPathConfig();
+    DLGConfig *dlg=new DLGConfig();
     
     dlg->show();
 }

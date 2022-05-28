@@ -1,4 +1,4 @@
-#include"DLG_PathConfig.h"
+#include"DLG_Config.h"
 #include<QVBoxLayout>
 #include<QLabel>
 #include<QPushButton>
@@ -46,7 +46,7 @@ public:
     }
 };//class BrowserButton:public QPushButton
 
-void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name,const OSString &str)
+void DLGConfig::CreateGroup(QWidget *parent,int row,const QString &name,const OSString &str)
 {
     QLabel *lab=new QLabel(parent);
     lab->setText(name);
@@ -65,10 +65,10 @@ void DLGPathConfig::CreateGroup(QWidget *parent,int row,const QString &name,cons
     path_edit[row]=edit;
 }
 
-DLGPathConfig::DLGPathConfig()
+DLGConfig::DLGConfig()
 {
     setModal(true);
-    setWindowTitle(tr("path config"));
+    setWindowTitle(tr("Config"));
 
     QWidget *widget=new QWidget(this);
     QVBoxLayout *layout=new QVBoxLayout(widget);
@@ -87,6 +87,10 @@ DLGPathConfig::DLGPathConfig()
         layout->addWidget(grid_widget);
     }
 
+    //字体区
+    {
+    }
+
     //按钮区
     {
         QWidget *button_widget=new QWidget(widget);
@@ -96,13 +100,13 @@ DLGPathConfig::DLGPathConfig()
         {
             QPushButton *ok_button=new QPushButton(button_widget);
             ok_button->setText("OK");
-            connect(ok_button,&QPushButton::clicked,this,&DLGPathConfig::OnOKClicked);
+            connect(ok_button,&QPushButton::clicked,this,&DLGConfig::OnOKClicked);
 
             button_layout->addWidget(ok_button,0,Qt::AlignRight);
 
             QPushButton *cancel_button=new QPushButton(button_widget);
             cancel_button->setText("Cancel");
-            connect(cancel_button,&QPushButton::clicked,this,&DLGPathConfig::OnCancelClicked);
+            connect(cancel_button,&QPushButton::clicked,this,&DLGConfig::OnCancelClicked);
             
             button_layout->addWidget(cancel_button,0,Qt::AlignLeft);
         }
@@ -113,7 +117,7 @@ DLGPathConfig::DLGPathConfig()
     resize(layout->sizeHint());
 }
 
-void DLGPathConfig::OnOKClicked()
+void DLGConfig::OnOKClicked()
 {
     OSString s_path=ToOSString(path_edit[0]->text());
     OSString m_path=ToOSString(path_edit[1]->text());
@@ -148,7 +152,7 @@ void DLGPathConfig::OnOKClicked()
     close();
 }
 
-void DLGPathConfig::OnCancelClicked()
+void DLGConfig::OnCancelClicked()
 {
     close();
 }

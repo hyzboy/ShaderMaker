@@ -15,7 +15,7 @@ private:    //menu
 
     void OnAbout();
 
-    void OnPathConfig();
+    void OnConfig();
 
     void InitMenu();
 
