@@ -36,9 +36,9 @@ const QFont &GetCodeFont()
     return code_fnt;
 }
 
-void SetShaderLibraryPath(const OSString &path){shader_library_path=path;}
-void SetMaterialSourcePath(const OSString &path){material_source_path=path;}
-void SetMaterialOutputPath(const OSString &path){material_output_path=path;}
+void SetShaderLibraryPath(const OSString &path){shader_library_path=FixFilename(path);}
+void SetMaterialSourcePath(const OSString &path){material_source_path=FixFilename(path);}
+void SetMaterialOutputPath(const OSString &path){material_output_path=FixFilename(path);}
 
 void SetUIFont(const QFont &fnt)
 {
@@ -84,7 +84,7 @@ bool LoadConfig()
 
         if(LoadJson(root,cfg_filename,error_info))
         {
-            #define PARSE_JSON_STR(name)    if(root.isMember(#name))name=ToOSString(root[#name].asCString());
+            #define PARSE_JSON_STR(name)    if(root.isMember(#name))name=FixFilename(ToOSString(root[#name].asCString()));
 
             PARSE_JSON_STR(shader_library_path  )
             PARSE_JSON_STR(material_source_path )
