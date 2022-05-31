@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include<stdint.h>
 #include<hgl/TypeFunc.h>
@@ -6,7 +6,7 @@
 
 namespace vk_shader
 {
-    enum ShaderStageBits        //µ»Õ¨VkShaderStageFlagBits
+    enum ShaderStageBits        //Á≠âÂêåVkShaderStageFlagBits
     {
         ssbVertex       = 0x00000001,
         ssbTesc         = 0x00000002,
@@ -26,9 +26,9 @@ namespace vk_shader
         ssbAll          = 0x7FFFFFFF
     };
 
-    using ShaderType=uint32_t;          ///<”√¿¥µ•∂¿±Ì æSHADER «ƒ«“ª÷÷
+    using ShaderType=uint32_t;          ///<Áî®Êù•ÂçïÁã¨Ë°®Á§∫SHADERÊòØÈÇ£‰∏ÄÁßç
     
-    constexpr char *shader_stage_name_list[32]=
+    constexpr const char *shader_stage_name_list[32]=
     {
         "Vertex"      ,
         "Tesc"        ,
@@ -48,7 +48,7 @@ namespace vk_shader
 
     const char *GetShaderStageName(const ShaderType &);
     
-    enum class DescriptorType         //µ»Õ¨VkDescriptorType
+    enum class DescriptorType         //Á≠âÂêåVkDescriptorType
     {
         SAMPLER = 0,
         COMBINED_IMAGE_SAMPLER,

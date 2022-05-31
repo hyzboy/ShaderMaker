@@ -93,7 +93,9 @@ MaterialEditorWidget::MaterialEditorWidget(EditorTreeWidgetItem *i):EditorWidget
         log_widget->setFrameShape(QFrame::StyledPanel);
         log_widget->setReadOnly(true);
         log_widget->setLineWrapMode(QPlainTextEdit::NoWrap);
-        log_widget->setTabStopWidth(4);
+
+        log_widget->setTabStopDistance(4);      //qt6
+        //log_widget->setTabStopWidth(4);       //qt5
     }
 
     splitter->setStretchFactor(0,2);

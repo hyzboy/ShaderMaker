@@ -17,7 +17,7 @@ enum class MaterialFileType
     ENUM_CLASS_RANGE(None,Frag)
 };
 
-constexpr char *MaterialFileTypeName[]=
+constexpr const char *MaterialFileTypeName[16]=
 {
     "None",
     "Material",

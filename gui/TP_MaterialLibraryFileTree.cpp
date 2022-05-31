@@ -35,10 +35,19 @@ EditorTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name
                       MLIColor[(size_t)type][2]/255.0f);
     }
     else
-        color=item->textColor(0);
+    {
+        color=item->foreground(0).color();  //qt6
+        //color=item->textColor(0);         //qt5
+    }
     
     for(int i=0;i<item->columnCount();i++)
-        item->setTextColor(i,color);
+    {
+        QBrush brush=item->foreground(i);
+        brush.setColor(color);
+        item->setForeground(0,brush);
+        
+        //item->setTextColor(i,color);      //qt5
+    }
 
     return item;
 }

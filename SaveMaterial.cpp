@@ -1,4 +1,4 @@
-#include"ShaderLib.h"
+ï»¿#include"ShaderLib.h"
 #include"GLSLCompiler.h"
 #include<hgl/io/MemoryOutputStream.h>
 #include<hgl/filesystem/FileSystem.h>
@@ -123,7 +123,7 @@ namespace shader_lib
             OutputShaderStage(mdos,spv->input,"in");
             OutputShaderStage(mdos,spv->output,"out");
 
-            StatShaderResource(flag,spv->resource);     //×¢Òâ£ºÒòÎª¸÷ÖÖ×ÊÔ´¿ÉÄÜ»áÓÐVS/GS/FS¹²ÓÃµÄÇé¿ö£¬ËùÒÔÕâÀïÖ»ÓÐÍ³¼Æ£¬²¢²»Êä³ö
+            StatShaderResource(flag,spv->resource);     //æ³¨æ„ï¼šå› ä¸ºå„ç§èµ„æºå¯èƒ½ä¼šæœ‰VS/GS/FSå…±ç”¨çš„æƒ…å†µï¼Œæ‰€ä»¥è¿™é‡Œåªæœ‰ç»Ÿè®¡ï¼Œå¹¶ä¸è¾“å‡º
 
             dos->WriteUint32(mmos.Tell());
             dos->Write(mmos.GetData(),mmos.Tell());

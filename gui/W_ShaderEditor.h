@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include"W_EditorWidget.h"
 #include"GLSLTextEdit.h"
@@ -12,7 +12,7 @@ class ShaderEditorWidget:public EditorWidget
 {
     Q_OBJECT;
 
-private:    //shader±à¼­Çø
+private:    //shaderç¼–è¾‘åŒº
     
     GLSLTextEdit *  glsl_editor;
     QLabel *        editor_hint;
@@ -25,7 +25,7 @@ private:    //shader±à¼­Çø
 
     QWidget *InitEditor(QWidget *);
 
-private:    //shader³É·İÔ¤ÀÀÇø
+private:    //shaderæˆä»½é¢„è§ˆåŒº
 public:
 
     ShaderEditorWidget(EditorTreeWidgetItem *);

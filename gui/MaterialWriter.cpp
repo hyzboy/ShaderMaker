@@ -1,7 +1,6 @@
 #include<QApplication>
 #include<QFont>
 #include<QStyle>
-#include<QDesktopWidget>
 #include<QMessageBox>
 #include"MainWindow.h"
 #include<hgl/filesystem/FileSystem.h>
@@ -39,7 +38,7 @@ int main(int argc,char **argv)
         os_err<<OS_TEXT("Load ShaderLib failed!")<<std::endl;
         return(-2);
     }
-    
+
     qt_app.setAttribute(Qt::AA_UseDesktopOpenGL);
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
     qt_app.setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -49,12 +48,12 @@ int main(int argc,char **argv)
 
     win.Init();
     
-    win.setGeometry(QStyle::alignedRect(
-        Qt::LeftToRight,
-        Qt::AlignCenter,
-        win.size(),
-        qt_app.desktop()->availableGeometry()
-    ));
+    //win.setGeometry(QStyle::alignedRect(
+    //    Qt::LeftToRight,
+    //    Qt::AlignCenter,
+    //    win.size(),
+    //    qt_app.desktop()->availableGeometry()
+    //));
 
     win.show();
 

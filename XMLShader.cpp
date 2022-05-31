@@ -40,7 +40,7 @@ namespace shader_lib
             }
 
             glsl_compiler::Free(spv);
-            return(nullptr);
+            return(false);
         }
 
         if(info_output)

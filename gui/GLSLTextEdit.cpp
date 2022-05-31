@@ -4,7 +4,7 @@
 #include<QRegularExpression>
 #include<QTextBlock>
 #include<QPainter>
-#include<QRegExp>
+#include<QRegularExpression>
 
 class GLSLHighlighter:public QSyntaxHighlighter
 {
@@ -260,7 +260,7 @@ GLSLTextEdit::GLSLTextEdit(QWidget *parent):QTextEdit(parent)
     setFrameShape(QFrame::StyledPanel);
     setReadOnly(true);
     setLineWrapMode(QTextEdit::NoWrap);
-    setTabStopWidth(4);
+    setTabStopDistance(4);
     setFont(GetCodeFont());
 
     highlighter=new GLSLHighlighter(document());
