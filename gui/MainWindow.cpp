@@ -19,7 +19,7 @@ void MainWindow::Init()
         tab->addTab(new TPShaderLibrary(),"Shader Library");
         tab->addTab(new TPMaterialLibrary(),"My Material Library");
 
-        tab->addTab(new TPShaderFile(),"Shader Files");
+        tab->addTab(new TPShaderFile(),"Shader Modules");
     }
 
     this->setCentralWidget(tab);
