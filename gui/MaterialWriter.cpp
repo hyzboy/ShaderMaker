@@ -40,6 +40,7 @@ int main(int argc,char **argv)
         return(-2);
     }
     
+    qt_app.setAttribute(Qt::AA_UseDesktopOpenGL);
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);
     qt_app.setAttribute(Qt::AA_EnableHighDpiScaling);
     qt_app.setFont(GetUIFont());
