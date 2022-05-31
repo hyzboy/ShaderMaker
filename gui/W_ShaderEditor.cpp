@@ -14,21 +14,33 @@ QWidget *ShaderEditorWidget::InitEditor(QWidget *parent)
     QVBoxLayout *layout=new QVBoxLayout(widget);
     layout->setContentsMargins(0,0,0,0);
 
+    const QString qfilename = ToQString(GetFilename());
+
     {
         QWidget *toolbar=new QWidget(widget);
         QHBoxLayout *toolbar_layout=new QHBoxLayout(toolbar);
 
         toolbar_layout->setContentsMargins(0,0,0,0);
 
-        save_button=new QPushButton(toolbar);
-        save_button->setText("Save");
-        connect(save_button,&QPushButton::clicked,this,&ShaderEditorWidget::OnSave);
-        toolbar_layout->addWidget(save_button,0,Qt::AlignLeft);
+        {
+            save_button = new QPushButton(toolbar);
+            save_button->setText("Save");
+            connect(save_button, &QPushButton::clicked, this, &ShaderEditorWidget::OnSave);
+            toolbar_layout->addWidget(save_button, 0, Qt::AlignLeft);
+        }
+
+        {
+            QLabel* filename_label = new QLabel(toolbar);
+            toolbar_layout->addWidget(filename_label, 0, Qt::AlignLeft);
+            filename_label->setText(qfilename);
+        }
 
         toolbar_layout->addStretch();
 
-        editor_hint=new QLabel(toolbar);
-        toolbar_layout->addWidget(editor_hint,0,Qt::AlignRight);
+        {
+            editor_hint = new QLabel(toolbar);
+            toolbar_layout->addWidget(editor_hint, 0, Qt::AlignRight);
+        }
 
         toolbar->setFixedHeight(toolbar->sizeHint().height());
 
