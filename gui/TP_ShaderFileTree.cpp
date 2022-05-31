@@ -73,6 +73,7 @@ void TPShaderFile::UpdateFileTree()
 
     file_tree_widget->clear();
     file_tree_widget->setHeaderLabels(header);
+    file_tree_widget->setHeaderHidden(true);
 
     QTreeWidgetItem *root_item=new EditorTreeWidgetItem(nullptr,QStringList("root"),nullptr);
 
