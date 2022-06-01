@@ -9,8 +9,8 @@ namespace vk_shader
     enum ShaderStageBits        //等同VkShaderStageFlagBits
     {
         ssbVertex       = 0x00000001,
-        ssbTesc         = 0x00000002,
-        ssbTesv         = 0x00000004,
+        ssbTessControl  = 0x00000002,
+        ssbTessEval     = 0x00000004,
         ssbGeometry     = 0x00000008,
         ssbFragment     = 0x00000010,
         ssbGraphics     = 0x0000001F,
@@ -31,8 +31,8 @@ namespace vk_shader
     constexpr const char *shader_stage_name_list[32]=
     {
         "Vertex"      ,
-        "Tesc"        ,
-        "Tesv"        ,
+        "TessControl" ,
+        "TeseEval"    ,
         "Geometry"    ,
         "Fragment"    ,
         "Compute"     ,

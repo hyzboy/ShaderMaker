@@ -113,10 +113,12 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/W_XMLShaderEditor.cpp
                         gui/W_XMLShaderEditor.h)
 
-    SET(MW_DIALOG_FILES gui/DLG_Config.cpp
+    SET(MW_DIALOG_FILES gui/DLG_About.cpp
+                        gui/DLG_About.h
+                        gui/DLG_Config.cpp
                         gui/DLG_Config.h
-                        gui/DLG_About.cpp
-                        gui/DLG_About.h)
+                        gui/DLG_CreateMaterial.cpp
+                        gui/DLG_CreateMaterial.h)
 
     SET(MW_MAIN_FILES   gui/MaterialWriter.cpp
                         gui/MaterialWriter.qrc

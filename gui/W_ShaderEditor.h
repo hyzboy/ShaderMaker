@@ -20,7 +20,7 @@ private:    //shader编辑区
     QPushButton *   save_button;
 
     void OnEditorCursorPositionChanged();
-    void OnTextChanged();    
+    void OnTextChanged();
     void OnSave();
 
     QWidget *InitEditor(QWidget *);
@@ -31,5 +31,5 @@ public:
     ShaderEditorWidget(EditorTreeWidgetItem *);
     virtual ~ShaderEditorWidget()=default;
 
-    bool OnCloseRequested() override;    
+    bool OnCloseRequested() override;
 };//class ShaderEditorWidget:public EditorWidget
