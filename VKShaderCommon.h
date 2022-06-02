@@ -68,7 +68,7 @@ namespace vk_shader
     constexpr const char *descriptor_type_name[32]=
     {
         "sampler",
-        "combinded_image_sampler",
+        "combined_image_sampler",
         "sampled_image",
         "storage_image",
         "uniform_texel_buffer",
