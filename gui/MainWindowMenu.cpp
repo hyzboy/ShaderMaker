@@ -1,6 +1,7 @@
 #include"MainWindow.h"
 #include"DLG_About.h"
 #include"DLG_Config.h"
+#include"DLG_CreateMaterial.h"
 #include<QMenuBar>
 #include<QApplication>
 
@@ -12,6 +13,12 @@ void MainWindow::InitMenu()
         //QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
         menu_bar->addAction(tr("&Config"),this,&MainWindow::OnConfig);
+    }
+
+    {
+        QMenu *create_menu=menu_bar->addMenu(tr("Create"));
+
+        create_menu->addAction(tr("Create &Material"),this,&MainWindow::OnCreateMaterial);
     }
     
     {
@@ -33,5 +40,12 @@ void MainWindow::OnConfig()
 {
     DLGConfig *dlg=new DLGConfig();
     
+    dlg->show();
+}
+
+void MainWindow::OnCreateMaterial()
+{
+    DLGCreateMaterial *dlg=new DLGCreateMaterial();
+
     dlg->show();
 }

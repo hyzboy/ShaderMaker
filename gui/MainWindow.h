@@ -17,6 +17,8 @@ private:    //menu
 
     void OnConfig();
 
+    void OnCreateMaterial();
+
     void InitMenu();
 
 public:
