@@ -18,6 +18,16 @@ void MainWindow::InitMenu()
     {
         QMenu *create_menu=menu_bar->addMenu(tr("Create"));
 
+        {
+            QMenu *create_shader_menu=create_menu->addMenu(tr("Create Shader"));
+            
+            create_shader_menu->addAction(tr("Create Vertex Shader"),this,&MainWindow::OnCreateVertexShader);
+            create_shader_menu->addAction(tr("Create Tessellation Control Shader"),this,&MainWindow::OnCreateTessControlShader);
+            create_shader_menu->addAction(tr("Create Tessellation Evaluation Shader"),this,&MainWindow::OnCreateTessEvalShader);
+            create_shader_menu->addAction(tr("Create Gemoetry Shader"),this,&MainWindow::OnCreateGeometryShader);
+            create_shader_menu->addAction(tr("Create Fragment Shader"),this,&MainWindow::OnCreateFragmentShader);
+        }
+        
         create_menu->addAction(tr("Create &Material"),this,&MainWindow::OnCreateMaterial);
     }
     
@@ -42,6 +52,17 @@ void MainWindow::OnConfig()
     
     dlg->show();
 }
+
+void MainWindow::OnCreateVertexShader()
+{}
+void MainWindow::OnCreateTessControlShader()
+{}
+void MainWindow::OnCreateTessEvalShader()
+{}
+void MainWindow::OnCreateGeometryShader()
+{}
+void MainWindow::OnCreateFragmentShader()
+{}
 
 void MainWindow::OnCreateMaterial()
 {

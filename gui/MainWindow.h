@@ -16,7 +16,13 @@ private:    //menu
     void OnAbout();
 
     void OnConfig();
-
+    
+    void OnCreateVertexShader();
+    void OnCreateTessControlShader();
+    void OnCreateTessEvalShader();
+    void OnCreateGeometryShader();
+    void OnCreateFragmentShader();
+    
     void OnCreateMaterial();
 
     void InitMenu();
