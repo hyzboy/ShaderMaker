@@ -8,6 +8,8 @@ ShaderUseWidget::ShaderUseWidget(const QString &name,QWidget *parent,QGridLayout
     edit=new QLineEdit(parent);
     browser=new QPushButton("Browser",parent);
 
+    edit->setMinimumWidth(edit->fontInfo().pixelSize()*32);
+
     layout->addWidget(label,    row,1,Qt::AlignLeft);
     layout->addWidget(edit,     row,2);
     layout->addWidget(browser,  row,3);
