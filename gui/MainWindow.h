@@ -13,6 +13,7 @@ class MainWindow:public QMainWindow
 
 private:    //menu
 
+    void OnHomepage();
     void OnAbout();
 
     void OnConfig();

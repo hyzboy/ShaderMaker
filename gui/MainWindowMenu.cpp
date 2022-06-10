@@ -4,6 +4,7 @@
 #include"DLG_CreateMaterial.h"
 #include<QMenuBar>
 #include<QApplication>
+#include<QDesktopServices>
 
 void MainWindow::InitMenu()
 {
@@ -21,11 +22,11 @@ void MainWindow::InitMenu()
         {
             QMenu *create_shader_menu=create_menu->addMenu(tr("Create Shader"));
             
-            create_shader_menu->addAction(tr("Create Vertex Shader"),this,&MainWindow::OnCreateVertexShader);
-            create_shader_menu->addAction(tr("Create Tessellation Control Shader"),this,&MainWindow::OnCreateTessControlShader);
+            create_shader_menu->addAction(tr("Create Vertex Shader"                 ),this,&MainWindow::OnCreateVertexShader);
+            create_shader_menu->addAction(tr("Create Tessellation Control Shader"   ),this,&MainWindow::OnCreateTessControlShader);
             create_shader_menu->addAction(tr("Create Tessellation Evaluation Shader"),this,&MainWindow::OnCreateTessEvalShader);
-            create_shader_menu->addAction(tr("Create Gemoetry Shader"),this,&MainWindow::OnCreateGeometryShader);
-            create_shader_menu->addAction(tr("Create Fragment Shader"),this,&MainWindow::OnCreateFragmentShader);
+            create_shader_menu->addAction(tr("Create Gemoetry Shader"               ),this,&MainWindow::OnCreateGeometryShader);
+            create_shader_menu->addAction(tr("Create Fragment Shader"               ),this,&MainWindow::OnCreateFragmentShader);
         }
         
         create_menu->addAction(tr("Create &Material"),this,&MainWindow::OnCreateMaterial);
@@ -34,9 +35,15 @@ void MainWindow::InitMenu()
     {
         QMenu *about_menu=menu_bar->addMenu(tr("&About"));
 
+        about_menu->addAction(tr("&Homepage"),this,&MainWindow::OnHomepage);
         about_menu->addAction(tr("&About"),this,&MainWindow::OnAbout);
         about_menu->addAction(tr("About &Qt"),this,&QApplication::aboutQt);
     }
+}
+
+void MainWindow::OnHomepage()
+{
+    QDesktopServices::openUrl(QUrl(HGL_OFFICAL_WEB_URL_u8));
 }
 
 void MainWindow::OnAbout()
