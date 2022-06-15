@@ -104,7 +104,8 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/QStringInfoOutput.h)
 
     SET(MW_WIDGET_FILES gui/GLSLTextEdit.cpp
-                        gui/GLSLTextEdit.h
+                        gui/GLSLTextEdit.h                        
+                        gui/WI_EditorTreeWidgetItem.h
                         gui/W_EditorWidget.h
                         gui/W_ShaderEditor.h
                         gui/W_ShaderEditor.cpp
