@@ -1,5 +1,6 @@
 #include"GLSLCompiler.h"
 #include<hgl/platform/ExternalModule.h>
+#include<hgl/type/StringList.h>
 
 using namespace hgl;
 using namespace hgl::io;
@@ -23,6 +24,9 @@ namespace glsl_compiler
         const char **       includes        = nullptr;
     };
 
+    UTF8StringList include_list;
+    CompileInfo compile_info;
+
     struct GLSLCompilerInterface
     {
         bool        (*Init)();
@@ -43,6 +47,9 @@ namespace glsl_compiler
 
     bool Init()
     {
+        compile_info.includes=nullptr;
+        compile_info.includes_count=0;
+
         if(gsi)return(true);
 
         constexpr os_char filename[]=OS_TEXT("GLSLCompiler") HGL_PLUGIN_EXTNAME;
@@ -71,7 +78,10 @@ namespace glsl_compiler
     }
 
     void Close()
-    {
+    {        
+        delete[] compile_info.includes;
+        compile_info.includes=nullptr;
+        
         if(gsi)
         {
             gsi->Close();
@@ -85,6 +95,23 @@ namespace glsl_compiler
         }
     }
 
+    void AddGLSLIncludePath(const char *path)
+    {
+        if(include_list.Find(path)==-1)
+            include_list.Add(path);
+    }
+
+    void RebuildGLSLIncludePath()
+    {
+        delete[] compile_info.includes;
+
+        compile_info.includes_count=include_list.GetCount();
+        compile_info.includes=new const char *[compile_info.includes_count];
+
+        for(uint32_t i=0;i<compile_info.includes_count;i++)
+            compile_info.includes[i]=include_list[i].c_str();
+    }
+
     ShaderType GetType (const char *ext_name)
     {
         if(gsi)
@@ -96,7 +123,7 @@ namespace glsl_compiler
     SPVData *   Compile (const uint32_t type,const char *source)
     {
         if(gsi)
-            return gsi->Compile(type,source,nullptr);
+            return gsi->Compile(type,source,&compile_info);
 
         return nullptr;
     }

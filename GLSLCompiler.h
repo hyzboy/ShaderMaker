@@ -59,6 +59,9 @@ namespace glsl_compiler
     bool Init();
     void Close();
 
+    void        AddGLSLIncludePath(const char *);    
+    void        RebuildGLSLIncludePath();
+
     ShaderType  GetType (const char *ext_name);
     
     SPVData *   Compile (const uint32_t type,const char *source);
