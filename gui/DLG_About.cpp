@@ -63,6 +63,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                         "<p>MaterialWriter</p>"
                         "<p>Copyright (C) 2018-2021</p>"
                         "<p>Offical web: <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
+                        "<p>Author email: <a href=\"mailto:hyzboy@gmail.com\">hyzboy@gmail.com</a></p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
 
