@@ -4,6 +4,7 @@
 #include<hgl/type/QTString.h>
 #include"WI_EditorTreeWidgetItem.h"
 #include<QStringList>
+#include<QScrollBar>
 
 using namespace hgl;
 using namespace hgl::filesystem;
@@ -155,5 +156,6 @@ void TPMaterialLibrary::UpdateFileTree()
     file_tree_widget->resizeColumnToContents(1);
 
     file_tree_widget->setMinimumWidth(file_tree_widget->columnWidth(0)+
-                                      file_tree_widget->columnWidth(1));
+                                      file_tree_widget->columnWidth(1)+
+                                      file_tree_widget->verticalScrollBar()->width());
 }
