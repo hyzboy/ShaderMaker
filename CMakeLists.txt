@@ -112,7 +112,12 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/W_MaterialEditor.cpp
                         gui/W_MaterialEditor.h
                         gui/W_XMLShaderEditor.cpp
-                        gui/W_XMLShaderEditor.h)
+                        gui/W_XMLShaderEditor.h
+                        gui/XMLTextEdit.cpp
+                        gui/XMLTextEdit.h
+                        gui/W_XMLEditor.cpp
+                        gui/W_XMLEditor.h
+                        )
 
     SET(MW_DIALOG_FILES gui/DLG_About.cpp
                         gui/DLG_About.h

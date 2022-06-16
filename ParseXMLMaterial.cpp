@@ -4,6 +4,7 @@
 #include<hgl/type/StringList.h>
 #include"ShaderLib.h"
 #include"GLSLCompiler.h"
+#include"gui/ConfigData.h"
 
 namespace shader_lib
 {
@@ -133,6 +134,16 @@ namespace shader_lib
             }
 
             return(nullptr);
+        }
+
+        {
+            const OSString sl_path=GetShaderLibraryPath();
+
+            const AnsiString sl_path_ansi=ToAnsiString(sl_path);
+
+            glsl_compiler::AddGLSLIncludePath(sl_path_ansi.c_str());
+            
+            glsl_compiler::RebuildGLSLIncludePath();
         }
 
         XMLMaterial *xml_material=new XMLMaterial;
