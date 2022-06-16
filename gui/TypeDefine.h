@@ -7,8 +7,6 @@
 
 enum class MaterialFileType
 { 
-    None=0,
-
     Material,
     Vert,
     Tesc,
@@ -25,15 +23,13 @@ enum class MaterialFileType
     Rmiss,
     Rcall,
 
-    END,
+    Unknow,
 
-    ENUM_CLASS_RANGE(None,END)
+    ENUM_CLASS_RANGE(Material,Rcall)
 };
 
 constexpr const char *MaterialFileTypeName[(size_t)MaterialFileType::RANGE_SIZE]=
-{
-    "None",
-    
+{    
     "Material",
     "Vert",
     "Tesc",
@@ -48,7 +44,5 @@ constexpr const char *MaterialFileTypeName[(size_t)MaterialFileType::RANGE_SIZE]
     "Rahit",
     "Rchit",
     "Rmiss",
-    "Rcall",
-    
-    "END"
+    "Rcall"
 };

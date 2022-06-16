@@ -18,7 +18,7 @@ public:
     EditorTreeWidgetItem(QTreeWidgetItem *          parent,
                          const QStringList &        string_list,
                          const FileInfo *           fi          =nullptr,
-                         const MaterialFileType &   t           =MaterialFileType::None):
+                         const MaterialFileType &   t           =MaterialFileType::Unknow):
         QTreeWidgetItem(parent,string_list)
     {
         if(fi)

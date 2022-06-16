@@ -42,8 +42,8 @@ private:
     void OnGeometryBrowserClicked();
     void OnFragmentBrowserClicked();
 
-private:    
-        
+private:
+
     void OnOKClicked();
     void OnCancelClicked();
 

@@ -30,7 +30,6 @@ TPShaderFile::TPShaderFile()
 
     //右侧，编辑区
     {
-        
         editor_tab_widget=new QTabWidget(splitter);
         editor_tab_widget->resize(QSize(width()*0.8,height()));
         editor_tab_widget->setTabsClosable(true);

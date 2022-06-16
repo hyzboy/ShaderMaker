@@ -8,14 +8,22 @@
 using namespace hgl;
 using namespace hgl::filesystem;
 
-constexpr float MLIColor[(size_t)MaterialFileType::RANGE_SIZE][3]=
+constexpr QRgb MLIColor[(size_t)MaterialFileType::RANGE_SIZE]=
 {
-    {0,0,0},
+    0xA149FA,       //Material
     
-    {64,64,255},
-    {64,128,128},
-    {255,64,64},
-    {128,128,64}
+    0xF87474,       //Vertex
+    0x4CACBC,       //TessControl
+    0x6CC4A1,       //TessEval
+    0xFFB562,       //Geometry
+    0x3AB0FF,       //Fragment
+
+    0x635666,       //Compute
+
+    0x93B23B,       //Mesh
+    0xC7D36F,       //Task
+
+    0,0,0,0,0,0
 };
 
 EditorTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name,const MaterialFileType &type,const QString &type_name,const FileInfo *fi)
@@ -30,24 +38,17 @@ EditorTreeWidgetItem *CreateFileItem(QTreeWidgetItem *parent,const QString &name
 
     if(RangeCheck(type))
     {
-        color.setRgbF(MLIColor[(size_t)type][0]/255.0f,
-                      MLIColor[(size_t)type][1]/255.0f,
-                      MLIColor[(size_t)type][2]/255.0f);
+        color.setRgb(MLIColor[(size_t)type]);
     }
     else
     {
-        color=item->foreground(0).color();  //qt6
-        //color=item->textColor(0);         //qt5
+        color=item->foreground(0).color();
     }
     
+    QBrush brush(color);
+    
     for(int i=0;i<item->columnCount();i++)
-    {
-        QBrush brush=item->foreground(i);
-        brush.setColor(color);
-        item->setForeground(0,brush);
-        
-        //item->setTextColor(i,color);      //qt5
-    }
+        item->setForeground(i,brush);
 
     return item;
 }
