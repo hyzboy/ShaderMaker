@@ -22,6 +22,8 @@ void MainWindow::InitMenu()
         {
             QMenu *create_shader_menu=create_menu->addMenu(tr("Create Shader"));
             
+            create_shader_menu->addAction(tr("Create Common Shader"                 ),this,&MainWindow::OnCreateCommonShader);
+            create_shader_menu->addSeparator();
             create_shader_menu->addAction(tr("Create Vertex Shader"                 ),this,&MainWindow::OnCreateVertexShader);
             create_shader_menu->addAction(tr("Create Tessellation Control Shader"   ),this,&MainWindow::OnCreateTessControlShader);
             create_shader_menu->addAction(tr("Create Tessellation Evaluation Shader"),this,&MainWindow::OnCreateTessEvalShader);
@@ -60,6 +62,8 @@ void MainWindow::OnConfig()
     dlg->show();
 }
 
+void MainWindow::OnCreateCommonShader()
+{}
 void MainWindow::OnCreateVertexShader()
 {}
 void MainWindow::OnCreateTessControlShader()

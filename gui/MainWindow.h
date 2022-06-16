@@ -18,6 +18,7 @@ private:    //menu
 
     void OnConfig();
     
+    void OnCreateCommonShader();
     void OnCreateVertexShader();
     void OnCreateTessControlShader();
     void OnCreateTessEvalShader();
