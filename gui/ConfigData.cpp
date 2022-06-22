@@ -6,6 +6,8 @@
 #include<hgl/io/TextOutputStream.h>
 #include<QMessageBox>
 #include<hgl/util/json/JsonTool.h>
+#include<QApplication>
+#include<QStyle>
 
 using namespace hgl;
 using namespace hgl::io;
@@ -114,6 +116,19 @@ bool LoadConfig()
 
             #undef PARSE_JSON_STR
 
+            //ui
+            if(root.isMember("ui"))
+            {
+                const Json::Value &ui_root=root["ui"];
+
+                if(ui_root.isMember("style"))
+                {
+                    const std::string style=ui_root["style"].asString();
+
+                    QApplication::setStyle(QString::fromStdString(style));
+                }
+            }
+
             return(true);
         }
 
@@ -156,6 +171,15 @@ void SaveConfigData()
     }
 
     #undef SET_JSON_STR
+
+    //ui
+    {
+        Json::Value ui_root;
+
+        ui_root["style"]=QApplication::style()->objectName().toStdString();
+
+        root["ui"]=ui_root;
+    }
     
     OSString error_info;
 

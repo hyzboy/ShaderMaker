@@ -12,15 +12,6 @@
 using namespace hgl;
 using namespace hgl::filesystem;
 
-void SetShaderLibraryPath(const OSString &path);
-void SetMaterialSourcePath(const OSString &path);
-void SetMaterialOutputPath(const OSString &path);
-
-void SetUIFont(const QFont &fnt);
-void SetCodeFont(const QFont &fnt);
-
-void SaveConfigData();
-
 class BrowserButton:public QPushButton
 {
 private:

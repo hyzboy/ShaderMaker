@@ -1,6 +1,7 @@
 #include"MainWindow.h"
 #include"DLG_About.h"
 #include"DLG_Config.h"
+#include"DLG_GUIStyle.h"
 #include"DLG_CreateMaterial.h"
 #include<QMenuBar>
 #include<QApplication>
@@ -10,10 +11,13 @@ void MainWindow::InitMenu()
 {
     QMenuBar *menu_bar=menuBar();
 
-    {
-        //QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
+    menu_bar->setStyle(QApplication::style());
 
-        menu_bar->addAction(tr("&Config"),this,&MainWindow::OnConfig);
+    {
+        QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
+
+        setup_menu->addAction(tr("&Config"),this,&MainWindow::OnConfig);
+        setup_menu->addAction(tr("&Style"),this,&MainWindow::OnStyle);
     }
 
     {
@@ -59,6 +63,13 @@ void MainWindow::OnConfig()
 {
     DLGConfig *dlg=new DLGConfig();
     
+    dlg->show();
+}
+
+void MainWindow::OnStyle()
+{
+    DLGGUIStyle *dlg=new DLGGUIStyle();
+
     dlg->show();
 }
 

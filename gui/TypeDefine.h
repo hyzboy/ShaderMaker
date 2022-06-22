@@ -29,7 +29,7 @@ enum class MaterialFileType
 };
 
 constexpr const char *MaterialFileTypeName[(size_t)MaterialFileType::RANGE_SIZE]=
-{    
+{
     "Material",
     "Vert",
     "Tesc",

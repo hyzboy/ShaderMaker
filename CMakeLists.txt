@@ -123,6 +123,8 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/DLG_About.h
                         gui/DLG_Config.cpp
                         gui/DLG_Config.h
+                        gui/DLG_GUIStyle.cpp
+                        gui/DLG_GUIStyle.h
                         gui/DLG_CreateMaterial.cpp
                         gui/DLG_CreateMaterial.h)
 

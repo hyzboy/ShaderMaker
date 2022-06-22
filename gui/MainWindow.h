@@ -17,6 +17,7 @@ private:    //menu
     void OnAbout();
 
     void OnConfig();
+    void OnStyle();
     
     void OnCreateCommonShader();
     void OnCreateVertexShader();
