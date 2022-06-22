@@ -233,7 +233,7 @@ namespace shader_lib
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))
                 {
-                    //front+=U8_TEXT(",row_major) uniform");                    
+                    //front+=U8_TEXT(",row_major) uniform");
                     front+=U8_TEXT(",std140) uniform");
                     shader_lib::AddStruct(shader_text,front,(*ubo)->type_name,(*ubo)->value_name);
                 }

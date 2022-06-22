@@ -17,7 +17,8 @@ void MainWindow::InitMenu()
         QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
 
         setup_menu->addAction(tr("&Config"),this,&MainWindow::OnConfig);
-        setup_menu->addAction(tr("&Style"),this,&MainWindow::OnStyle);
+        setup_menu->addSeparator();
+        setup_menu->addAction(tr("Set UI &Style"),this,&MainWindow::OnStyle);
     }
 
     {

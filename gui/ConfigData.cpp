@@ -17,16 +17,19 @@ namespace
 {
     OSString cfg_filename;
 
-    OSString shader_library_path;
-    OSString material_source_path;
-    OSString material_output_path;
+    struct
+    {
+        OSString library;
+        OSString source;
+        OSString output;
+    }path_config;
 
     QFont ui_fnt,code_fnt;
 }//namespace
 
-const OSString &GetShaderLibraryPath(){return shader_library_path;}
-const OSString &GetMaterialSourcePath(){return material_source_path;}
-const OSString &GetMaterialOutputPath(){return material_output_path;}
+const OSString &GetShaderLibraryPath (){return path_config.library;}
+const OSString &GetMaterialSourcePath(){return path_config.source;}
+const OSString &GetMaterialOutputPath(){return path_config.output;}
 
 const QFont &GetUIFont()
 {
@@ -38,9 +41,9 @@ const QFont &GetCodeFont()
     return code_fnt;
 }
 
-void SetShaderLibraryPath(const OSString &path){shader_library_path=FixFilename(path);}
-void SetMaterialSourcePath(const OSString &path){material_source_path=FixFilename(path);}
-void SetMaterialOutputPath(const OSString &path){material_output_path=FixFilename(path);}
+void SetShaderLibraryPath (const OSString &path){path_config.library=FixFilename(path);}
+void SetMaterialSourcePath(const OSString &path){path_config.source =FixFilename(path);}
+void SetMaterialOutputPath(const OSString &path){path_config.output =FixFilename(path);}
 
 void SetUIFont(const QFont &fnt)
 {
@@ -86,11 +89,18 @@ bool LoadConfig()
 
         if(LoadJson(root,cfg_filename,error_info))
         {
-            #define PARSE_JSON_STR(name)    if(root.isMember(#name))name=FixFilename(ToOSString(root[#name].asCString()));
+            if(root.isMember("path"))
+            {
+                const Json::Value &path_root=root["path"];
 
-            PARSE_JSON_STR(shader_library_path  )
-            PARSE_JSON_STR(material_source_path )
-            PARSE_JSON_STR(material_output_path )
+            #define PARSE_JSON_STR(name)    if(path_root.isMember(#name))path_config.name=FixFilename(ToOSString(path_root[#name].asCString()));
+
+                PARSE_JSON_STR(library)
+                PARSE_JSON_STR(source)
+                PARSE_JSON_STR(output)
+
+            #undef PARSE_JSON_STR
+            }
             
             //font
             if(root.isMember("font"))
@@ -114,7 +124,6 @@ bool LoadConfig()
             code_fnt.setFixedPitch(true);
             code_fnt.setStyleHint(QFont::StyleHint::Monospace);
 
-            #undef PARSE_JSON_STR
 
             //ui
             if(root.isMember("ui"))
@@ -154,11 +163,20 @@ void SaveConfigData()
 
     Json::Value root;
 
-    #define SET_JSON_STR(name)  root[#name]=Json::Value(ToUTF8String(name));
+    //path
+    {
+        Json::Value path_root;
 
-    SET_JSON_STR(shader_library_path)
-    SET_JSON_STR(material_source_path)
-    SET_JSON_STR(material_output_path)
+        #define SET_JSON_STR(name)  path_root[#name]=Json::Value(ToUTF8String(path_config.name));
+
+        SET_JSON_STR(library)
+        SET_JSON_STR(source)
+        SET_JSON_STR(output)
+
+        #undef SET_JSON_STR
+
+        root["path"]=path_root;
+    }
     
     //font
     {
@@ -169,8 +187,6 @@ void SaveConfigData()
 
         root["font"]=font_root;
     }
-
-    #undef SET_JSON_STR
 
     //ui
     {
