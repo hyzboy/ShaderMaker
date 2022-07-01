@@ -22,6 +22,15 @@ private:
     void UpdateFileTree();
     void OnFileChanged(QTreeWidgetItem *,int);
 
+    QMenu *popup_menu;
+
+    void CreatePopupMenu();
+    void OnPopupMenu(const QPoint &);
+
+    void OnNew();
+    void OnRename();
+    void OnDelete();
+
 private:
 
     QTabWidget *editor_tab_widget;

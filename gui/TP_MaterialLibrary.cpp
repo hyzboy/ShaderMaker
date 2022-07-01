@@ -25,6 +25,8 @@ TPMaterialLibrary::TPMaterialLibrary()
 
         UpdateFileTree();
 
+        //file_tree_widget->menu
+
         connect(file_tree_widget,&QTreeWidget::itemDoubleClicked,this,&TPMaterialLibrary::OnFileChanged);
     }
 

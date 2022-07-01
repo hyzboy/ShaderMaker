@@ -61,9 +61,9 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     about_text->setFrameShape(QFrame::NoFrame);
     about_text->setHtml("<html><body>"
                         "<p>MaterialWriter</p>"
-                        "<p>Copyright (C) 2018-2021</p>"
-                        "<p>Offical web: <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
-                        "<p>Author email: <a href=\"mailto:hyzboy@gmail.com\">hyzboy@gmail.com</a></p>"
+                        "<p>Copyright (C) 2018 - 2022</p>"
+                        "<p>Offical Web: <a href=\"" HGL_OFFICAL_WEB_URL "\">" HGL_OFFICAL_WEB "</a></p>"
+                        "<p>Author E-Mail: <a href=\"mailto:hyzboy@gmail.com\">hyzboy@gmail.com</a></p>"
                         "</body></html>");
     tab->addTab(about_text,tr("About"));
 
@@ -134,7 +134,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
 DLGAbout::DLGAbout()
 {
     setWindowTitle(tr("About"));
-    resize(640,480);
+    resize(720,480);
 
     QVBoxLayout* aboutLayout = new QVBoxLayout(this);
 

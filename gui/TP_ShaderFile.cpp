@@ -25,7 +25,12 @@ TPShaderFile::TPShaderFile()
 
         UpdateFileTree();
 
+        CreatePopupMenu();
+
+        file_tree_widget->setContextMenuPolicy(Qt::CustomContextMenu);
+
         connect(file_tree_widget,&QTreeWidget::itemDoubleClicked,this,&TPShaderFile::OnFileChanged);
+        connect(file_tree_widget,&QTreeWidget::customContextMenuRequested,this,&TPShaderFile::OnPopupMenu);
     }
 
     //右侧，编辑区

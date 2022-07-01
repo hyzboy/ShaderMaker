@@ -22,6 +22,8 @@ namespace glsl_compiler
 
         uint32_t            includes_count  = 0;
         const char **       includes        = nullptr;
+
+        const char *        preamble        = nullptr;
     };
 
     UTF8StringList include_list;
