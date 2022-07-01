@@ -28,6 +28,7 @@ private:
     void OnPopupMenu(const QPoint &);
 
     void OnNew();
+    void OnNewFolder();
     void OnRename();
     void OnDelete();
 
