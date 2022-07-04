@@ -126,7 +126,9 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/DLG_GUIStyle.cpp
                         gui/DLG_GUIStyle.h
                         gui/DLG_CreateMaterial.cpp
-                        gui/DLG_CreateMaterial.h)
+                        gui/DLG_CreateMaterial.h
+                        gui/DLG_New.cpp
+                        gui/DLG_New.h)
 
     SET(MW_MAIN_FILES   gui/MaterialWriter.cpp
                         gui/MaterialWriter.qrc

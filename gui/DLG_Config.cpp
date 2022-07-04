@@ -121,13 +121,13 @@ DLGConfig::DLGConfig()
         //确定、取消按钮
         {
             QPushButton *ok_button=new QPushButton(button_widget);
-            ok_button->setText("OK");
+            ok_button->setText(tr("OK"));
             connect(ok_button,&QPushButton::clicked,this,&DLGConfig::OnOKClicked);
 
             button_layout->addWidget(ok_button,0,Qt::AlignRight);
 
             QPushButton *cancel_button=new QPushButton(button_widget);
-            cancel_button->setText("Cancel");
+            cancel_button->setText(tr("Cancel"));
             connect(cancel_button,&QPushButton::clicked,this,&DLGConfig::OnCancelClicked);
             
             button_layout->addWidget(cancel_button,0,Qt::AlignLeft);
