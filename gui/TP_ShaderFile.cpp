@@ -29,7 +29,8 @@ TPShaderFile::TPShaderFile()
 
         file_tree_widget->setContextMenuPolicy(Qt::CustomContextMenu);
 
-        connect(file_tree_widget,&QTreeWidget::itemDoubleClicked,this,&TPShaderFile::OnFileChanged);
+        connect(file_tree_widget,&QTreeWidget::itemPressed,this,&TPShaderFile::OnItemChange);
+        connect(file_tree_widget,&QTreeWidget::itemDoubleClicked,this,&TPShaderFile::OnFileOpenEditor);
         connect(file_tree_widget,&QTreeWidget::customContextMenuRequested,this,&TPShaderFile::OnPopupMenu);
     }
 
@@ -46,10 +47,15 @@ TPShaderFile::TPShaderFile()
     layout->addWidget(splitter);
 }
 
-void TPShaderFile::OnFileChanged(QTreeWidgetItem *item,int)
+void TPShaderFile::OnItemChange(QTreeWidgetItem *item,int)
 {
-    if(current_item==item)return;
-    
+    EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
+
+    current_item=w;
+}
+
+void TPShaderFile::OnFileOpenEditor(QTreeWidgetItem *item,int)
+{
     EditorTreeWidgetItem *w=dynamic_cast<EditorTreeWidgetItem *>(item);
 
     if(w->isFolder())

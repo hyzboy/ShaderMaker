@@ -3,6 +3,7 @@
 #include<QWidget>
 #include<QTreeWidget>
 #include"GLSLTextEdit.h"
+#include"WI_EditorTreeWidgetItem.h"
 
 enum class ShaderFileColumn
 {
@@ -17,12 +18,13 @@ class TPShaderFile:public QWidget
 private:
     
     QTreeWidget *file_tree_widget;
-    QTreeWidgetItem *current_item;
+    EditorTreeWidgetItem *current_item;
 
     void UpdateFileTree();
-    void OnFileChanged(QTreeWidgetItem *,int);
+    void OnItemChange(QTreeWidgetItem *,int);
+    void OnFileOpenEditor(QTreeWidgetItem *,int);
 
-    QMenu *popup_menu;
+    QMenu *popup_menu_file,*popup_menu_folder;
 
     void CreatePopupMenu();
     void OnPopupMenu(const QPoint &);

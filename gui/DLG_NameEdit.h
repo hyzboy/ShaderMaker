@@ -4,7 +4,7 @@
 #include<QLabel>
 #include<QLineEdit>
 
-class DLGNew:public QDialog
+class DLGNameEdit:public QDialog
 {
     Q_OBJECT
 
@@ -23,8 +23,8 @@ private:
 
 public:
 
-    DLGNew(const QString &,const QString &);
-    virtual ~DLGNew()=default;
+    DLGNameEdit(const QString &,const QString &);
+    virtual ~DLGNameEdit()=default;
 
     virtual void OnOKClicked()=0;
-};//class DLGNew:public QDialog
+};//class DLGNameEdit:public QDialog

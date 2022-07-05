@@ -1,19 +1,19 @@
-#include"DLG_New.h"
+#include"DLG_NameEdit.h"
 #include<QVBoxLayout>
 #include<QPushButton>
 
-DLGNew::DLGNew(const QString &tn,const QString &str)
+DLGNameEdit::DLGNameEdit(const QString &tn,const QString &str)
 {
     result=false;
     type_name=tn;
 
     setModal(true);
-    setWindowTitle(tr("New..."));
+//    setWindowTitle(tr("New..."));
 
     QVBoxLayout *layout=new QVBoxLayout(this);
 
     {
-        QLabel *lab=new QLabel(tr("Please enter a name for the new ")+type_name,this);
+        QLabel *lab=new QLabel(tr("Please enter a name for the ")+type_name,this);
 
         lab->setAlignment(Qt::AlignLeft);
 
@@ -47,13 +47,13 @@ DLGNew::DLGNew(const QString &tn,const QString &str)
         {
             QPushButton *ok_button=new QPushButton(button_widget);
             ok_button->setText(tr("OK"));
-            connect(ok_button,&QPushButton::clicked,this,&DLGNew::OnOKClicked);
+            connect(ok_button,&QPushButton::clicked,this,&DLGNameEdit::OnOKClicked);
 
             button_layout->addWidget(ok_button,0,Qt::AlignRight);
 
             QPushButton *cancel_button=new QPushButton(button_widget);
             cancel_button->setText(tr("Cancel"));
-            connect(cancel_button,&QPushButton::clicked,this,&DLGNew::OnCancelClicked);
+            connect(cancel_button,&QPushButton::clicked,this,&DLGNameEdit::OnCancelClicked);
             
             button_layout->addWidget(cancel_button,0,Qt::AlignLeft);
         }
@@ -64,7 +64,7 @@ DLGNew::DLGNew(const QString &tn,const QString &str)
     resize(layout->sizeHint());
 }
 
-void DLGNew::OnCancelClicked()
+void DLGNameEdit::OnCancelClicked()
 {
     close();
 }
