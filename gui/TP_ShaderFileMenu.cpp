@@ -1,36 +1,73 @@
 #include"TP_ShaderFile.h"
 #include<QMenu>
-#include"DLG_New.h"
+#include<hgl/qt/dialog/NameEdit.h>
 #include<hgl/filesystem/FileSystem.h>
+#include<hgl/type/QTString.h>
 
 using namespace hgl;
+using namespace hgl::qt;
 
-class DLGNewShader:public DLGNameEdit
+class DLGNewFile:public dialog::NameEdit
 {
-    OSString base_path;
+    EditorTreeWidgetItem *tree_item;
 
 public:
 
-    DLGNewShader(const OSString &path):DLGNameEdit("shader",".glsl")
+    DLGNewFile(EditorTreeWidgetItem *item,const QString &file_type_name,const QString &default_name)
+        :dialog::NameEdit("Please enter a name for the "+file_type_name,default_name)
     {
-        base_path=path;
+        tree_item=item;
     }
 
-    ~DLGNewShader()=default;
+    ~DLGNewFile()=default;
 
-    void OnOKClicked() override
+    bool OnNameCheck(QString &err_text) override
     {
-        close();
+        const OSString &filename=ToOSString(name_edit->text());
+        const OSString &fullname=filesystem::MergeFilename(tree_item->GetFilename(),filename);
+
+        if(filesystem::FileExist(fullname))
+        {
+            err_text="the file\n\""+ToQString(fullname)+"\"\nalready exists, please input a new name.";
+            return(false);
+        }
+
+        const UTF8String str="// glsl: "+to_u8(fullname)+"\n";
+
+        filesystem::SaveMemoryToFile(fullname,str.c_str(),str.Length());
+
+        {
+            filesystem::FileInfo fi;
+            filesystem::GetFileInfo(fullname,fi);
+            
+            const OSString s_fn=ClipFileMainname(filename);
+
+            hgl::strcpy(fi.name,sizeof(fi.name)/sizeof(os_char),filename.c_str());
+            hgl::strcpy(fi.fullname,sizeof(fi.fullname)/sizeof(os_char),fullname.c_str());
+
+            tree_item->addChild(new EditorTreeWidgetItem(tree_item,QStringList(ToQString(s_fn)),&fi));
+        }
+
+        return(true);
     }
 };
 
-class DLGRename:public DLGNameEdit
+class DLGNewGLSL:public DLGNewFile
+{
+public:
+
+    DLGNewGLSL(EditorTreeWidgetItem *tree_item):DLGNewFile(tree_item,"GLSL",".glsl")
+    {
+    }
+};
+
+class DLGRename:public dialog::NameEdit
 {
     OSString origin_name;
 
 public:
 
-    DLGRename(const OSString &name):DLGNameEdit("file",name)
+    DLGRename(const OSString &name):dialog::NameEdit("file",ToQString(name))
     {
         origin_name=name;
     }
@@ -52,7 +89,7 @@ void TPShaderFile::CreatePopupMenu()
 
     popup_menu_folder=new QMenu(this);
 
-    popup_menu_folder->addAction(tr("&New shader"),this,&TPShaderFile::OnNew);
+    popup_menu_folder->addAction(tr("&New shader"),this,&TPShaderFile::OnNewGLSL);
     popup_menu_folder->addAction(tr("New &Folder"),this,&TPShaderFile::OnNewFolder);
     popup_menu_folder->addSeparator();
     popup_menu_folder->addAction(tr("&Rename"),this,&TPShaderFile::OnRename);
@@ -68,10 +105,13 @@ void TPShaderFile::OnPopupMenu(const QPoint &pos)
     pm->popup(file_tree_widget->viewport()->mapToGlobal(pos));
 }
 
-void TPShaderFile::OnNew()
+void TPShaderFile::OnNewGLSL()
 {
-    DLGNameEdit *dlg=new DLGNewShader(OS_TEXT(""));
+    if(!current_item)return;
+    if(!current_item->isFolder())return;
 
+    DLGNewGLSL *dlg=new DLGNewGLSL(current_item);
+    
     dlg->show();
 }
 

@@ -126,9 +126,7 @@ IF(CM_BUILD_GUI_TOOLS)
                         gui/DLG_GUIStyle.cpp
                         gui/DLG_GUIStyle.h
                         gui/DLG_CreateMaterial.cpp
-                        gui/DLG_CreateMaterial.h
-                        gui/DLG_New.cpp
-                        gui/DLG_New.h)
+                        gui/DLG_CreateMaterial.h)
 
     SET(MW_MAIN_FILES   gui/MaterialWriter.cpp
                         gui/MaterialWriter.qrc
@@ -171,7 +169,7 @@ IF(CM_BUILD_GUI_TOOLS)
                                     ${VK_SHADER_COMMON_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE})
 
-    target_link_libraries(MaterialWriter PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+    target_link_libraries(MaterialWriter PRIVATE CMQT)
     set_target_properties(MaterialWriter PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
 
     shader_maker_project(MaterialWriter)

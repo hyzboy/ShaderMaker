@@ -78,7 +78,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                             "<li> <a href=\"https://www.qt.io/\">Qt " QT_VERSION_STR "</a></li>\n"
                             "<li> <a href=\"https://github.com/libexpat/libexpat\">libexpat "+expat_ver+"</a></li>\n"
                             "<li> <a href=\"https://github.com/open-source-parsers/jsoncpp\">jsoncpp "+json_ver+"</a></li>\n"
-                            "<li> <a href=\"https://github.com/hyzboy/GLSLCompiler\">GLSLCompiler v1.02</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/GLSLCompiler\">GLSLCompiler v1.04</a></li>\n"
                             "<ul>"
                                 "<li> <a href=\"https://github.com/KhronosGroup/glslang\">glslang</a></li>\n"
                                 "<li> <a href=\"https://github.com/KhronosGroup/SPIRV-Cross\">SPIRV-Cross</a></li>\n"
@@ -88,6 +88,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                             "<li> <a href=\"https://github.com/hyzboy/CMUtil\">CMUtil</a></li>\n"
                             "<li> <a href=\"https://github.com/hyzboy/CMSceneGraph\">CMSceneGraph</a></li>\n"
                             "<li> <a href=\"https://github.com/hyzboy/CMPlatform\">CMPlatform</a></li>\n"
+                            "<li> <a href=\"https://github.com/hyzboy/CMQT\">CMQT</a></li>\n"
                         "</ul></body></html>");
     tab->addTab(lib_text,tr("Libraries"));
 
