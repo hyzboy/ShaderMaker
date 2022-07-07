@@ -63,8 +63,11 @@ void LoadFontJson(QFont &fnt,const Json::Value &font_root)
     if(!font_root.isMember("size"))
         return;
 
-    fnt.setFamily(QString::fromStdString(font_root["name"].asString()));
-    fnt.setPointSize(font_root["size"].asUInt());
+    const std::string fn=font_root["name"].asString();
+    const int fs=font_root["size"].asInt();
+
+    fnt.setFamily(QString::fromStdString(fn));
+    fnt.setPointSize(fs);
 }
 
 bool LoadConfig()
@@ -167,7 +170,7 @@ void SaveConfigData()
     {
         Json::Value path_root;
 
-        #define SET_JSON_STR(name)  path_root[#name]=Json::Value(ToUTF8String(path_config.name));
+        #define SET_JSON_STR(name)  if(!path_config.name.IsEmpty())path_root[#name]=Json::Value(ToUTF8String(path_config.name));
 
         SET_JSON_STR(library)
         SET_JSON_STR(source)

@@ -190,7 +190,6 @@ void DLGConfig::OnUIFontClicked()
     if(ok)
     {
         SetUIFont(font);
-        SaveConfigData();
         UpdateFontButtonText(ui_font_button,"UI",font);
     }
 }
@@ -205,8 +204,7 @@ void DLGConfig::OnCodeFontClicked()
 
     if(ok)
     {
-        SetCodeFont(font);
-        SaveConfigData();        
+        SetCodeFont(font);  
         UpdateFontButtonText(code_font_button,"Code",font);
     }
 }
