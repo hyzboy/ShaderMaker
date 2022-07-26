@@ -78,6 +78,8 @@ SOURCE_GROUP("Shader Lib\\GLSL Parse" FILES ${GLSLParse_SOURCE})
 SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
                                 ParseXMLShader.cpp
                                 ParseXMLMaterial.cpp
+                                ParseMaterial.cpp
+                                ParseMaterialShader.cpp
                                 SaveMaterial.cpp)
 
 add_executable(MaterialCompiler MaterialCompiler.cpp
