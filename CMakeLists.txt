@@ -69,7 +69,8 @@ SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
                             SLP_Root.cpp
                             SLPF_RawGLSL.cpp
                             SLPF_XmlGLSL.cpp
-                            SLPF_Varying.cpp)
+                            SLPF_Varying.cpp
+                            LoadVarying.cpp)
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
