@@ -13,6 +13,11 @@
 
 using namespace hgl;
 
+namespace shader_lib
+{
+    bool LoadAllVarying(const OSString &path);
+}//namespace shader_lib
+
 int main(int argc,char **argv)
 {
     QApplication qt_app(argc, argv);
@@ -37,6 +42,12 @@ int main(int argc,char **argv)
     {
         os_err<<OS_TEXT("Load ShaderLib failed!")<<std::endl;
         return(-2);
+    }
+
+    {
+        OSString varying_path=filesystem::MergeFilename(shader_lib_path,OS_TEXT("varying"));
+
+        shader_lib::LoadAllVarying(varying_path);
     }
 
     qt_app.setAttribute(Qt::AA_UseDesktopOpenGL);

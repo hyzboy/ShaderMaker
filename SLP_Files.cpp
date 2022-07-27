@@ -4,7 +4,7 @@
 
 namespace shader_lib
 {
-    bool LoadVarying(const OSString &);
+    //bool LoadVarying(const OSString &);
     bool LoadXmlGLSL(const OSString &);
     bool LoadRawGLSL(const OSString &);
 
@@ -51,7 +51,9 @@ namespace shader_lib
                 os_out<<OS_TEXT("    XML file: ")<<fullname.c_str()<<std::endl;
 
                 if(type==FileType::Varying)
-                    LoadVarying(fullname);
+                {
+                 //   LoadVarying(fullname);
+                }
                 else
                 if(type==FileType::GLSL)
                     LoadXmlGLSL(fullname);
