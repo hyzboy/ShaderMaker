@@ -3,6 +3,7 @@
 #include<hgl/type/StringList.h>
 #include"ShaderLib.h"
 #include"GLSLTokenizer.h"
+#include"gui/ConfigData.h"
 
 namespace shader_lib
 {
@@ -132,7 +133,7 @@ namespace shader_lib
         }
     }//namespace
 
-    bool LoadVaryingFile(const hgl::OSString &filename)
+    VaryingConfig *LoadVaryingFile(const hgl::OSString &filename)
     {
         UTF8StringList sl;
 
@@ -140,7 +141,8 @@ namespace shader_lib
 
         LOG_INFO(OS_TEXT("Loading varying file: ")+filename);
 
-        if(line_count<=0)return(false);
+        if(line_count<=0)
+            return(nullptr);
 
         VaryingConfig *vc=new VaryingConfig;
 
@@ -155,18 +157,10 @@ namespace shader_lib
         if(vc->GetCount()<=0)
         {
             delete vc;
-            return(false);
+            return(nullptr);
         }
 
-        {
-            const UTF8String mfn=ToUTF8String(filesystem::ClipFileMainname(filename));
-
-            varying_list.Add(mfn);
-
-            varying_config_list.Add(mfn,vc);
-
-            return(true);
-        }
+        return vc;
     }
     
     namespace
@@ -180,18 +174,52 @@ namespace shader_lib
 
             void ProcFile(struct EnumFileConfig *,FileInfo &fi) override
             {
-                const OSString &ext_name=ClipFileExtName(OSString(fi.name),false);
+                const OSString fn=fi.name;
+
+                const OSString &ext_name=ClipFileExtName(fn,false);
 
                 if(ext_name.CaseComp(OS_TEXT("varying"))==0)
-                    LoadVaryingFile(fi.fullname);
+                {
+                    VaryingConfig *vc=LoadVaryingFile(fi.fullname);
+                    
+                    if(vc)
+                    {
+                        const UTF8String mfn=ToUTF8String(filesystem::ClipFileMainname(fn));
+
+                        varying_list.Add(mfn);
+                        varying_config_list.Add(mfn,vc);
+                    }
+                }
             }
         };//class EnumVaryingFile:public filesystem::EnumFile
     }//namespace
 
-    bool LoadAllVarying(const OSString &path)
+    bool ReloadVarying(const OSString &name)
+    {        
+        OSString varying_path=GetVaryingLibraryPath();
+
+        OSString filename=filesystem::MergeFilename(varying_path,name)+OS_TEXT(".varying");
+
+        VaryingConfig *vc=LoadVaryingFile(filename);
+
+        if(!vc)
+            return(false);
+        
+        const UTF8String mfn=ToUTF8String(name);
+
+        if(varying_list.Find(mfn)==-1)varying_list.Add(mfn);
+
+        varying_config_list.Update(mfn,vc);
+
+        return(true);
+    }
+
+    bool LoadAllVarying()
     {
         varying_list.Clear();
         varying_config_list.Clear();
+
+        const OSString path=GetVaryingLibraryPath();
 
         if(!filesystem::IsDirectory(path))
             return(false);
