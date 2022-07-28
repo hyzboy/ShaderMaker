@@ -10,6 +10,7 @@ bool LoadConfig();
 const OSString &GetShaderLibraryPath();
 const OSString &GetMaterialSourcePath();
 const OSString &GetMaterialOutputPath();
+const OSString &GetVaryingLibraryPath();
 
 const QFont &GetUIFont();
 const QFont &GetCodeFont();

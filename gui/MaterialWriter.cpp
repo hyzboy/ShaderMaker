@@ -15,7 +15,7 @@ using namespace hgl;
 
 namespace shader_lib
 {
-    bool LoadAllVarying(const OSString &path);
+    bool LoadAllVarying();
 }//namespace shader_lib
 
 int main(int argc,char **argv)
@@ -44,11 +44,7 @@ int main(int argc,char **argv)
         return(-2);
     }
 
-    {
-        OSString varying_path=filesystem::MergeFilename(shader_lib_path,OS_TEXT("varying"));
-
-        shader_lib::LoadAllVarying(varying_path);
-    }
+    shader_lib::LoadAllVarying();
 
     qt_app.setAttribute(Qt::AA_UseDesktopOpenGL);
     qt_app.setAttribute(Qt::AA_UseHighDpiPixmaps);

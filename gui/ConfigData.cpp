@@ -22,6 +22,8 @@ namespace
         OSString library;
         OSString source;
         OSString output;
+
+        OSString varying;
     }path_config;
 
     QFont ui_fnt,code_fnt;
@@ -30,6 +32,13 @@ namespace
 const OSString &GetShaderLibraryPath (){return path_config.library;}
 const OSString &GetMaterialSourcePath(){return path_config.source;}
 const OSString &GetMaterialOutputPath(){return path_config.output;}
+const OSString &GetVaryingLibraryPath()
+{
+    if(path_config.varying.IsEmpty())        
+        path_config.varying=filesystem::MergeFilename(path_config.library,OS_TEXT("varying"));
+
+    return path_config.varying;
+}
 
 const QFont &GetUIFont()
 {
@@ -41,7 +50,13 @@ const QFont &GetCodeFont()
     return code_fnt;
 }
 
-void SetShaderLibraryPath (const OSString &path){path_config.library=FixFilename(path);}
+void SetShaderLibraryPath (const OSString &path)
+{
+    path_config.library=FixFilename(path);
+
+    path_config.varying.Clear();
+}
+
 void SetMaterialSourcePath(const OSString &path){path_config.source =FixFilename(path);}
 void SetMaterialOutputPath(const OSString &path){path_config.output =FixFilename(path);}
 
