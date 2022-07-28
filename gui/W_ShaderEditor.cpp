@@ -71,7 +71,7 @@ QWidget *ShaderEditorWidget::InitEditor(QWidget *parent)
     return widget;
 }
 
-ShaderEditorWidget::ShaderEditorWidget(EditorTreeWidgetItem *i):EditorWidget(i)
+ShaderEditorWidget::ShaderEditorWidget(const QString &in,const OSString &fn,const UTF8String &tn):EditorWidget(in,fn,tn)
 {
     QVBoxLayout *layout=new QVBoxLayout(this);
     

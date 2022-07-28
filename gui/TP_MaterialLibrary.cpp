@@ -5,6 +5,7 @@
 #include<hgl/type/StringList.h>
 #include"W_XMLShaderEditor.h"
 #include"W_MaterialEditor.h"
+#include"WI_EditorTreeWidgetItem.h"
 #include"TypeDefine.h"
 
 using namespace hgl;
@@ -54,9 +55,9 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
 
     for(int i=0;i<editor_tab_widget->count();i++)
     {
-        EditorWidget *w=(EditorWidget *)editor_tab_widget->widget(i);
+        EditorWidget *ew=(EditorWidget *)editor_tab_widget->widget(i);
 
-        if(w->GetItem()==item)
+        if(ew->GetFilename()==w->GetFilename())
         {
             editor_tab_widget->setCurrentIndex(i);
             return;
@@ -66,9 +67,9 @@ void TPMaterialLibrary::OnFileChanged(QTreeWidgetItem *item,int)
     QWidget *widget=nullptr;
 
     if(w->type()==MaterialFileType::Material)
-        widget=new MaterialEditorWidget(w);
+        widget=new MaterialEditorWidget(w->GetName(),w->GetFilename());
     else
-        widget=new XMLShaderEditorWidget(w);
+        widget=new XMLShaderEditorWidget(w->GetName(),w->GetFilename());
 
     {
         const int index=editor_tab_widget->addTab(widget,QString(w->GetTypename())+QString(": ")+w->text(0));

@@ -14,10 +14,12 @@ private:
 
 private:
 
-    GLSLTextEdit *glsl_editor;
+    QTabWidget *editor_tab_widget;
+
+    void OnTabCloseRequested(int index);
 
 public:
 
     TPVarying();
-    ~TPVarying();
+    ~TPVarying()=default;
 };

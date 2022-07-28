@@ -46,7 +46,7 @@ private:    //日志区
 
 public:
 
-    XMLShaderEditorWidget(EditorTreeWidgetItem *);
+    XMLShaderEditorWidget(const QString &,const OSString &);
     virtual ~XMLShaderEditorWidget()=default;
 
     bool OnCloseRequested() override;

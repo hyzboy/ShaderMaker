@@ -33,7 +33,7 @@ private:    //ÈÕÖ¾Çø
 
 public:
 
-    XMLEditorWidget(EditorTreeWidgetItem *);
+    XMLEditorWidget(const QString &in,const OSString &fn);
     virtual ~XMLEditorWidget()=default;
 
     bool OnCloseRequested() override;

@@ -64,7 +64,7 @@ QWidget *XMLEditorWidget::InitEditor(QWidget *parent)
     return widget;
 }
 
-XMLEditorWidget::XMLEditorWidget(EditorTreeWidgetItem *i):EditorWidget(i)
+XMLEditorWidget::XMLEditorWidget(const QString &in,const OSString &fn):EditorWidget(in,fn,U8_TEXT("glsl"))
 {
     QVBoxLayout *layout=new QVBoxLayout(this);
     QSplitter *splitter=new QSplitter(Qt::Vertical,this);

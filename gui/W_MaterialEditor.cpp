@@ -72,7 +72,7 @@ QWidget *MaterialEditorWidget::InitEditor(QWidget *parent)
     return widget;
 }
 
-MaterialEditorWidget::MaterialEditorWidget(EditorTreeWidgetItem *i):EditorWidget(i)
+MaterialEditorWidget::MaterialEditorWidget(const QString &in,const OSString &fn):EditorWidget(in,fn,U8_TEXT("Material"))
 {
     QVBoxLayout *layout=new QVBoxLayout(this);
     QSplitter *splitter=new QSplitter(Qt::Vertical,this);

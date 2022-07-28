@@ -4,7 +4,6 @@
 #include"GLSLTextEdit.h"
 #include<QLabel>
 #include<QPushButton>
-#include"WI_EditorTreeWidgetItem.h"
 
 using namespace hgl;
 
@@ -28,7 +27,7 @@ private:    //shader编辑区
 private:    //shader成份预览区
 public:
 
-    ShaderEditorWidget(EditorTreeWidgetItem *);
+    ShaderEditorWidget(const QString &,const OSString &,const UTF8String &);
     virtual ~ShaderEditorWidget()=default;
 
     bool OnCloseRequested() override;

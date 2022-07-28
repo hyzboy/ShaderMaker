@@ -63,16 +63,16 @@ void TPShaderFile::OnFileOpenEditor(QTreeWidgetItem *item,int)
     
     for(int i=0;i<editor_tab_widget->count();i++)
     {
-        EditorWidget *w=(EditorWidget *)editor_tab_widget->widget(i);
+        EditorWidget *ew=(EditorWidget *)editor_tab_widget->widget(i);
 
-        if(w->GetItem()==item)
+        if(ew->GetItemName()==w->GetName())
         {
             editor_tab_widget->setCurrentIndex(i);
             return;
         }
     }
     
-    ShaderEditorWidget *widget=new ShaderEditorWidget(w);
+    ShaderEditorWidget *widget=new ShaderEditorWidget(w->GetName(),w->GetFilename(),U8_TEXT("glsl"));
 
     const int index=editor_tab_widget->addTab(widget,w->GetName());
 

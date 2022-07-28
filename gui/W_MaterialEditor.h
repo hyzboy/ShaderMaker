@@ -38,7 +38,7 @@ private:    //日志区
 
 public:
 
-    MaterialEditorWidget(EditorTreeWidgetItem *);
+    MaterialEditorWidget(const QString &in,const OSString &fn);
     virtual ~MaterialEditorWidget()=default;
 
     bool OnCloseRequested() override;

@@ -2,7 +2,6 @@
 
 #include<QWidget>
 #include<hgl/type/String.h>
-#include"WI_EditorTreeWidgetItem.h"
 
 using namespace hgl;
 
@@ -12,18 +11,23 @@ class EditorWidget:public QWidget
 
 private:
 
-    EditorTreeWidgetItem *item;
+    QString item_name;
+    OSString filename;
+    UTF8String type_name;
 
 public:
 
-    const EditorTreeWidgetItem *GetItem     ()const{return item;}
-    const os_char *             GetFilename ()const{return item->GetFilename();}
+    const QString & GetItemName()const{return item_name;}
+    const OSString &GetFilename()const{return filename;}
+    const UTF8String &GetTypename()const{return type_name;}
 
 public:
 
-    EditorWidget(EditorTreeWidgetItem *i)
+    EditorWidget(const QString &in,const OSString &fn,const UTF8String &tn)
     {
-        item=i;
+        item_name=in;
+        filename=fn;
+        type_name=tn;
     }
 
     virtual ~EditorWidget()=default;

@@ -110,7 +110,7 @@ QWidget *XMLShaderEditorWidget::InitPreview(QWidget *parent)
     return widget;
 }
 
-XMLShaderEditorWidget::XMLShaderEditorWidget(EditorTreeWidgetItem *i):EditorWidget(i)
+XMLShaderEditorWidget::XMLShaderEditorWidget(const QString &in,const OSString &fn):EditorWidget(in,fn,U8_TEXT("glsl"))
 {
     QVBoxLayout *layout=new QVBoxLayout(this);
     QSplitter *splitter=new QSplitter(Qt::Vertical,this);
@@ -270,7 +270,7 @@ void XMLShaderEditorWidget::OnCompile()
     
     log.clear();
     
-    xs->ext_name=ToUTF8String(GetItem()->text(ML_COLUMN_TYPE));
+    xs->ext_name=GetTypename();
 
     {
         shader_lib::MaterialStat ss;
