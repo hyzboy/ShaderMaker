@@ -27,8 +27,8 @@ TPVarying::TPVarying()
 
         connect(list,&QListWidget::itemClicked,this,&TPVarying::OnVaryingClicked);
 
-        list->setMaximumWidth(  list->sizeHintForColumn(0)+
-                                list->verticalScrollBar()->width());
+        list->setFixedWidth(list->sizeHintForColumn(0)+
+                            list->verticalScrollBar()->width());
 
         layout->addWidget(list);
     }
@@ -38,7 +38,6 @@ TPVarying::TPVarying()
         editor_tab_widget=new QTabWidget(this);
         editor_tab_widget->resize(QSize(width()*0.8,height()));
         editor_tab_widget->setTabsClosable(true);
-        editor_tab_widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
         connect(editor_tab_widget,&QTabWidget::tabCloseRequested,this,&TPVarying::OnTabCloseRequested);        
     }
