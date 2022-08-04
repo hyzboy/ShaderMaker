@@ -50,7 +50,7 @@ namespace
         {
             EnumShaderFileConfig *emfc=(EnumShaderFileConfig *)efc;
 
-            const OSString filename=OSString(fi.name);
+            const OSString filename(fi.name);
 
             const OSString ext_name=ClipFileExtName(filename,false);
 
