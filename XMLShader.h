@@ -56,6 +56,14 @@ namespace shader_lib
             type=DescriptorSetsType::Value;
         }
 
+        Uniform(const UTF8String &tn,const UTF8String &vn)
+        {
+            type_name=tn;
+            value_name=vn;
+
+            type=DescriptorSetsTypeFromName(value_name.c_str());
+        }
+
         Uniform(Uniform *u)
         {
             type=u->type;
