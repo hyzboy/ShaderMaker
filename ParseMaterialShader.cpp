@@ -14,10 +14,13 @@ namespace shader_lib
 
         UTF8StringList includes;
         UTF8StringList in,out;
+        UTF8StringList const_values;
         ObjectList<Uniform> ubo;
         ObjectList<Uniform> unifroms;
 
         GeometryAttribute geom;
+
+        UTF8StringList codes;
     };
 
     namespace
@@ -117,9 +120,43 @@ namespace shader_lib
 
             return(true);
         }
+
+        const u8char *shader_value_type_name_list[]=
+        {
+            "bool",
+            "float",
+            "int",
+            "uint",
+            "double",
+
+            "bvec", "vec", "ivec", "uvec", "dvec",
+            "bvec2","vec2","ivec2","uvec2","dvec2",
+            "bvec3","vec3","ivec3","uvec3","dvec3",
+            "bvec4","vec4","ivec4","uvec4","dvec4"
+        };
+
+        constexpr uint shader_value_type_name_count=sizeof(shader_value_type_name_list)/sizeof(const u8char *);
+
+        bool ParseConst(UTF8StringList &const_values,const UTF8String &str)
+        {
+            //example: const float alpha=0;
+
+            UTF8StringList sl;
+            
+            SplitToStringListByChars(sl,str,UTF8String(" =;"));
+
+            if(sl[0]!="const")return(false);
+            
+            if(find_str_array(shader_value_type_name_count,shader_value_type_name_list,sl[1].c_str())==-1)
+                return(false);
+
+            const_values.Add(str.SubString(6));
+
+            return(true);
+        }
     }//namespace
 
-    bool LoadMaterialShader(const ShaderType &type,const OSString &filename,InfoOutput *info_output)
+    MaterialShader *LoadMaterialShader(const ShaderType &type,const OSString &filename,InfoOutput *info_output)
     {
         UTF8StringList sl;
 
@@ -132,7 +169,7 @@ namespace shader_lib
         int line_count=LoadStringListFromTextFile(sl,filename);
 
         if(line_count<=0)
-            return(false);
+            return(nullptr);
 
         for(int i=0;i<line_count;i++)
         {
@@ -161,11 +198,9 @@ namespace shader_lib
                     if(u)
                         ms->ubo.Add(u);
                 }
-                else if(str.Comp("#const ")==0)
-                {
-                }
                 else if(str.Comp("#geometry ")==0)
                 {
+                    ParseGeometry(ms->geom,str);
                 }
             }
             else if(str.Comp("uniform ")==0)
@@ -174,6 +209,14 @@ namespace shader_lib
 
                 if(u)
                     ms->unifroms.Add(u);
+            }
+            else if(str.Comp("const ")==0)
+            {
+                ParseConst(ms->const_values,str);
+            }
+            else
+            {
+                ms->codes.Add(sl[i]);
             }
         }
 
