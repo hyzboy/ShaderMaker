@@ -3,7 +3,8 @@
 #include<QHBoxLayout>
 #include<QVBoxLayout>
 #include<QMessageBox>
-#include<hgl/type/StringList.h>
+#include<hgl/type/LoadStringList.h>
+#include<hgl/type/MergeString.h>
 #include<hgl/type/QTString.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/io/MemoryInputStream.h>
@@ -47,7 +48,7 @@ QWidget *XMLEditorWidget::InitEditor(QWidget *parent)
 
         if(LoadStringListFromTextFile(sl,GetFilename())>0)
         {
-            const UTF8String str=ToString(sl,UTF8String("\n"));
+            const UTF8String str=MergeString(sl,UTF8String("\n"));
 
             xml_editor->setText(ToQString(str));
         }

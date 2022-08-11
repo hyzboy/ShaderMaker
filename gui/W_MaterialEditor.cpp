@@ -4,6 +4,8 @@
 #include<QMessageBox>
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
+#include<hgl/type/LoadStringList.h>
+#include<hgl/type/MergeString.h>
 #include<hgl/filesystem/FileSystem.h>
 #include"QStringInfoOutput.h"
 #include"ConfigData.h"
@@ -55,7 +57,7 @@ QWidget *MaterialEditorWidget::InitEditor(QWidget *parent)
 
         if(LoadStringListFromTextFile(sl,GetFilename())>0)
         {
-            const UTF8String str=ToString(sl,UTF8String("\n"));
+            const UTF8String str=MergeString(sl,UTF8String("\n"));
 
             glsl_editor->setText(ToQString(str));
         }

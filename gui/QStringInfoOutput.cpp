@@ -1,5 +1,5 @@
 #include"QStringInfoOutput.h"
-#include<hgl/type/StringList.h>
+#include<hgl/type/SplitString.h>
 
 class QStringInfoOutput:public InfoOutput
 {

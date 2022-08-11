@@ -1,6 +1,6 @@
 #include<hgl/filesystem/Filesystem.h>
 #include<hgl/filesystem/EnumFile.h>
-#include<hgl/type/StringList.h>
+#include<hgl/type/LoadStringList.h>
 #include"ShaderLib.h"
 #include"GLSLTokenizer.h"
 #include"gui/ConfigData.h"

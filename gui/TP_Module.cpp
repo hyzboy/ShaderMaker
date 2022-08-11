@@ -1,7 +1,7 @@
 #include"TP_Module.h"
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
-#include<hgl/type/StringList.h>
+#include<hgl/type/MergeString.h>
 #include<QVBoxLayout>
 #include<QSplitter>
 #include<QListWidget>
@@ -114,7 +114,7 @@ void TPModule::OnModuleClicked(QListWidgetItem *item)
     for(const hgl::UTF8String *str:sm->struct_list)
         depend_struct_list->addItem(ToQString(*str));
 
-    const UTF8String str=ToString(sm->codes,UTF8String("\n"));
+    const UTF8String str=MergeString(sm->codes,UTF8String("\n"));
 
     glsl_editor->setPlainText(ToQString(str));
 }

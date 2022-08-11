@@ -1,6 +1,7 @@
 #include"XMLShader.h"
 #include"GLSLCompiler.h"
 #include<hgl/filesystem/FileSystem.h>
+#include<hgl/type/MergeString.h>
 
 namespace shader_lib
 {
@@ -21,7 +22,7 @@ namespace shader_lib
 
     bool XMLShader::SetShaderSource(const UTF8StringList &shader_text,InfoOutput *info_output)
     {
-        shader_source=ToString(shader_text,UTF8String(U8_TEXT("\n"),1));
+        shader_source=MergeString(shader_text,UTF8String(U8_TEXT("\n"),1));
 
         glsl_compiler::SPVData *spv=glsl_compiler::Compile(shader_type,shader_source.c_str());
 

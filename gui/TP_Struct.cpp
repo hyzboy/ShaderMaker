@@ -1,7 +1,7 @@
 #include"TP_Struct.h"
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
-#include<hgl/type/StringList.h>
+#include<hgl/type/MergeString.h>
 #include<QVBoxLayout>
 #include<QSplitter>
 #include<QListWidget>
@@ -54,7 +54,7 @@ void TPStruct::OnStructClicked(QListWidgetItem *item)
     if(!shader_lib::AddStruct(sl,U8_TEXT("struct"),ToUTF8String(item->text()),U8_TEXT("")))
         return;
 
-    const UTF8String str=ToString(sl,UTF8String("\n"));
+    const UTF8String str=MergeString(sl,UTF8String("\n"));
 
     glsl_editor->setPlainText(ToQString(str));
 }

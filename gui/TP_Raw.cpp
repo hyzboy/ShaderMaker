@@ -1,7 +1,7 @@
 #include"TP_Raw.h"
 #include"ShaderLib.h"
 #include<hgl/type/QTString.h>
-#include<hgl/type/StringList.h>
+#include<hgl/type/MergeString.h>
 #include<QVBoxLayout>
 #include<QSplitter>
 #include<QListWidget>
@@ -49,7 +49,7 @@ void TPRawGLSL::OnRawGLSLClicked(QListWidgetItem *item)
 
     const UTF8StringList *sl=shader_lib::GetRawModule(ToUTF8String(item->text()));
 
-    const UTF8String str=ToString(*sl,UTF8String("\n"));
+    const UTF8String str=MergeString(*sl,UTF8String("\n"));
 
     glsl_editor->setPlainText(ToQString(str));
 }

@@ -1,4 +1,4 @@
-﻿#include<hgl/type/StringList.h>
+﻿#include<hgl/type/LoadString.h>
 #include"GLSLTokenizer.h"
 #include"ShaderFile.h"
 
