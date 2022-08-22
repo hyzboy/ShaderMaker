@@ -25,8 +25,8 @@ namespace shader_lib
             type=glsl_compiler::GetType(front);
 
             if(type==0)
-                return(false);        
-
+                return(false);
+            
             filename=str.SubString(pos+1);
             return(true);
         }

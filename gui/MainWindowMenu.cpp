@@ -3,15 +3,45 @@
 #include"DLG_Config.h"
 #include"DLG_GUIStyle.h"
 #include"DLG_CreateMaterial.h"
-#include<QMenuBar>
 #include<QApplication>
 #include<QDesktopServices>
+#include<hgl/qt/widgets/TipMenu.h>
 
 void MainWindow::InitMenu()
 {
     QMenuBar *menu_bar=menuBar();
 
     menu_bar->setStyle(QApplication::style());
+
+    {
+        QMenu *file_menu=menu_bar->addMenu(tr("&File"));
+
+        file_menu->addAction(tr("&New Material"),this,&MainWindow::OnNewMaterial);
+        file_menu->addSeparator();
+        file_menu->addAction(tr("&Open Material"),this,&MainWindow::OnOpenMaterial);
+        file_menu->addAction(tr("&Save Material"),this,&MainWindow::OnSaveMaterial);
+        file_menu->addAction(tr("S&ave Material As"),this,&MainWindow::OnSaveMaterialAs);
+        file_menu->addSeparator();
+        file_menu->addAction(tr("&Close"),this,&MainWindow::OnClose);
+        file_menu->addSeparator();
+        file_menu->addAction(tr("&Exit"),this,&MainWindow::OnExit);
+    }
+    
+    {
+        QMenu *library_menu=new qt::TipMenu(tr("&Library"));
+
+        menu_bar->addMenu(library_menu);
+
+        {
+            QAction *qa=library_menu->addAction(tr("&Varying"),this,&MainWindow::OnVaryingLibrary);        
+            qa->setToolTip(tr("show a dialog that it sould show all varying."));
+        }
+        
+        library_menu->addAction(tr("&Shader Module"),this,&MainWindow::OnShaderModuleLibrary);
+
+        library_menu->addSeparator();
+        library_menu->addAction(tr("&Reload"),this,&MainWindow::OnReloadLibrary);
+    }
 
     {
         QMenu *setup_menu=menu_bar->addMenu(tr("&Setup"));
@@ -21,24 +51,6 @@ void MainWindow::InitMenu()
         setup_menu->addAction(tr("Set UI &Style"),this,&MainWindow::OnStyle);
     }
 
-    {
-        QMenu *create_menu=menu_bar->addMenu(tr("Create"));
-
-        {
-            QMenu *create_shader_menu=create_menu->addMenu(tr("Create Shader"));
-            
-            create_shader_menu->addAction(tr("Create Common Shader"                 ),this,&MainWindow::OnCreateCommonShader);
-            create_shader_menu->addSeparator();
-            create_shader_menu->addAction(tr("Create Vertex Shader"                 ),this,&MainWindow::OnCreateVertexShader);
-            create_shader_menu->addAction(tr("Create Tessellation Control Shader"   ),this,&MainWindow::OnCreateTessControlShader);
-            create_shader_menu->addAction(tr("Create Tessellation Evaluation Shader"),this,&MainWindow::OnCreateTessEvalShader);
-            create_shader_menu->addAction(tr("Create Gemoetry Shader"               ),this,&MainWindow::OnCreateGeometryShader);
-            create_shader_menu->addAction(tr("Create Fragment Shader"               ),this,&MainWindow::OnCreateFragmentShader);
-        }
-        
-        create_menu->addAction(tr("Create &Material"),this,&MainWindow::OnCreateMaterial);
-    }
-    
     {
         QMenu *about_menu=menu_bar->addMenu(tr("&About"));
 
@@ -74,22 +86,23 @@ void MainWindow::OnStyle()
     dlg->show();
 }
 
-void MainWindow::OnCreateCommonShader()
-{}
-void MainWindow::OnCreateVertexShader()
-{}
-void MainWindow::OnCreateTessControlShader()
-{}
-void MainWindow::OnCreateTessEvalShader()
-{}
-void MainWindow::OnCreateGeometryShader()
-{}
-void MainWindow::OnCreateFragmentShader()
-{}
+void MainWindow::OnNewMaterial(){}
+void MainWindow::OnOpenMaterial(){}
+void MainWindow::OnSaveMaterial(){}
+void MainWindow::OnSaveMaterialAs(){}
+void MainWindow::OnClose(){}
+void MainWindow::OnExit(){}
 
-void MainWindow::OnCreateMaterial()
+void MainWindow::OnVaryingLibrary()
 {
-    DLGCreateMaterial *dlg=new DLGCreateMaterial();
+    
+}
 
-    dlg->show();
+void MainWindow::OnShaderModuleLibrary()
+{
+}
+
+void MainWindow::OnReloadLibrary()
+{
+    
 }

@@ -13,20 +13,22 @@ class MainWindow:public QMainWindow
 
 private:    //menu
 
+    void OnNewMaterial();
+    void OnOpenMaterial();
+    void OnSaveMaterial();
+    void OnSaveMaterialAs();
+    void OnClose();
+    void OnExit();
+
+    void OnVaryingLibrary();
+    void OnShaderModuleLibrary();
+    void OnReloadLibrary();
+
     void OnHomepage();
     void OnAbout();
 
     void OnConfig();
     void OnStyle();
-    
-    void OnCreateCommonShader();
-    void OnCreateVertexShader();
-    void OnCreateTessControlShader();
-    void OnCreateTessEvalShader();
-    void OnCreateGeometryShader();
-    void OnCreateFragmentShader();
-    
-    void OnCreateMaterial();
 
     void InitMenu();
 

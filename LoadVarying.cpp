@@ -63,6 +63,9 @@ namespace shader_lib
 
             const char *p=parse.GetToken(&token,&length);
 
+            if(!p)
+                return(nullptr);
+
             if(token==GLSLToken::Flat
              ||token==GLSLToken::Noperspective
              ||token==GLSLToken::Smooth)
@@ -83,7 +86,7 @@ namespace shader_lib
             do
             {
                 p=parse.GetToken(&token,&length);
-                if(token==GLSLToken::Identifier)
+                if(p&&token==GLSLToken::Identifier)
                 {
                     v->name.SetString(p,length);
                     break;
@@ -93,7 +96,7 @@ namespace shader_lib
             do
             {
                 p=parse.GetToken(&token,&length);
-                if(token==GLSLToken::OnelineComment)
+                if(p&&token==GLSLToken::OnelineComment)
                 {
                     v->comment.SetString(p+2,length-2);
                     return v;
