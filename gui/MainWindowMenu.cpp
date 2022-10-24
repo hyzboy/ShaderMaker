@@ -20,7 +20,7 @@ void MainWindow::InitMenu()
         file_menu->addSeparator();
         file_menu->addAction(tr("&Open Material"),this,&MainWindow::OnOpenMaterial);
         file_menu->addAction(tr("&Save Material"),this,&MainWindow::OnSaveMaterial);
-        file_menu->addAction(tr("S&ave Material As"),this,&MainWindow::OnSaveMaterialAs);
+        file_menu->addAction(tr("Save &Material As"),this,&MainWindow::OnSaveMaterialAs);
         file_menu->addSeparator();
         file_menu->addAction(tr("&Close"),this,&MainWindow::OnClose);
         file_menu->addSeparator();

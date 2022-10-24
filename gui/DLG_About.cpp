@@ -98,7 +98,6 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
     const uint msc_patch = _MSC_FULL_VER % 100000;
 
     const QString msvc_ver = QString::number(msc_major) + "." +QString::number(msc_minor) + "." + QString::number(msc_patch);
-
 #endif//
     const QString text_compiler=tr("Compiler");
     const QString text_build_time=tr("Build-Time");
@@ -114,6 +113,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                         "<li> CMAKE: " CMAKE_VERSION "</li>"
 #if HGL_OS == HGL_OS_Windows
                         "<li> "+text_compiler+": "+QString::fromWCharArray(HGL_COMPILER_NAME)+" "+ msvc_ver+
+                        "<li> Windows SDK version: "+HGL_WINDOWS_SDK_VERSION+
 #else
                         "<li> "+text_compiler+": " HGL_COMPILER_NAME " (" HGL_LIB_COMPILER_VERSION ")"
 #endif//
