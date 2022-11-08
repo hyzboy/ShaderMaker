@@ -169,7 +169,8 @@ IF(CM_BUILD_GUI_TOOLS)
                                     ${SHADER_FILE_SOURCE}
                                     ${GLSL_COMPILER_SOURCE}
                                     ${VK_SHADER_COMMON_SOURCE}
-                                    ${SHADER_LIBRARY_SOURCE})
+                                    ${SHADER_LIBRARY_SOURCE}
+    ${CM_QT_EXTRA_STYLE_RC_FILES})
 
     target_link_libraries(MaterialWriter PRIVATE CMQT)
     set_target_properties(MaterialWriter PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")

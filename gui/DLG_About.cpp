@@ -113,6 +113,7 @@ QWidget *DLGAbout::CreateTabpage(QWidget *parent)
                         "<li> CMAKE: " CMAKE_VERSION "</li>"
 #if HGL_OS == HGL_OS_Windows
                         "<li> "+text_compiler+": "+QString::fromWCharArray(HGL_COMPILER_NAME)+" "+ msvc_ver+
+                        "</li>\n"
                         "<li> Windows SDK version: "+HGL_WINDOWS_SDK_VERSION+
 #else
                         "<li> "+text_compiler+": " HGL_COMPILER_NAME " (" HGL_LIB_COMPILER_VERSION ")"

@@ -11,6 +11,7 @@ class DLGGUIStyle:public QDialog
 private:
 
     QStringList style_list;
+    QStringList extra_style_list;
     QString choose_style;
 
     void OnStyleChange(int);

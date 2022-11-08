@@ -7,6 +7,11 @@
 #include<QButtonGroup>
 #include"ConfigData.h"
 
+namespace hgl{namespace qt{
+    const QStringList GetExtraGUIStyleList();
+    QStyle *CreateQTExtraStyle(const QString &style_name);
+}}
+
 DLGGUIStyle::DLGGUIStyle()
 {
     setModal(true);
@@ -16,6 +21,8 @@ DLGGUIStyle::DLGGUIStyle()
     
     style_list=QStyleFactory::keys();
     choose_style=QApplication::style()->objectName();
+
+    extra_style_list=hgl::qt::GetExtraGUIStyleList();
 
     {
         QButtonGroup *group=new QButtonGroup(this);
@@ -27,6 +34,18 @@ DLGGUIStyle::DLGGUIStyle()
             group->addButton(radio_button,i);
 
             if(choose_style.compare(style_list[i],Qt::CaseInsensitive)==0)
+                radio_button->setChecked(true);
+            
+            layout->addWidget(radio_button);
+        }
+
+        for(int i=0;i<extra_style_list.count();i++)
+        {
+            QRadioButton *radio_button=new QRadioButton(extra_style_list[i],this);
+
+            group->addButton(radio_button,i+style_list.count());
+
+            if(choose_style.compare(extra_style_list[i],Qt::CaseInsensitive)==0)
                 radio_button->setChecked(true);
 
             layout->addWidget(radio_button);
@@ -42,7 +61,24 @@ DLGGUIStyle::DLGGUIStyle()
 
 void DLGGUIStyle::OnStyleChange(int index)
 {
-    QApplication::setStyle(style_list[index]);
+    if(index<style_list.count())
+    {
+        QApplication::setStyle(style_list[index]);
+    }
+    else
+    {
+        index-=style_list.count();
+
+        QStyle *s=hgl::qt::CreateQTExtraStyle(extra_style_list[index]);
+
+        if(!s)
+        {
+            OnStyleChange(0);
+            return;
+        }
+
+        QApplication::setStyle(s);
+    }
 }
 
 void DLGGUIStyle::OnFinished(int)
