@@ -2,8 +2,8 @@
 
 #include<hgl/type/StringList.h>
 #include<hgl/type/Map.h>
-#include"XMLShader.h"
-#include"InfoOutput.h"
+#include"ShaderLibrary/XMLShader.h"
+#include"InfoOutput/InfoOutput.h"
 
 namespace shader_lib
 {

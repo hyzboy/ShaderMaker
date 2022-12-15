@@ -3,7 +3,7 @@
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/io/FileInputStream.h>
 #include<hgl/type/StringList.h>
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 
 /**
  * Shader类型

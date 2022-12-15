@@ -1,5 +1,5 @@
-#include"XMLShader.h"
-#include"GLSLCompiler.h"
+#include"ShaderLibrary/XMLShader.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/MergeString.h>
 

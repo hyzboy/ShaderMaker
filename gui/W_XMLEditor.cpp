@@ -9,9 +9,9 @@
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/io/MemoryInputStream.h>
 #include"QStringInfoOutput.h"
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include"TypeDefine.h"
-#include"GLSLCompiler.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 
 QWidget *XMLEditorWidget::InitEditor(QWidget *parent)
 {

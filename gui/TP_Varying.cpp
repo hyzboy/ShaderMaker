@@ -1,5 +1,5 @@
 #include"TP_Varying.h"
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include"W_ShaderEditor.h"
 #include"ConfigData.h"
 #include<hgl/type/QTString.h>

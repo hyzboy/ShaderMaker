@@ -1,7 +1,7 @@
 #include<hgl/filesystem/Filesystem.h>
 #include<hgl/filesystem/EnumFile.h>
 #include<hgl/type/LoadStringList.h>
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include"GLSLParse/GLSLTokenizer.h"
 #include"gui/ConfigData.h"
 

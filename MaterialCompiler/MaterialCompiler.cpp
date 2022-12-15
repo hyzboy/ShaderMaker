@@ -1,5 +1,5 @@
-#include"ShaderLib.h"
-#include"GLSLCompiler.h"
+#include"ShaderLibrary/ShaderLib.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
 

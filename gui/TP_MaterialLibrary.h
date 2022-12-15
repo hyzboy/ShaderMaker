@@ -7,7 +7,7 @@
 #include<QHBoxLayout>
 #include"GLSLTextEdit.h"
 #include<hgl/type/String.h>
-#include"InfoOutput.h"
+#include"InfoOutput/InfoOutput.h"
 
 class TPMaterialLibrary:public QWidget
 {

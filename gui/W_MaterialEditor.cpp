@@ -2,7 +2,7 @@
 #include<QVBoxLayout>
 #include<QSplitter>
 #include<QMessageBox>
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include<hgl/type/QTString.h>
 #include<hgl/type/LoadStringList.h>
 #include<hgl/type/MergeString.h>

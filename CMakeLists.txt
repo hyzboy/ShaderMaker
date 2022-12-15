@@ -33,8 +33,8 @@ endmacro()
 set(SM_HEADER_FILES ShaderDataType.h ShaderConfig.h ShaderLib.h glsl2spv.h ShaderMaker.h)
 set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp ShaderConfigParse.cpp ShaderMaker.cpp ForwardShading.cpp)
 
-SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
-                            GLSLCompiler.cpp)
+SET(GLSL_COMPILER_SOURCE	GLSLCompiler/GLSLCompiler.h
+                            GLSLCompiler/GLSLCompiler.cpp)
 
 SET(VK_SHADER_COMMON_SOURCE vulkan/VKShaderCommon.h
                             vulkan/VKShaderCommon.cpp)
@@ -57,40 +57,48 @@ SET(SHADER_FILE_SOURCE  GLSLParse/ShaderSourceLocation.h
 
 SOURCE_GROUP("Shader Lib\\Shader File" FILES ${SHADER_FILE_SOURCE})
 
-SET(SHADER_LIBRARY_SOURCE   ShaderLib.h
-                            ShaderLib.cpp
-                            ShaderLibParse.h
-                            InfoOutput.h
-                            InfoOutput.cpp
-                            XMLShader.h
-                            XMLShader.cpp
-                            SLP_Folder.cpp
-                            SLP_Files.cpp
-                            SLP_Root.cpp
-                            SLPF_RawGLSL.cpp
-                            SLPF_XmlGLSL.cpp
-                            LoadVarying.cpp)
+SET(INFO_OUTPUT_SOURCE      InfoOutput/InfoOutput.h
+                            InfoOutput/InfoOutput.cpp)
+
+SOURCE_GROUP("Info Output" FILES ${INFO_OUTPUT_SOURCE})
+
+SET(SHADER_LIBRARY_SOURCE   ShaderLibrary/ShaderLib.h
+                            ShaderLibrary/ShaderLib.cpp
+                            ShaderLibrary/ShaderLibParse.h
+                            
+                            ShaderLibrary/XMLShader.h
+                            ShaderLibrary/XMLShader.cpp
+                            ShaderLibrary/SLP_Folder.cpp
+                            ShaderLibrary/SLP_Files.cpp
+                            ShaderLibrary/SLP_Root.cpp
+                            ShaderLibrary/SLPF_RawGLSL.cpp
+                            ShaderLibrary/SLPF_XmlGLSL.cpp
+                            ShaderLibrary/LoadVarying.cpp)
 
 SOURCE_GROUP("GLSL Compiler" FILES ${GLSL_COMPILER_SOURCE})
 SOURCE_GROUP("Shader Lib" FILES ${SHADER_LIBRARY_SOURCE})
 SOURCE_GROUP("Shader Lib\\GLSL Parse" FILES ${GLSLParse_SOURCE})
 
-SET(MATERIAL_COMPILER_SOURCE    ShaderMaker.cpp
-                                ParseXMLShader.cpp
-                                ParseXMLMaterial.cpp
-                                ParseMaterial.cpp
-                                ParseMaterialShader.cpp
-                                SaveMaterial.cpp)
+SET(MATERIAL_COMPILER_SOURCE    MaterialCompiler/ShaderMaker.cpp
+                                MaterialCompiler/ParseXMLShader.cpp
+                                MaterialCompiler/ParseXMLMaterial.cpp
+                                MaterialCompiler/ParseMaterial.cpp
+                                MaterialCompiler/ParseMaterialShader.cpp
+                                MaterialCompiler/SaveMaterial.cpp)
 
-add_executable(MaterialCompiler MaterialCompiler.cpp
+SOURCE_GROUP("Material Compiler" FILES ${MATERIAL_COMPILER_SOURCE})
+
+add_executable(MaterialCompiler MaterialCompiler/MaterialCompiler.cpp
                                 ${MATERIAL_COMPILER_SOURCE}
                                 ${GLSL_COMPILER_SOURCE}
                                 ${VK_SHADER_COMMON_SOURCE}
-                                ${SHADER_LIBRARY_SOURCE})
+                                ${SHADER_LIBRARY_SOURCE}
+                                ${INFO_OUTPUT_SOURCE})
 
-add_executable(ShaderCompiler ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE} ${VK_SHADER_COMMON_SOURCE})
+add_executable(ShaderCompiler ShaderCompiler/ShaderCompiler.cpp ${GLSL_COMPILER_SOURCE} ${VK_SHADER_COMMON_SOURCE})
 
-add_executable(PipelineCompiler PipelineCompiler.cpp LoadXMLPipeline.cpp)
+add_executable(PipelineCompiler PipelineCompiler/PipelineCompiler.cpp 
+                                PipelineCompiler/LoadXMLPipeline.cpp)
 
 shader_maker_project(ShaderCompiler)
 shader_maker_project(PipelineCompiler)
@@ -170,7 +178,8 @@ IF(CM_BUILD_GUI_TOOLS)
                                     ${GLSL_COMPILER_SOURCE}
                                     ${VK_SHADER_COMMON_SOURCE}
                                     ${SHADER_LIBRARY_SOURCE}
-    ${CM_QT_EXTRA_STYLE_RC_FILES})
+                                    ${INFO_OUTPUT_SOURCE}
+                                    ${CM_QT_EXTRA_STYLE_RC_FILES})
 
     target_link_libraries(MaterialWriter PRIVATE CMQT)
     set_target_properties(MaterialWriter PROPERTIES WIN32_EXECUTABLE YES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")

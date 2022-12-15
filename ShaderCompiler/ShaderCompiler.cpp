@@ -1,5 +1,5 @@
 #include<iostream>
-#include"GLSLCompiler.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 
 int os_main(int argc,os_char **argv)
 {

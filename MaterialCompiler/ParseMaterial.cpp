@@ -1,7 +1,7 @@
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/LoadStringList.h>
-#include"ShaderLib.h"
-#include"GLSLCompiler.h"
+#include"ShaderLibrary/ShaderLib.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 
 namespace shader_lib
 {

@@ -1,5 +1,5 @@
 ﻿#include"TP_ShaderFile.h"
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include<hgl/type/QTString.h>
 #include<hgl/type/StringList.h>
 #include<QVBoxLayout>

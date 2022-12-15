@@ -1,6 +1,6 @@
 #pragma once
 
 #include<QString>
-#include"InfoOutput.h"
+#include"InfoOutput/InfoOutput.h"
 
 InfoOutput *CreateQStringInfoOutput(QString *);

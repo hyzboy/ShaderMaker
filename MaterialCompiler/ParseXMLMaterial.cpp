@@ -2,8 +2,8 @@
 #include<hgl/util/xml/XMLParse.h>
 #include<hgl/util/xml/ElementParseCreater.h>
 #include<hgl/type/StringList.h>
-#include"ShaderLib.h"
-#include"GLSLCompiler.h"
+#include"ShaderLibrary/ShaderLib.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 #include"gui/ConfigData.h"
 
 namespace shader_lib

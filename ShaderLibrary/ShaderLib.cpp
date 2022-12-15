@@ -1,4 +1,4 @@
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include"ShaderLibParse.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/util/xml/XMLParse.h>

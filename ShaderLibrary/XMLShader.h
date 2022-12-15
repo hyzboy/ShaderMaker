@@ -2,7 +2,7 @@
 
 #include<hgl/type/StringList.h>
 #include<hgl/type/SortedSets.h>
-#include"InfoOutput.h"
+#include"InfoOutput/InfoOutput.h"
 #include"vulkan/VKShaderCommon.h"
 
 namespace glsl_compiler

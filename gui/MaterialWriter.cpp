@@ -5,8 +5,8 @@
 #include"MainWindow.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<iostream>
-#include"ShaderLib.h"
-#include"GLSLCompiler.h"
+#include"ShaderLibrary/ShaderLib.h"
+#include"GLSLCompiler/GLSLCompiler.h"
 #include<hgl/type/QTString.h>
 #include"ConfigData.h"
 #include"DLG_Config.h"

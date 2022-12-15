@@ -3,7 +3,7 @@
 #include"W_EditorWidget.h"
 #include<QLabel>
 #include<hgl/type/String.h>
-#include"ShaderLib.h"
+#include"ShaderLibrary/ShaderLib.h"
 #include"GLSLTextEdit.h"
 #include<QPushButton>
 #include<QPlainTextEdit>
