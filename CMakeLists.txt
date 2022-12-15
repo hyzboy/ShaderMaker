@@ -36,8 +36,8 @@ set(SM_SOURCE_FILES main.cpp glsl2spv.cpp ShaderLib.cpp ShaderDataType.cpp Shade
 SET(GLSL_COMPILER_SOURCE	GLSLCompiler.h
                             GLSLCompiler.cpp)
 
-SET(VK_SHADER_COMMON_SOURCE VKShaderCommon.h
-                            VKShaderCommon.cpp)
+SET(VK_SHADER_COMMON_SOURCE vulkan/VKShaderCommon.h
+                            vulkan/VKShaderCommon.cpp)
 
 SOURCE_GROUP("Vulkan Shader Common" FILES ${VK_SHADER_COMMON_SOURCE})
 
