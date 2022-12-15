@@ -41,19 +41,19 @@ SET(VK_SHADER_COMMON_SOURCE VKShaderCommon.h
 
 SOURCE_GROUP("Vulkan Shader Common" FILES ${VK_SHADER_COMMON_SOURCE})
 
-SET(GLSLParse_SOURCE    GLSLToken.h
-                        GLSLTokenizer.h
-                        GLSLTokenizer.cpp
-                        GLSLParse.cpp)
+SET(GLSLParse_SOURCE    GLSLParse/GLSLToken.h
+                        GLSLParse/GLSLTokenizer.h
+                        GLSLParse/GLSLTokenizer.cpp
+                        GLSLParse/GLSLParse.cpp)
 
-add_executable(ShaderParse ShaderParseTest.cpp ${GLSLParse_SOURCE})
+add_executable(ShaderParse GLSLParse/ShaderParseTest.cpp ${GLSLParse_SOURCE})
 shader_maker_project(ShaderParse)
 
-SET(SHADER_FILE_SOURCE  ShaderSourceLocation.h
-                        ShaderStruct.h
-                        ShaderConstVarying.h
-                        ShaderFunction.h
-                        ShaderFile.h)
+SET(SHADER_FILE_SOURCE  GLSLParse/ShaderSourceLocation.h
+                        GLSLParse/ShaderStruct.h
+                        GLSLParse/ShaderConstVarying.h
+                        GLSLParse/ShaderFunction.h
+                        GLSLParse/ShaderFile.h)
 
 SOURCE_GROUP("Shader Lib\\Shader File" FILES ${SHADER_FILE_SOURCE})
 

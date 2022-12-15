@@ -2,7 +2,7 @@
 #include<hgl/filesystem/EnumFile.h>
 #include<hgl/type/LoadStringList.h>
 #include"ShaderLib.h"
-#include"GLSLTokenizer.h"
+#include"GLSLParse/GLSLTokenizer.h"
 #include"gui/ConfigData.h"
 
 namespace shader_lib

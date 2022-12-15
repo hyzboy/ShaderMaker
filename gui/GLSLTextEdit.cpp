@@ -101,7 +101,6 @@ public:
             rule.pattern = QRegularExpression(pattern);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
-        
         //! [0] //! [1]
         }
         //! [1]
