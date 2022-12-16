@@ -1,4 +1,0 @@
-[submodule "shader_libs"]
-	path = shader_libs
-	url = https://github.com/hyzboy/shader_libs.git
-
