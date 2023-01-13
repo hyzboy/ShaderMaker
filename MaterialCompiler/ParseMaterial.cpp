@@ -55,5 +55,7 @@ namespace shader_lib
                 shader_stage_bits|=type;
             }
         }
+
+        return(true);
     }
 }//namespace shader_lib
