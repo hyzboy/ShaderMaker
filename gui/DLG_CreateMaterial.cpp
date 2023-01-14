@@ -1,4 +1,4 @@
-#include"DLG_CreateMaterial.h"
+ï»¿#include"DLG_CreateMaterial.h"
 #include<QVBoxLayout>
 #include<QPushButton>
 
@@ -57,7 +57,7 @@ DLGCreateMaterial::DLGCreateMaterial()
         QWidget *button_area_widget=new QWidget(widget);
         QHBoxLayout *button_area_layout=new QHBoxLayout(button_area_widget);
 
-        //È·¶¨¡¢È¡Ïû°´Å¥
+        //ç¡®å®šã€å–æ¶ˆæŒ‰é’®
         {
             QPushButton *ok_button=new QPushButton(button_area_widget);
             ok_button->setText("OK");

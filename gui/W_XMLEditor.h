@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include"W_EditorWidget.h"
 #include<QLabel>
@@ -13,7 +13,7 @@ class XMLEditorWidget:public EditorWidget
 {
     Q_OBJECT
 
-private:    //XMLShader±à¼­Çø
+private:    //XMLShaderç¼–è¾‘åŒº
 
     XMLTextEdit *xml_editor;
     QLabel *editor_hint;
@@ -27,7 +27,7 @@ private:    //XMLShader±à¼­Çø
 
     QWidget *InitEditor(QWidget *);
 
-private:    //ÈÕÖ¾Çø
+private:    //æ—¥å¿—åŒº
 
     QPlainTextEdit *log_widget;
 

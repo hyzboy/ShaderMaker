@@ -1,4 +1,4 @@
-#include<hgl/filesystem/FileSystem.h>
+ï»¿#include<hgl/filesystem/FileSystem.h>
 #include<hgl/type/LoadStringList.h>
 #include"ShaderLibrary/ShaderLib.h"
 #include"GLSLCompiler/GLSLCompiler.h"
@@ -12,7 +12,7 @@ namespace shader_lib
             if(str.Length()<=5)
                 return(false);
 
-            int pos=str.FindChars(U8_TEXT("\t ="));     //Ñ°ÕÒ\t¡¢¿Õ¸ñ¡¢=
+            int pos=str.FindChars(U8_TEXT("\t ="));     //å¯»æ‰¾\tã€ç©ºæ ¼ã€=
 
             if(pos<4)
                 return(false);

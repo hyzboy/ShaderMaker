@@ -545,7 +545,7 @@ namespace shader_lib
         {
             token_type = glsl_token_words[lastPossible].token;
             //token_length = strlen(glsl_token_words[lastPossible].word);
-            token_length = strlen(glsl_token_words[lastPossible].word);
+            token_length = (int)strlen(glsl_token_words[lastPossible].word);
             return true;
         }
 

@@ -104,7 +104,7 @@ shader_maker_project(ShaderCompiler)
 shader_maker_project(PipelineCompiler)
 shader_maker_project(MaterialCompiler)
 
-IF(CM_BUILD_GUI_TOOLS)
+IF(CM_BUILD_QT)
     set(IDENTIFIER "com.hyzgame.materialwriter")
 
     SET(MW_BASIC_FILES  gui/TypeDefine.h

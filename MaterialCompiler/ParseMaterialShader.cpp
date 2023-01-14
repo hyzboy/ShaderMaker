@@ -52,7 +52,7 @@ namespace shader_lib
 
             UTF8StringList ins;
 
-            int count=SplitToStringListByCodes(ins,str);
+            int count=SplitToStringListByCodes<u8char>(ins,str);
 
             for(int i=0;i<count;i++)
             {
@@ -68,7 +68,7 @@ namespace shader_lib
 
             UTF8StringList sl;
 
-            SplitToStringListByCodes(sl,str);
+            SplitToStringListByCodes<u8char>(sl,str);
 
             if(sl.GetCount()<3)return(nullptr);
 
