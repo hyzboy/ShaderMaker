@@ -11,7 +11,7 @@ namespace shader_lib
     namespace
     {
         UTF8StringList raw_shader_name_list;
-        MapObject<UTF8String,UTF8StringList> raw_shader_list;
+        ObjectMap<UTF8String,UTF8StringList> raw_shader_list;
     }
 
     const UTF8StringList &GetRawModuleList()

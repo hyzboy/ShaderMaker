@@ -72,7 +72,7 @@ namespace shader_lib
         CompOperator(const MaterialShaderResource &,Comp);
     };//struct MaterialShaderResource:public ShaderResource
 
-    using MSRList=MapObject<AnsiString,MaterialShaderResource>;
+    using MSRList=ObjectMap<AnsiString,MaterialShaderResource>;
 
     struct MaterialUniform:public Uniform
     {
@@ -92,7 +92,7 @@ namespace shader_lib
 
         List<Uniform *> uniform_list;
 
-        MapObject<UTF8String,MaterialUniform> mu_list;
+        ObjectMap<UTF8String,MaterialUniform> mu_list;
 
     public:
 
@@ -109,7 +109,7 @@ namespace shader_lib
         DescSetUniformList ds_uniform[(size_t)DescriptorSetsType::RANGE_SIZE];
     };
 
-    using XMLShaderMap=MapObject<ShaderType,XMLShader>;
+    using XMLShaderMap=ObjectMap<ShaderType,XMLShader>;
 
     struct XMLMaterial
     {

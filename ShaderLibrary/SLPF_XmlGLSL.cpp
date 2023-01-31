@@ -18,10 +18,10 @@ namespace shader_lib
         };//
 
         UTF8StringList struct_name_list;
-        MapObject<UTF8String,ShaderStruct> struct_list;
+        ObjectMap<UTF8String,ShaderStruct> struct_list;
 
         UTF8StringList module_name_list;
-        MapObject<UTF8String,XMLShaderModule> xml_module_list;
+        ObjectMap<UTF8String,XMLShaderModule> xml_module_list;
 
         class StructElementCreater:public xml::ElementAttribute
         {

@@ -10,7 +10,7 @@ namespace shader_lib
     namespace
     {
         UTF8StringList varying_list;
-        MapObject<UTF8String,VaryingConfig> varying_config_list;
+        ObjectMap<UTF8String,VaryingConfig> varying_config_list;
     }//namespace
 
     const UTF8StringList &GetVaryingList()
