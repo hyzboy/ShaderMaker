@@ -81,7 +81,7 @@ namespace shader_lib
             if(xs->shader_type==shader_lib::ssbGeometry)
             {
                 shader_text.Add(u8"layout("+xs->geom.in+u8") in;");
-                shader_text.Add(u8"layout("+xs->geom.out+u8",max_vertices="+UTF8String::valueOf(xs->geom.max_vertices)+u8") out;\n");
+                shader_text.Add(u8"layout("+xs->geom.out+u8",max_vertices="+UTF8String::numberOf(xs->geom.max_vertices)+u8") out;\n");
             }
         }
 
@@ -116,7 +116,7 @@ namespace shader_lib
 
             for(int i=0;i<count;i++)
             {
-                layout=U8_TEXT("layout(location=")+UTF8String::valueOf(binding)+U8_TEXT(")");
+                layout=U8_TEXT("layout(location=")+UTF8String::numberOf(binding)+U8_TEXT(")");
 
                 if(type==VaryingType::Input)
                 {
@@ -215,7 +215,7 @@ namespace shader_lib
 
             shader_lib::Uniform **ubo=xs->uniforms.GetData();
 
-            OutComment(U8_TEXT("Begin ")+UTF8String::valueOf(count)+U8_TEXT(" uniforms"));
+            OutComment(U8_TEXT("Begin ")+UTF8String::numberOf(count)+U8_TEXT(" uniforms"));
 
             UTF8String front;
 
@@ -223,12 +223,12 @@ namespace shader_lib
             {
                 if((*ubo)->set_number==-1)
                 {
-                    front=U8_TEXT("layout(binding=")+UTF8String::valueOf(i);        //only debug
+                    front=U8_TEXT("layout(binding=")+UTF8String::numberOf(i);        //only debug
                 }
                 else
                 {
-                    front=U8_TEXT("layout(set=")+UTF8String::valueOf((int)(*ubo)->set_number)
-                         +U8_TEXT(",binding=")  +UTF8String::valueOf((int)(*ubo)->binding);
+                    front=U8_TEXT("layout(set=")+UTF8String::numberOf((int)(*ubo)->set_number)
+                         +U8_TEXT(",binding=")  +UTF8String::numberOf((int)(*ubo)->binding);
                 }
 
                 if(shader_lib::CheckStruct((*ubo)->type_name))

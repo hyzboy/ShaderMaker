@@ -34,6 +34,9 @@ namespace glsl_compiler
         bool        (*Init)();
         void        (*Close)();
 
+        bool        (*GetLimit)(void *,const int);
+        bool        (*SetLimit)(void *,const int);
+
         uint32_t    (*GetType)(const char *ext_name);
         SPVData *   (*Compile)(const uint32_t stage,const char *shader_source, const CompileInfo *compile_info);
         SPVData *   (*CompileFromPath)(const uint32_t stage,const char *shader_filename, const CompileInfo *compile_info);

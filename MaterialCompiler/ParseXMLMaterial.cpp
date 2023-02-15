@@ -162,7 +162,7 @@ namespace shader_lib
 
         {
             {
-                bool set_has[(size_t)DescriptorSetsType::RANGE_SIZE];
+                bool set_has[(size_t)DescriptorSetType::RANGE_SIZE];
 
                 hgl_zero(set_has);
 
@@ -183,7 +183,7 @@ namespace shader_lib
                 {
                     uint32_t index=0;
 
-                    ENUM_CLASS_FOR(DescriptorSetsType,int,i)
+                    ENUM_CLASS_FOR(DescriptorSetType,int,i)
                     {
                         if(set_has[i])
                         {

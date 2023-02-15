@@ -15,7 +15,7 @@ namespace shader_lib
     using namespace hgl;
     using namespace vk_shader;
 
-    enum class DescriptorSetsType
+    enum class DescriptorSetType
     {
         //设计使其对应shader中的sets
     
@@ -28,14 +28,14 @@ namespace shader_lib
         ENUM_CLASS_RANGE(Global,Renderable)
     };//
 
-    inline const DescriptorSetsType DescriptorSetsTypeFromName(const char *name)
+    inline const DescriptorSetType DescriptorSetsTypeFromName(const char *name)
     {
-        if(!name||!*name||name[1]!='_')return DescriptorSetsType::Value;
+        if(!name||!*name||name[1]!='_')return DescriptorSetType::Value;
 
-        if(*name=='m')return DescriptorSetsType::Material;
-        if(*name=='g')return DescriptorSetsType::Global;
-        if(*name=='r')return DescriptorSetsType::Renderable;
-                      return DescriptorSetsType::Value;
+        if(*name=='m')return DescriptorSetType::Material;
+        if(*name=='g')return DescriptorSetType::Global;
+        if(*name=='r')return DescriptorSetType::Renderable;
+                      return DescriptorSetType::Value;
     }
 
     struct Uniform
@@ -43,7 +43,7 @@ namespace shader_lib
         UTF8String type_name;
         UTF8String value_name;
 
-        DescriptorSetsType type;
+        DescriptorSetType type;
 
         //以下变量由material统计生成
         int set_number=-1;
@@ -53,7 +53,7 @@ namespace shader_lib
 
         Uniform()
         {
-            type=DescriptorSetsType::Value;
+            type=DescriptorSetType::Value;
         }
 
         Uniform(const UTF8String &tn,const UTF8String &vn)

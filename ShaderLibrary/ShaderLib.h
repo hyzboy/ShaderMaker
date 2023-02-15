@@ -106,7 +106,7 @@ namespace shader_lib
      */
     struct MaterialStat
     {
-        DescSetUniformList ds_uniform[(size_t)DescriptorSetsType::RANGE_SIZE];
+        DescSetUniformList ds_uniform[(size_t)DescriptorSetType::RANGE_SIZE];
     };
 
     using XMLShaderMap=ObjectMap<ShaderType,XMLShader>;

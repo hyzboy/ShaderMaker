@@ -54,6 +54,9 @@ namespace glsl_compiler
 
         ShaderStageData input,output;
         ShaderFullResourceData resource;
+
+        ShaderResourceData push_constant;
+        ShaderResourceData subpass_input;
     };
 
     bool Init();

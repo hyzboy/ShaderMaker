@@ -90,7 +90,7 @@ namespace shader_lib
             const char *type_string;
             int location;
 
-            info_output->colorWriteln("blue",UTF8String::valueOf(ssd.count)+U8_TEXT(" Stage ")+UTF8String(hint));
+            info_output->colorWriteln("blue",UTF8String::numberOf(ssd.count)+U8_TEXT(" Stage ")+UTF8String(hint));
 
             for(size_t i=0;i<ssd.count;i++)
             {
@@ -225,7 +225,7 @@ namespace shader_lib
 
             if(filesystem::SaveMemoryToFile(filename,mos.GetData(),mos.Tell())==mos.Tell())
             {
-                info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::valueOf(mos.Tell())+OS_TEXT(" bytes."));
+                info_output->colorWriteln("green",OS_TEXT("Save material file \"<b>")+filename+OS_TEXT("</b>\" OK! total ")+OSString::numberOf(mos.Tell())+OS_TEXT(" bytes."));
                 return(true);
             }
             else
